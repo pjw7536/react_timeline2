@@ -1,0 +1,59 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   vis-timeline 커스터마이징
+───────────────────────────────────────────────────────────────────────── */
+
+.timeline-container { margin-bottom: 16px; }
+
+/* 공통 아이템 */
+.vis-item {
+  @apply border border-transparent text-slate-800;
+  border-radius: 0 !important;
+  margin-right: -1px;
+  box-shadow: none !important;
+  pointer-events: all !important;
+}
+.dark .vis-item { @apply text-slate-100; }
+
+/* 상태 색상 */
+.vis-item.bg-red-500    { @apply bg-red-500 border-red-600; }
+.vis-item.bg-green-500  { @apply bg-green-500 border-green-600; }
+.vis-item.bg-blue-500   { @apply bg-blue-500 border-blue-600; }
+.vis-item.bg-yellow-500 { @apply bg-yellow-500 border-yellow-600; }
+.vis-item.bg-gray-300   { @apply bg-gray-300 border-gray-400; }
+/* 600 계열 */
+.vis-item.bg-red-600    { @apply bg-red-600  border-red-700; }
+.vis-item.bg-blue-600   { @apply bg-blue-600 border-blue-700; }
+.vis-item.bg-yellow-600 { @apply bg-yellow-600 border-yellow-700; }
+.vis-item.bg-green-600  { @apply bg-green-600 border-green-700; }
+.vis-item.bg-amber-600  { @apply bg-amber-600 border-amber-700; }
+
+/* 선택 아이템 */
+.vis-item.vis-selected {
+  outline: 2px dashed #fb923c !important;  
+  outline-offset: -2px !important;              
+  background-color: rgba(251, 146, 60, 0.2) !important; 
+  filter: brightness(1.1) !important;
+  z-index: 10 !important;
+}
+
+/* 레인지/포인트 */
+.vis-item.vis-range { pointer-events: all !important; min-height: 20px !important; }
+.vis-item.vis-point { pointer-events: all !important; }
+
+/* 시간축 텍스트 */
+.vis-time-axis .vis-text,
+.vis-time-axis .vis-label { font-size: 13px !important; color: #334155; }
+.dark .vis-time-axis .vis-text,
+.dark .vis-time-axis .vis-label { color: #f1f5f9 !important; }
+
+/* 그룹 라벨 */
+.vis-label.custom-group-label { color: #334155; }
+.dark .vis-label.custom-group-label { color: #f1f5f9 !important; }
+
+/* 테이블 스크롤바 */
+.table-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.table-scroll::-webkit-scrollbar-track { background: #ffffff; border-radius: 10px; }
+.table-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; border: 1px solid #e2e8f0; }
+.dark .table-scroll::-webkit-scrollbar-track { background: #1e293b; }
+.dark .table-scroll::-webkit-scrollbar-thumb { background: #475569; border: 1px solid #1e293b; }
+.dark .table-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }

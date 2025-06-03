@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+/* === vis-timeline 공통 스타일 === */
+@custom-variant dark (&:where(.dark, .dark *));
+@import "./styles/timeline.css";
