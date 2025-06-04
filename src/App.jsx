@@ -22,7 +22,7 @@ export default function App() {
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <Navbar />
-      <div className="flex-1 overflow-hidden px-6">
+      <div className="flex-1 overflow-hidden px-4">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route

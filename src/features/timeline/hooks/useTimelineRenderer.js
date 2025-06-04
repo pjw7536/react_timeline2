@@ -28,9 +28,20 @@ export const useTimelineRenderer = (containerRef, groupKey, data, options) => {
         syncRange(tlRef.current, start, end)
       );
 
-      tlRef.current.on("select", (e) => {
-        const id = e.items?.[0];
-        if (id) setSelectedRow(id, "timeline");
+      tlRef.current.on("select", ({ items }) => {
+        // 최신 selectedRow 참조
+        const currentSelected = useSelectionStore.getState().selectedRow;
+
+        if (items && items.length > 0) {
+          if (String(currentSelected) === String(items[0])) {
+            setSelectedRow(null, "timeline");
+            tlRef.current.setSelection([]); // 타임라인도 해제!
+          } else {
+            setSelectedRow(items[0], "timeline");
+          }
+        } else {
+          setSelectedRow(null, "timeline");
+        }
       });
     })();
 

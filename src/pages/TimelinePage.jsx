@@ -3,6 +3,7 @@ import { useLogs } from "@/features/timeline";
 import { LineSelector, SDWTSelector, EqpSelector } from "@/features/drilldown";
 import { TimelineBoard } from "@/features/timeline";
 import CombinedDataTable from "@/features/table/CombinedDataTable";
+import LogDetailSection from "@/features/table/LogDetailSection";
 import LoadingSpinner from "@/shared/LoadingSpinner";
 import { useSelectionStore } from "@/shared/store";
 
@@ -14,11 +15,8 @@ const DATA_TYPES = {
 };
 
 export default function TimelinePage() {
-  /* ───────────────── 드릴다운 상태 (Zustand) ───────────────── */
   const { lineId, sdwtId, eqpId, setLine, setSdwt, setEqp } =
     useSelectionStore();
-
-  /* ───────────────── 로그 Fetch ───────────────── */
   const enabled = Boolean(lineId && eqpId);
   const {
     data: logs = [],
@@ -26,7 +24,6 @@ export default function TimelinePage() {
     isError: logsError,
   } = useLogs({ lineId, sdwtId, eqpId }, enabled);
 
-  /* ───────────────── 체크박스 필터 ───────────────── */
   const [typeFilters, setTypeFilters] = useState({
     [DATA_TYPES.EQP]: true,
     [DATA_TYPES.TIP]: true,
@@ -36,7 +33,6 @@ export default function TimelinePage() {
   const handleFilter = (e) =>
     setTypeFilters((p) => ({ ...p, [e.target.name]: e.target.checked }));
 
-  /* ───────────────── 로그 분류 & 테이블 가공 ───────────────── */
   const logsByType = useMemo(() => {
     const g = { EQP: [], TIP: [], RACB: [], CTTTM: [] };
     logs.forEach((l) => g[l.logType]?.push(l));
@@ -62,7 +58,14 @@ export default function TimelinePage() {
       );
   }, [logs, logsLoading, enabled, typeFilters]);
 
-  /* ───────────────── UI ───────────────── */
+  const { selectedRow } = useSelectionStore();
+  const selectedLog = useMemo(
+    () => logs.find((l) => String(l.id) === String(selectedRow)),
+    [logs, selectedRow]
+  );
+
+  const [showLegend, setShowLegend] = useState(false);
+
   if (logsError)
     return (
       <div className="flex items-center justify-center h-[80vh]">
@@ -71,16 +74,15 @@ export default function TimelinePage() {
     );
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-110px)] gap-3 mt-4">
-      {/* 왼쪽: 선택기 + 테이블 */}
-      <div className="lg:w-[40%] flex flex-col gap-4 h-full">
-        <div className="p-4 bg-white dark:bg-slate-800 shadow rounded-xl">
-          <h2 className="text-lg font-bold mb-3 text-slate-900 dark:text-white">
-            📊 EQP 타임라인 뷰어
+    <div className="flex flex-col lg:flex-row h-[calc(100vh-110px)] gap-2 mt-3">
+      {/* 왼쪽: 세 칸 구조! */}
+      <div className="flex flex-col h-full min-h-0 lg:w-[40%] gap-2">
+        {/* 1. Log Viewer */}
+        <section className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex flex-col">
+          <h2 className="text-md font-bold text-slate-900 dark:text-white border-slate-200 dark:border-slate-700">
+            📊 Log Viewer
           </h2>
-
-          {/* 드릴다운 */}
-          <div className="grid grid-cols-3 gap-2 mb-2">
+          <div className="grid grid-cols-3 gap-2 mt-2">
             <LineSelector lineId={lineId} setLineId={setLine} />
             <SDWTSelector lineId={lineId} sdwtId={sdwtId} setSdwtId={setSdwt} />
             <EqpSelector
@@ -90,40 +92,79 @@ export default function TimelinePage() {
               setEqpId={setEqp}
             />
           </div>
-        </div>
+        </section>
 
-        {/* 테이블 */}
-        <div className="flex-1 overflow-auto bg-white dark:bg-slate-800 shadow rounded-xl p-3">
-          {!eqpId && !logsLoading ? (
-            <p className="text-center text-slate-600 dark:text-slate-400">
-              EQP를 선택하세요.
-            </p>
-          ) : logsLoading ? (
-            <div className="flex items-center justify-center h-full">
-              <LoadingSpinner />
-            </div>
-          ) : (
-            <CombinedDataTable
-              data={tableData}
-              typeFilters={typeFilters}
-              handleFilter={handleFilter}
-            />
-          )}
+        {/* 아래 영역 전체를 다시 flex-col로 감싸서 분할 */}
+        <div className="flex-1 min-h-0 flex flex-col gap-2">
+          {/* 2. Data Log - 비율 2 (예시) */}
+          <section className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex-[3] min-h-0 flex flex-col overflow-auto">
+            {!eqpId && !logsLoading ? (
+              <p className="text-center text-slate-600 dark:text-slate-400 py-10">
+                EQP를 선택하세요.
+              </p>
+            ) : logsLoading ? (
+              <div className="flex items-center justify-center h-full">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <CombinedDataTable
+                data={tableData}
+                typeFilters={typeFilters}
+                handleFilter={handleFilter}
+              />
+            )}
+          </section>
+
+          {/* 3. Log Detail - 비율 1 */}
+          <section
+            className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex-[1] min-h-0 flex flex-col overflow-auto"
+            style={{ minHeight: 180, maxHeight: 320 }}
+          >
+            <h2 className="text-md font-bold text-slate-900 dark:text-white border-slate-200 dark:border-slate-700 pb-1">
+              📝 Log Detail
+            </h2>
+            <hr className="my-1 border-slate-300 dark:border-slate-600" />
+            <LogDetailSection log={selectedLog} />
+          </section>
         </div>
       </div>
 
       {/* 오른쪽: 타임라인 */}
-      <div className="lg:w-[60%] h-full overflow-auto bg-white dark:bg-slate-800 shadow rounded-xl p-4">
+      <div className="lg:w-[60%] h-full overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl p-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-md font-bold text-slate-900 dark:text-white">
+            📊 Timeline
+          </h2>
+
+          <div className="flex justify-end">
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-300 mr-2 font-bold">
+                Legend 보기
+              </span>
+              <input
+                type="checkbox"
+                value=""
+                className="sr-only peer"
+                checked={showLegend}
+                onChange={() => setShowLegend((v) => !v)}
+              />
+              <div className="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+        </div>
+        <hr className="my-4 border-slate-300 dark:border-slate-600" />
         {!eqpId && !logsLoading ? (
-          <p className="text-center text-slate-600 dark:text-slate-400 py-20">
-            EQP 선택 후 타임라인을 확인하세요.
-          </p>
+          <div className="flex items-center justify-center h-full">
+            <p className="text-center text-slate-600 dark:text-slate-400">
+              EQP를 선택하세요.
+            </p>
+          </div>
         ) : logsLoading ? (
           <div className="flex items-center justify-center h-full">
             <LoadingSpinner />
           </div>
         ) : (
-          <TimelineBoard dataMap={logsByType} />
+          <TimelineBoard dataMap={logsByType} showLegend={showLegend} />
         )}
       </div>
     </div>

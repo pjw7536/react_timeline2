@@ -6,11 +6,12 @@ import {
   addBuffer,
 } from "@/features/timeline/utils/timelineUtils";
 import { useSelectionStore } from "@/shared/store";
+import { makeGroupLabel } from "@/features/timeline/utils/groupLabel";
 
 /**
  * CTTTM_LOG + RACB_LOG 를 stack=true 로 보여주는 타임라인
  */
-export default function StackedTimeline({ dataMap }) {
+export default function StackedTimeline({ dataMap, showLegend }) {
   const containerRef = useRef(null);
   const tlRef = useRef(null);
 
@@ -22,18 +23,24 @@ export default function StackedTimeline({ dataMap }) {
     () => [
       {
         id: "CTTTM",
-        content: "CTTTM 이벤트",
-        height: 100,
-        className: "custom-group-label",
+        content: makeGroupLabel("CTTTM", "CTTTM 이벤트", showLegend),
+        height: 150,
+        style: "height: 200px", // ← 꼭 추가!
+        className: showLegend
+          ? "custom-group-label legend-mode"
+          : "custom-group-label",
       },
       {
         id: "RACB",
-        content: "RACB 이벤트",
+        content: makeGroupLabel("RACB", "RACB 이벤트", showLegend),
         height: 150,
-        className: "custom-group-label",
+        style: "height: 200px", // ← 꼭 추가!
+        className: showLegend
+          ? "custom-group-label legend-mode"
+          : "custom-group-label",
       },
     ],
-    []
+    [showLegend]
   );
 
   /* 전체 범위 */
@@ -61,6 +68,7 @@ export default function StackedTimeline({ dataMap }) {
         zoomMin: 60 * 1000,
         verticalScroll: true,
         groupHeightMode: "fixed",
+        groupHeights: { CTTTM: 200, RACB: 200 }, // 원하는대로
         groupOrder: (a, b) =>
           ["CTTTM", "RACB"].indexOf(a.id) - ["CTTTM", "RACB"].indexOf(b.id),
       });
@@ -69,9 +77,21 @@ export default function StackedTimeline({ dataMap }) {
       tlRef.current.on("rangechange", ({ start, end }) =>
         syncRange(tlRef.current, start, end)
       );
-      tlRef.current.on("select", ({ items }) =>
-        setSelectedRow(items?.[0] ?? null, "timeline")
-      );
+      tlRef.current.on("select", ({ items }) => {
+        // 최신 selectedRow 참조
+        const currentSelected = useSelectionStore.getState().selectedRow;
+
+        if (items && items.length > 0) {
+          if (String(currentSelected) === String(items[0])) {
+            setSelectedRow(null, "timeline");
+            tlRef.current.setSelection([]); // 타임라인도 해제!
+          } else {
+            setSelectedRow(items[0], "timeline");
+          }
+        } else {
+          setSelectedRow(null, "timeline");
+        }
+      });
     })();
 
     return () => {
@@ -103,6 +123,12 @@ export default function StackedTimeline({ dataMap }) {
       }
     }
   }, [selectedRow]);
+
+  useEffect(() => {
+    if (tlRef.current) {
+      tlRef.current.setGroups(groups); // showLegend 변화 시 그룹 갱신!
+    }
+  }, [groups]);
 
   return (
     <div className="timeline-container">

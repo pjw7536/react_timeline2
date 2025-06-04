@@ -2,18 +2,33 @@ import React, { useEffect, useRef } from "react";
 import { DataSet } from "vis-data";
 import { processData } from "@/features/timeline/utils/timelineUtils";
 import { useSelectionStore } from "@/shared/store";
-import Legend from "./Legend";
+import { makeGroupLabel } from "@/features/timeline/utils/groupLabel";
 
-/**
- * EQP_LOG + TIP_LOG 를 stack 없이 나란히 보여주는 타임라인
- */
-export default function NonStackedTimeline({ dataMap, range }) {
+export default function NonStackedTimeline({ dataMap, range, showLegend }) {
   const containerRef = useRef(null);
   const tlRef = useRef(null); // 인스턴스 보관
 
   // 전역 선택/동기화 스토어
   const { selectedRow, setSelectedRow, register, unregister, syncRange } =
     useSelectionStore();
+
+  const groups = [
+    {
+      id: "EQP",
+      content: makeGroupLabel("EQP", "EQP 상태", showLegend),
+      className: showLegend
+        ? "custom-group-label legend-mode"
+        : "custom-group-label",
+    },
+    {
+      id: "TIP",
+      content: makeGroupLabel("TIP", "TIP 상태", showLegend),
+      className: showLegend
+        ? "custom-group-label legend-mode"
+        : "custom-group-label",
+    },
+    // ... 나머지도 동일
+  ];
 
   // 1️⃣ 생성 Effect – 의존성 []
   useEffect(() => {
@@ -23,10 +38,6 @@ export default function NonStackedTimeline({ dataMap, range }) {
       if (!mounted || !containerRef.current) return;
 
       /* 그룹 & 아이템 */
-      const groups = [
-        { id: "EQP", content: "EQP 상태", className: "custom-group-label" },
-        { id: "TIP", content: "TIP 상태", className: "custom-group-label" },
-      ];
       const items = new DataSet(
         groups.flatMap((g) => processData(g.id, dataMap[g.id] || []))
       );
@@ -51,9 +62,21 @@ export default function NonStackedTimeline({ dataMap, range }) {
       );
 
       /* 아이템 선택 → 전역 상태로 전파 */
-      tlRef.current.on("select", ({ items }) =>
-        setSelectedRow(items?.[0] ?? null, "timeline")
-      );
+      tlRef.current.on("select", ({ items }) => {
+        // 최신 selectedRow 참조
+        const currentSelected = useSelectionStore.getState().selectedRow;
+
+        if (items && items.length > 0) {
+          if (String(currentSelected) === String(items[0])) {
+            setSelectedRow(null, "timeline");
+            tlRef.current.setSelection([]); // 타임라인도 해제!
+          } else {
+            setSelectedRow(items[0], "timeline");
+          }
+        } else {
+          setSelectedRow(null, "timeline");
+        }
+      });
     })();
 
     return () => {
@@ -86,13 +109,18 @@ export default function NonStackedTimeline({ dataMap, range }) {
     }
   }, [selectedRow]);
 
+  useEffect(() => {
+    if (tlRef.current) {
+      tlRef.current.setGroups(groups);
+    }
+  }, [showLegend]);
+
   return (
     <div className="timeline-container relative">
       <h3 className="text-sm font-semibold mb-1 text-slate-600 dark:text-slate-300">
         ⛓ EQP + TIP 로그
       </h3>
       <div ref={containerRef} className="timeline" />
-      <Legend logTypes={["EQP", "TIP"]} />
     </div>
   );
 }

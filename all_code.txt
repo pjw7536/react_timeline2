@@ -49,7 +49,7 @@ export default function EqpSelector({ lineId, sdwtId, eqpId, setEqpId }) {
     return (
       <select
         disabled
-        className="w-full px-3 py-1.5 border rounded-lg bg-slate-100 dark:bg-slate-800 text-sm text-slate-500"
+        className="w-full px-3 py-1.5 border rounded-lg bg-slate-100 dark:bg-slate-800 text-xs text-slate-500 h-8"
       >
         <option>EQP 선택…</option>
       </select>
@@ -63,7 +63,7 @@ export default function EqpSelector({ lineId, sdwtId, eqpId, setEqpId }) {
     <select
       value={eqpId}
       onChange={(e) => setEqpId(e.target.value)} // 상태 lift-up
-      className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-sm dark:text-slate-100 focus:ring-2 focus:ring-indigo-500"
+      className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-xs dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 h-8"
       disabled={eqps.length === 0}
     >
       <option value="">EQP 선택…</option>
@@ -102,7 +102,7 @@ export default function LineSelector({ lineId, setLineId }) {
     <select
       value={lineId}
       onChange={(e) => setLineId(e.target.value)}
-      className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-sm dark:text-slate-100 focus:ring-2 focus:ring-indigo-500"
+      className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-xs dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 h-8"
     >
       <option value="">라인 선택…</option>
       {lines.map((l) => (
@@ -131,7 +131,7 @@ export default function SDWTSelector({ lineId, sdwtId, setSdwtId }) {
     return (
       <select
         disabled
-        className="w-full px-3 py-1.5 border rounded-lg bg-slate-100 dark:bg-slate-800 text-sm text-slate-500"
+        className="w-full px-3 py-1.5 border rounded-lg bg-slate-100 dark:bg-slate-800 text-xs text-slate-500 h-8"
       >
         <option>SDWT 선택…</option>
       </select>
@@ -143,7 +143,7 @@ export default function SDWTSelector({ lineId, sdwtId, setSdwtId }) {
     <select
       value={sdwtId}
       onChange={(e) => setSdwtId(e.target.value)}
-      className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-sm dark:text-slate-100 focus:ring-2 focus:ring-indigo-500"
+      className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-xs dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 h-8"
     >
       <option value="">SDWT 선택…</option>
       {sdwts.map((s) => (
@@ -198,23 +198,23 @@ export default function CombinedDataTable({ data, typeFilters, handleFilter }) {
   }, [selectedRow, source]);
 
   const cols = [
-    { header: "시간", accessor: "displayTimestamp" },
-    { header: "타입", accessor: "logType" },
-    { header: "정보 1", accessor: "info1" },
-    { header: "정보 2", accessor: "info2" },
-    { header: "지속(초)", accessor: "duration" },
+    { header: "Time", accessor: "displayTimestamp" },
+    { header: "LogType", accessor: "logType" },
+    { header: "ChangeType", accessor: "info1" },
+    { header: "Operator", accessor: "info2" },
+    { header: "Duration", accessor: "duration" },
   ];
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
       {/* 상단 필터 영역 */}
-      <div className="flex justify-between items-center p-4 pt-2 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-t-lg">
-        <h3 className="text-lg font-semibold">통합 데이터 로그</h3>
-        <div className="flex gap-3 flex-wrap">
+      <div className="flex justify-between items-center pt-1 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-t-lg">
+        <h3 className="text-md font-semibold mb-3">📜 Data Log</h3>
+        <div className="flex gap-3 flex-wrap mr-3">
           {Object.entries(typeFilters).map(([type, checked]) => (
             <label
               key={type}
-              className="flex items-center gap-1 text-sm font-bold"
+              className="flex items-center gap-1 text-xs font-bold"
             >
               <input
                 type="checkbox"
@@ -231,7 +231,7 @@ export default function CombinedDataTable({ data, typeFilters, handleFilter }) {
 
       {/* 테이블 영역 */}
       {data.length === 0 ? (
-        <div className="text-center text-sm text-gray-500 dark:text-gray-400 p-4">
+        <div className="text-center text-sm text-gray-500 dark:text-gray-400 p-2">
           표시할 데이터가 없습니다.
         </div>
       ) : (
@@ -240,7 +240,7 @@ export default function CombinedDataTable({ data, typeFilters, handleFilter }) {
             <thead className="sticky top-0 bg-gray-200 text-gray-900 dark:bg-gray-600 dark:text-gray-100">
               <tr>
                 {cols.map((c) => (
-                  <th key={c.accessor} className="px-6 py-3 font-semibold">
+                  <th key={c.accessor} className="px-3 py-2 font-semibold">
                     {c.header}
                   </th>
                 ))}
@@ -253,7 +253,9 @@ export default function CombinedDataTable({ data, typeFilters, handleFilter }) {
                   <tr
                     key={row.id}
                     ref={(el) => (rowRefs.current[row.id] = el)}
-                    onClick={() => setSelectedRow(row.id, "table")}
+                    onClick={() =>
+                      setSelectedRow(isSel ? null : row.id, "table")
+                    }
                     className={`transition-colors duration-300 cursor-pointer ${
                       isSel
                         ? "bg-yellow-100 dark:bg-yellow-800"
@@ -261,7 +263,7 @@ export default function CombinedDataTable({ data, typeFilters, handleFilter }) {
                     }`}
                   >
                     {cols.map((c) => (
-                      <td key={c.accessor} className="px-1 py-3">
+                      <td key={c.accessor} className="px-3 py-2">
                         {c.accessor === "displayTimestamp"
                           ? formatDateString(row[c.accessor])
                           : row[c.accessor] ?? "-"}
@@ -274,6 +276,151 @@ export default function CombinedDataTable({ data, typeFilters, handleFilter }) {
           </table>
         </div>
       )}
+    </div>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\eqp-timeline\src\features\table\LogDetailSection.jsx -----
+
+import React from "react";
+
+// 필드 공통 출력용
+function Field({ label, value, className }) {
+  return (
+    <>
+      <div
+        className={
+          "font-semibold text-slate-700 dark:text-slate-200 " +
+          (className || "")
+        }
+      >
+        {label}
+      </div>
+      <div>{value}</div>
+    </>
+  );
+}
+
+function UrlField({ url }) {
+  return (
+    <>
+      <div className="font-semibold text-slate-700 dark:text-slate-200">
+        URL
+      </div>
+      <div>
+        <a
+          href={url}
+          className="text-blue-600 dark:text-blue-400 underline break-all"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {url}
+        </a>
+      </div>
+    </>
+  );
+}
+
+// 로그 타입별 렌더러
+function renderDetailByType(log) {
+  switch (log.logType) {
+    case "EQP":
+      return (
+        <>
+          <Field label="ID" value={log.id} />
+          <Field label="Log Type" value={log.logType} />
+          <Field label="EQP State" value={log.eventType} />
+          <Field label="Time" value={log.eventTime} />
+          <Field label="End Time" value={log.endTime ?? "-"} />
+          <Field label="Operator" value={log.operator ?? "-"} />
+          <Field label="Duration" value={log.duration?.toFixed(1) ?? "-"} />
+          <Field
+            label="Comment"
+            value={log.comment ?? "-"}
+            className="col-span-2"
+          />
+        </>
+      );
+    case "TIP":
+      return (
+        <>
+          <Field label="ID" value={log.id} />
+          <Field label="Log Type" value={log.logType} />
+          <Field label="TIP Event" value={log.eventType} />
+          <Field label="Time" value={log.eventTime} />
+          <Field label="Operator" value={log.operator ?? "-"} />
+          <Field label="Level" value={log.level ?? "-"} />
+          <Field
+            label="Comment"
+            value={log.comment ?? "-"}
+            className="col-span-2"
+          />
+          {log.url && <UrlField url={log.url} />}
+        </>
+      );
+    case "RACB":
+      return (
+        <>
+          <Field label="ID" value={log.id} />
+          <Field label="Log Type" value={log.logType} />
+          <Field label="RACB Alarm" value={log.eventType} />
+          <Field label="Time" value={log.eventTime} />
+          <Field label="Operator" value={log.operator ?? "-"} />
+          <Field
+            label="Comment"
+            value={log.comment ?? "-"}
+            className="col-span-2"
+          />
+          {log.url && <UrlField url={log.url} />}
+        </>
+      );
+    case "CTTTM":
+      return (
+        <>
+          <Field label="ID" value={log.id} />
+          <Field label="Log Type" value={log.logType} />
+          <Field label="CTTTM" value={log.eventType} />
+          <Field label="Time" value={log.eventTime} />
+          <Field label="Recipe" value={log.recipe ?? "-"} />
+          <Field label="Operator" value={log.operator ?? "-"} />
+          <Field label="Duration" value={log.duration?.toFixed(1) ?? "-"} />
+          <Field
+            label="Comment"
+            value={log.comment ?? "-"}
+            className="col-span-2"
+          />
+        </>
+      );
+    default:
+      return (
+        <div className="col-span-2 text-slate-500 dark:text-slate-400 py-2">
+          알 수 없는 로그 타입입니다.
+        </div>
+      );
+  }
+}
+
+/**
+ * 선택된 로그 상세정보를 보여주는 컴포넌트
+ * @param {Object} log - 상세를 보여줄 로그 객체
+ */
+export default function LogDetailSection({ log }) {
+  if (!log) {
+    return (
+      <div className="text-sm text-slate-500 dark:text-slate-400 text-center py-6">
+        테이블이나 타임라인에서 로그를 선택하면 상세정보가 여기에 표시됩니다.
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm
+      bg-white dark:bg-slate-800 rounded-lg p-2
+      text-slate-800 dark:text-slate-100 overflow-auto table-scroll"
+    >
+      {renderDetailByType(log)}
     </div>
   );
 }
@@ -373,18 +520,33 @@ import React, { useEffect, useRef } from "react";
 import { DataSet } from "vis-data";
 import { processData } from "@/features/timeline/utils/timelineUtils";
 import { useSelectionStore } from "@/shared/store";
-import Legend from "./Legend";
+import { makeGroupLabel } from "@/features/timeline/utils/groupLabel";
 
-/**
- * EQP_LOG + TIP_LOG 를 stack 없이 나란히 보여주는 타임라인
- */
-export default function NonStackedTimeline({ dataMap, range }) {
+export default function NonStackedTimeline({ dataMap, range, showLegend }) {
   const containerRef = useRef(null);
   const tlRef = useRef(null); // 인스턴스 보관
 
   // 전역 선택/동기화 스토어
   const { selectedRow, setSelectedRow, register, unregister, syncRange } =
     useSelectionStore();
+
+  const groups = [
+    {
+      id: "EQP",
+      content: makeGroupLabel("EQP", "EQP 상태", showLegend),
+      className: showLegend
+        ? "custom-group-label legend-mode"
+        : "custom-group-label",
+    },
+    {
+      id: "TIP",
+      content: makeGroupLabel("TIP", "TIP 상태", showLegend),
+      className: showLegend
+        ? "custom-group-label legend-mode"
+        : "custom-group-label",
+    },
+    // ... 나머지도 동일
+  ];
 
   // 1️⃣ 생성 Effect – 의존성 []
   useEffect(() => {
@@ -394,10 +556,6 @@ export default function NonStackedTimeline({ dataMap, range }) {
       if (!mounted || !containerRef.current) return;
 
       /* 그룹 & 아이템 */
-      const groups = [
-        { id: "EQP", content: "EQP 상태", className: "custom-group-label" },
-        { id: "TIP", content: "TIP 상태", className: "custom-group-label" },
-      ];
       const items = new DataSet(
         groups.flatMap((g) => processData(g.id, dataMap[g.id] || []))
       );
@@ -422,9 +580,21 @@ export default function NonStackedTimeline({ dataMap, range }) {
       );
 
       /* 아이템 선택 → 전역 상태로 전파 */
-      tlRef.current.on("select", ({ items }) =>
-        setSelectedRow(items?.[0] ?? null, "timeline")
-      );
+      tlRef.current.on("select", ({ items }) => {
+        // 최신 selectedRow 참조
+        const currentSelected = useSelectionStore.getState().selectedRow;
+
+        if (items && items.length > 0) {
+          if (String(currentSelected) === String(items[0])) {
+            setSelectedRow(null, "timeline");
+            tlRef.current.setSelection([]); // 타임라인도 해제!
+          } else {
+            setSelectedRow(items[0], "timeline");
+          }
+        } else {
+          setSelectedRow(null, "timeline");
+        }
+      });
     })();
 
     return () => {
@@ -457,13 +627,18 @@ export default function NonStackedTimeline({ dataMap, range }) {
     }
   }, [selectedRow]);
 
+  useEffect(() => {
+    if (tlRef.current) {
+      tlRef.current.setGroups(groups);
+    }
+  }, [showLegend]);
+
   return (
     <div className="timeline-container relative">
       <h3 className="text-sm font-semibold mb-1 text-slate-600 dark:text-slate-300">
         ⛓ EQP + TIP 로그
       </h3>
       <div ref={containerRef} className="timeline" />
-      <Legend logTypes={["EQP", "TIP"]} />
     </div>
   );
 }
@@ -479,11 +654,12 @@ import {
   addBuffer,
 } from "@/features/timeline/utils/timelineUtils";
 import { useSelectionStore } from "@/shared/store";
+import { makeGroupLabel } from "@/features/timeline/utils/groupLabel";
 
 /**
  * CTTTM_LOG + RACB_LOG 를 stack=true 로 보여주는 타임라인
  */
-export default function StackedTimeline({ dataMap }) {
+export default function StackedTimeline({ dataMap, showLegend }) {
   const containerRef = useRef(null);
   const tlRef = useRef(null);
 
@@ -495,18 +671,24 @@ export default function StackedTimeline({ dataMap }) {
     () => [
       {
         id: "CTTTM",
-        content: "CTTTM 이벤트",
-        height: 100,
-        className: "custom-group-label",
+        content: makeGroupLabel("CTTTM", "CTTTM 이벤트", showLegend),
+        height: 150,
+        style: "height: 200px", // ← 꼭 추가!
+        className: showLegend
+          ? "custom-group-label legend-mode"
+          : "custom-group-label",
       },
       {
         id: "RACB",
-        content: "RACB 이벤트",
+        content: makeGroupLabel("RACB", "RACB 이벤트", showLegend),
         height: 150,
-        className: "custom-group-label",
+        style: "height: 200px", // ← 꼭 추가!
+        className: showLegend
+          ? "custom-group-label legend-mode"
+          : "custom-group-label",
       },
     ],
-    []
+    [showLegend]
   );
 
   /* 전체 범위 */
@@ -534,6 +716,7 @@ export default function StackedTimeline({ dataMap }) {
         zoomMin: 60 * 1000,
         verticalScroll: true,
         groupHeightMode: "fixed",
+        groupHeights: { CTTTM: 200, RACB: 200 }, // 원하는대로
         groupOrder: (a, b) =>
           ["CTTTM", "RACB"].indexOf(a.id) - ["CTTTM", "RACB"].indexOf(b.id),
       });
@@ -542,9 +725,21 @@ export default function StackedTimeline({ dataMap }) {
       tlRef.current.on("rangechange", ({ start, end }) =>
         syncRange(tlRef.current, start, end)
       );
-      tlRef.current.on("select", ({ items }) =>
-        setSelectedRow(items?.[0] ?? null, "timeline")
-      );
+      tlRef.current.on("select", ({ items }) => {
+        // 최신 selectedRow 참조
+        const currentSelected = useSelectionStore.getState().selectedRow;
+
+        if (items && items.length > 0) {
+          if (String(currentSelected) === String(items[0])) {
+            setSelectedRow(null, "timeline");
+            tlRef.current.setSelection([]); // 타임라인도 해제!
+          } else {
+            setSelectedRow(items[0], "timeline");
+          }
+        } else {
+          setSelectedRow(null, "timeline");
+        }
+      });
     })();
 
     return () => {
@@ -577,6 +772,12 @@ export default function StackedTimeline({ dataMap }) {
     }
   }, [selectedRow]);
 
+  useEffect(() => {
+    if (tlRef.current) {
+      tlRef.current.setGroups(groups); // showLegend 변화 시 그룹 갱신!
+    }
+  }, [groups]);
+
   return (
     <div className="timeline-container">
       <h3 className="text-sm font-semibold mb-1 text-slate-600 dark:text-slate-300">
@@ -599,7 +800,7 @@ import NonStackedTimeline from "./NonStackedTimeline";
 import StackedTimeline from "./StackedTimeline";
 import { calcRange, addBuffer } from "@/features/timeline/utils/timelineUtils";
 
-export default function TimelineBoard({ dataMap }) {
+export default function TimelineBoard({ dataMap, showLegend }) {
   const eqpLogArr = dataMap.EQP || [];
   const tipLogArr = dataMap.TIP || [];
   const ctttmLogArr = dataMap.CTTTM || [];
@@ -620,8 +821,12 @@ export default function TimelineBoard({ dataMap }) {
       <NonStackedTimeline
         dataMap={{ EQP: eqpLogArr, TIP: tipLogArr }}
         range={fullRange}
+        showLegend={showLegend}
       />
-      <StackedTimeline dataMap={{ CTTTM: ctttmLogArr, RACB: racbLogArr }} />
+      <StackedTimeline
+        dataMap={{ CTTTM: ctttmLogArr, RACB: racbLogArr }}
+        showLegend={showLegend}
+      />
     </div>
   );
 }
@@ -686,9 +891,20 @@ export const useTimelineRenderer = (containerRef, groupKey, data, options) => {
         syncRange(tlRef.current, start, end)
       );
 
-      tlRef.current.on("select", (e) => {
-        const id = e.items?.[0];
-        if (id) setSelectedRow(id, "timeline");
+      tlRef.current.on("select", ({ items }) => {
+        // 최신 selectedRow 참조
+        const currentSelected = useSelectionStore.getState().selectedRow;
+
+        if (items && items.length > 0) {
+          if (String(currentSelected) === String(items[0])) {
+            setSelectedRow(null, "timeline");
+            tlRef.current.setSelection([]); // 타임라인도 해제!
+          } else {
+            setSelectedRow(items[0], "timeline");
+          }
+        } else {
+          setSelectedRow(null, "timeline");
+        }
       });
     })();
 
@@ -710,6 +926,37 @@ export const useTimelineRenderer = (containerRef, groupKey, data, options) => {
 
   return tlRef;
 };
+
+
+----- C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\utils\groupLabel.js -----
+
+// src/features/timeline/utils/groupLabel.js
+
+import { groupConfig } from "./timelineMeta";
+
+export function makeGroupLabel(type, title, showLegend) {
+  if (!showLegend) {
+    return `<div style="width:240px">${title}</div>`;
+  }
+  const EMOJI = {
+    RUN: "🟦RUN ",
+    IDLE: "🟨IDLE ",
+    PM: "🟩PM ",
+    DOWN: "🟥DOWN ",
+    OPEN: "🟦OPEN ",
+    CLOSE: "🟥CLOSE ",
+    ALARM: "🟥ALARM ",
+    WARN: "🟧WARN ",
+    TTM_FAIL: "🟥TTM_FAIL ",
+    TTM_WARN: "🟨TTM_WARN ",
+  };
+  const config = groupConfig[type];
+  if (!config) return `<div style="width:240px"></div>`;
+  const legendHtml = Object.keys(config.stateColors)
+    .map((state) => `<span>${EMOJI[state] || "▪️"}</span>`)
+    .join(" ");
+  return `<div style="width:240px;">${legendHtml}</div>`;
+}
 
 
 ----- C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\utils\timelineMeta.js -----
@@ -827,6 +1074,7 @@ import { useLogs } from "@/features/timeline";
 import { LineSelector, SDWTSelector, EqpSelector } from "@/features/drilldown";
 import { TimelineBoard } from "@/features/timeline";
 import CombinedDataTable from "@/features/table/CombinedDataTable";
+import LogDetailSection from "@/features/table/LogDetailSection";
 import LoadingSpinner from "@/shared/LoadingSpinner";
 import { useSelectionStore } from "@/shared/store";
 
@@ -838,11 +1086,8 @@ const DATA_TYPES = {
 };
 
 export default function TimelinePage() {
-  /* ───────────────── 드릴다운 상태 (Zustand) ───────────────── */
   const { lineId, sdwtId, eqpId, setLine, setSdwt, setEqp } =
     useSelectionStore();
-
-  /* ───────────────── 로그 Fetch ───────────────── */
   const enabled = Boolean(lineId && eqpId);
   const {
     data: logs = [],
@@ -850,7 +1095,6 @@ export default function TimelinePage() {
     isError: logsError,
   } = useLogs({ lineId, sdwtId, eqpId }, enabled);
 
-  /* ───────────────── 체크박스 필터 ───────────────── */
   const [typeFilters, setTypeFilters] = useState({
     [DATA_TYPES.EQP]: true,
     [DATA_TYPES.TIP]: true,
@@ -860,7 +1104,6 @@ export default function TimelinePage() {
   const handleFilter = (e) =>
     setTypeFilters((p) => ({ ...p, [e.target.name]: e.target.checked }));
 
-  /* ───────────────── 로그 분류 & 테이블 가공 ───────────────── */
   const logsByType = useMemo(() => {
     const g = { EQP: [], TIP: [], RACB: [], CTTTM: [] };
     logs.forEach((l) => g[l.logType]?.push(l));
@@ -886,7 +1129,14 @@ export default function TimelinePage() {
       );
   }, [logs, logsLoading, enabled, typeFilters]);
 
-  /* ───────────────── UI ───────────────── */
+  const { selectedRow } = useSelectionStore();
+  const selectedLog = useMemo(
+    () => logs.find((l) => String(l.id) === String(selectedRow)),
+    [logs, selectedRow]
+  );
+
+  const [showLegend, setShowLegend] = useState(false);
+
   if (logsError)
     return (
       <div className="flex items-center justify-center h-[80vh]">
@@ -895,16 +1145,15 @@ export default function TimelinePage() {
     );
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-110px)] gap-3 mt-4">
-      {/* 왼쪽: 선택기 + 테이블 */}
-      <div className="lg:w-[40%] flex flex-col gap-4 h-full">
-        <div className="p-4 bg-white dark:bg-slate-800 shadow rounded-xl">
-          <h2 className="text-lg font-bold mb-3 text-slate-900 dark:text-white">
-            📊 EQP 타임라인 뷰어
+    <div className="flex flex-col lg:flex-row h-[calc(100vh-110px)] gap-2 mt-3">
+      {/* 왼쪽: 세 칸 구조! */}
+      <div className="flex flex-col h-full min-h-0 lg:w-[40%] gap-2">
+        {/* 1. Log Viewer */}
+        <section className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex flex-col">
+          <h2 className="text-md font-bold text-slate-900 dark:text-white border-slate-200 dark:border-slate-700">
+            📊 Log Viewer
           </h2>
-
-          {/* 드릴다운 */}
-          <div className="grid grid-cols-3 gap-2 mb-2">
+          <div className="grid grid-cols-3 gap-2 mt-2">
             <LineSelector lineId={lineId} setLineId={setLine} />
             <SDWTSelector lineId={lineId} sdwtId={sdwtId} setSdwtId={setSdwt} />
             <EqpSelector
@@ -914,40 +1163,79 @@ export default function TimelinePage() {
               setEqpId={setEqp}
             />
           </div>
-        </div>
+        </section>
 
-        {/* 테이블 */}
-        <div className="flex-1 overflow-auto bg-white dark:bg-slate-800 shadow rounded-xl p-3">
-          {!eqpId && !logsLoading ? (
-            <p className="text-center text-slate-600 dark:text-slate-400">
-              EQP를 선택하세요.
-            </p>
-          ) : logsLoading ? (
-            <div className="flex items-center justify-center h-full">
-              <LoadingSpinner />
-            </div>
-          ) : (
-            <CombinedDataTable
-              data={tableData}
-              typeFilters={typeFilters}
-              handleFilter={handleFilter}
-            />
-          )}
+        {/* 아래 영역 전체를 다시 flex-col로 감싸서 분할 */}
+        <div className="flex-1 min-h-0 flex flex-col gap-2">
+          {/* 2. Data Log - 비율 2 (예시) */}
+          <section className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex-[3] min-h-0 flex flex-col overflow-auto">
+            {!eqpId && !logsLoading ? (
+              <p className="text-center text-slate-600 dark:text-slate-400 py-10">
+                EQP를 선택하세요.
+              </p>
+            ) : logsLoading ? (
+              <div className="flex items-center justify-center h-full">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <CombinedDataTable
+                data={tableData}
+                typeFilters={typeFilters}
+                handleFilter={handleFilter}
+              />
+            )}
+          </section>
+
+          {/* 3. Log Detail - 비율 1 */}
+          <section
+            className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex-[1] min-h-0 flex flex-col overflow-auto"
+            style={{ minHeight: 180, maxHeight: 320 }}
+          >
+            <h2 className="text-md font-bold text-slate-900 dark:text-white border-slate-200 dark:border-slate-700 pb-1">
+              📝 Log Detail
+            </h2>
+            <hr className="my-1 border-slate-300 dark:border-slate-600" />
+            <LogDetailSection log={selectedLog} />
+          </section>
         </div>
       </div>
 
       {/* 오른쪽: 타임라인 */}
-      <div className="lg:w-[60%] h-full overflow-auto bg-white dark:bg-slate-800 shadow rounded-xl p-4">
+      <div className="lg:w-[60%] h-full overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl p-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-md font-bold text-slate-900 dark:text-white">
+            📊 Timeline
+          </h2>
+
+          <div className="flex justify-end">
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-300 mr-2 font-bold">
+                Legend 보기
+              </span>
+              <input
+                type="checkbox"
+                value=""
+                className="sr-only peer"
+                checked={showLegend}
+                onChange={() => setShowLegend((v) => !v)}
+              />
+              <div className="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+        </div>
+        <hr className="my-4 border-slate-300 dark:border-slate-600" />
         {!eqpId && !logsLoading ? (
-          <p className="text-center text-slate-600 dark:text-slate-400 py-20">
-            EQP 선택 후 타임라인을 확인하세요.
-          </p>
+          <div className="flex items-center justify-center h-full">
+            <p className="text-center text-slate-600 dark:text-slate-400">
+              EQP를 선택하세요.
+            </p>
+          </div>
         ) : logsLoading ? (
           <div className="flex items-center justify-center h-full">
             <LoadingSpinner />
           </div>
         ) : (
-          <TimelineBoard dataMap={logsByType} />
+          <TimelineBoard dataMap={logsByType} showLegend={showLegend} />
         )}
       </div>
     </div>
@@ -1427,6 +1715,38 @@ export const useSelectionStore = create((set) => ({
 .dark .table-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
 
+/* 그룹 라벨 고정 폭 */
+.vis-label.custom-group-label {
+  width: 150px !important;
+  min-width: 150px !important;
+  max-width: 150px !important;
+  display: flex !important;
+  align-items: center !important;  /* 세로 중앙 */
+  justify-content: center !important; /* 가로 중앙 */
+  /* 줄바꿈 방지(원하는 경우) */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 그룹 라벨에 legend-mode 클래스가 추가됐을 때만 폰트 크기를 10px로 */
+.vis-label.legend-mode {
+  font-size: 14px !important;
+  font-weight: normal !important;
+  letter-spacing: 0 !important;
+  /* 👇 가운데 정렬 핵심! */
+  display: flex !important;
+  align-items: center !important;  /* 세로 중앙 */
+  justify-content: center !important; /* 가로 중앙 */
+  width: 240px !important;
+  min-width: 240px !important;
+  max-width: 240px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 !important;
+}
+
 ----- C:\Users\pjw75\Desktop\eqp-timeline\src\App.css -----
 
 
@@ -1456,7 +1776,7 @@ export default function App() {
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <Navbar />
-      <div className="flex-1 overflow-hidden px-6">
+      <div className="flex-1 overflow-hidden px-4">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route

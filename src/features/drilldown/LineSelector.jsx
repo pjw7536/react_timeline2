@@ -14,7 +14,7 @@ export default function LineSelector({ lineId, setLineId }) {
     <select
       value={lineId}
       onChange={(e) => setLineId(e.target.value)}
-      className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-sm dark:text-slate-100 focus:ring-2 focus:ring-indigo-500"
+      className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-xs dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 h-8"
     >
       <option value="">라인 선택…</option>
       {lines.map((l) => (

@@ -38,23 +38,23 @@ export default function CombinedDataTable({ data, typeFilters, handleFilter }) {
   }, [selectedRow, source]);
 
   const cols = [
-    { header: "시간", accessor: "displayTimestamp" },
-    { header: "타입", accessor: "logType" },
-    { header: "정보 1", accessor: "info1" },
-    { header: "정보 2", accessor: "info2" },
-    { header: "지속(초)", accessor: "duration" },
+    { header: "Time", accessor: "displayTimestamp" },
+    { header: "LogType", accessor: "logType" },
+    { header: "ChangeType", accessor: "info1" },
+    { header: "Operator", accessor: "info2" },
+    { header: "Duration", accessor: "duration" },
   ];
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
       {/* 상단 필터 영역 */}
-      <div className="flex justify-between items-center p-4 pt-2 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-t-lg">
-        <h3 className="text-lg font-semibold">통합 데이터 로그</h3>
-        <div className="flex gap-3 flex-wrap">
+      <div className="flex justify-between items-center pt-1 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-t-lg">
+        <h3 className="text-md font-semibold mb-3">📜 Data Log</h3>
+        <div className="flex gap-3 flex-wrap mr-3">
           {Object.entries(typeFilters).map(([type, checked]) => (
             <label
               key={type}
-              className="flex items-center gap-1 text-sm font-bold"
+              className="flex items-center gap-1 text-xs font-bold"
             >
               <input
                 type="checkbox"
@@ -71,7 +71,7 @@ export default function CombinedDataTable({ data, typeFilters, handleFilter }) {
 
       {/* 테이블 영역 */}
       {data.length === 0 ? (
-        <div className="text-center text-sm text-gray-500 dark:text-gray-400 p-4">
+        <div className="text-center text-sm text-gray-500 dark:text-gray-400 p-2">
           표시할 데이터가 없습니다.
         </div>
       ) : (
@@ -80,7 +80,7 @@ export default function CombinedDataTable({ data, typeFilters, handleFilter }) {
             <thead className="sticky top-0 bg-gray-200 text-gray-900 dark:bg-gray-600 dark:text-gray-100">
               <tr>
                 {cols.map((c) => (
-                  <th key={c.accessor} className="px-6 py-3 font-semibold">
+                  <th key={c.accessor} className="px-3 py-2 font-semibold">
                     {c.header}
                   </th>
                 ))}
@@ -93,7 +93,9 @@ export default function CombinedDataTable({ data, typeFilters, handleFilter }) {
                   <tr
                     key={row.id}
                     ref={(el) => (rowRefs.current[row.id] = el)}
-                    onClick={() => setSelectedRow(row.id, "table")}
+                    onClick={() =>
+                      setSelectedRow(isSel ? null : row.id, "table")
+                    }
                     className={`transition-colors duration-300 cursor-pointer ${
                       isSel
                         ? "bg-yellow-100 dark:bg-yellow-800"
@@ -101,7 +103,7 @@ export default function CombinedDataTable({ data, typeFilters, handleFilter }) {
                     }`}
                   >
                     {cols.map((c) => (
-                      <td key={c.accessor} className="px-1 py-3">
+                      <td key={c.accessor} className="px-3 py-2">
                         {c.accessor === "displayTimestamp"
                           ? formatDateString(row[c.accessor])
                           : row[c.accessor] ?? "-"}

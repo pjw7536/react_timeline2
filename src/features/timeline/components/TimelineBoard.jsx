@@ -3,7 +3,7 @@ import NonStackedTimeline from "./NonStackedTimeline";
 import StackedTimeline from "./StackedTimeline";
 import { calcRange, addBuffer } from "@/features/timeline/utils/timelineUtils";
 
-export default function TimelineBoard({ dataMap }) {
+export default function TimelineBoard({ dataMap, showLegend }) {
   const eqpLogArr = dataMap.EQP || [];
   const tipLogArr = dataMap.TIP || [];
   const ctttmLogArr = dataMap.CTTTM || [];
@@ -24,8 +24,12 @@ export default function TimelineBoard({ dataMap }) {
       <NonStackedTimeline
         dataMap={{ EQP: eqpLogArr, TIP: tipLogArr }}
         range={fullRange}
+        showLegend={showLegend}
       />
-      <StackedTimeline dataMap={{ CTTTM: ctttmLogArr, RACB: racbLogArr }} />
+      <StackedTimeline
+        dataMap={{ CTTTM: ctttmLogArr, RACB: racbLogArr }}
+        showLegend={showLegend}
+      />
     </div>
   );
 }
