@@ -5,6 +5,7 @@ import { TimelineBoard } from "@/features/timeline";
 import CombinedDataTable from "@/features/table/CombinedDataTable";
 import LogDetailSection from "@/features/table/LogDetailSection";
 import LoadingSpinner from "@/shared/LoadingSpinner";
+import { formatDateTime } from "@/shared/dateUtils";
 import { useSelectionStore } from "@/shared/store";
 
 const DATA_TYPES = {
@@ -44,18 +45,15 @@ export default function TimelinePage() {
     return logs
       .map((l) => ({
         id: l.id,
-        displayTimestamp: new Date(l.eventTime).toLocaleString("ko-KR", {
-          hour12: false,
-        }),
+        timestamp: new Date(l.eventTime).getTime(),
+        displayTimestamp: formatDateTime(l.eventTime),
         logType: l.logType,
         info1: l.eventType,
         info2: l.operator || "-",
         duration: l.duration?.toFixed(0) ?? "-",
       }))
       .filter((r) => typeFilters[r.logType])
-      .sort(
-        (a, b) => new Date(b.displayTimestamp) - new Date(a.displayTimestamp)
-      );
+      .sort((a, b) => b.timestamp - a.timestamp);
   }, [logs, logsLoading, enabled, typeFilters]);
 
   const { selectedRow } = useSelectionStore();
