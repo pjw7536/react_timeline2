@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+import forms from "@tailwindcss/forms";
+
 export default {
   darkMode: "class", // 버튼으로 다크모드 토글
   content: [
@@ -6,5 +8,5 @@ export default {
     "./src/**/*.{js,jsx}", // 템플릿 경로 (필수)
   ],
   theme: { extend: {} },
-  plugins: [require("@tailwindcss/forms")],
+  plugins: [forms],
 };
