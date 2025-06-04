@@ -1,26 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { useSelectionStore } from "@/shared/store";
+// Utility to format ISO date strings consistently across the app
+import { formatDateTime } from "@/shared/dateUtils";
 
-/**
- * 날짜 형식 변환 함수
- * 예: "2025. 6. 2. 10시 0분 0초" → "25/06/02 10:00"
- */
-function formatDateString(dateString) {
-  const match = dateString.match(
-    /(\d{4})\. (\d{1,2})\. (\d{1,2})\. (\d{1,2})시 (\d{1,2})분/
-  );
-  if (!match) return dateString;
-
-  const [, year, month, day, hour, minute] = match;
-  return `${year.slice(2)}/${month.padStart(2, "0")}/${day.padStart(
-    2,
-    "0"
-  )} ${hour.padStart(2, "0")}:${minute.padStart(2, "0")}`;
-}
 
 /**
  * 통합 데이터 테이블 컴포넌트
- * @param {Object[]} data - 필터링된 로그 배열
+ * @param {Object[]} data - 필터링된 로그 배열.
+ *   각 항목은 { id, displayTimestamp, logType, info1, info2, duration } 형식을 가집니다.
  * @param {Object} typeFilters - 로그 타입 필터링 상태
  * @param {Function} handleFilter - 체크박스 변경 핸들러
  */
@@ -28,6 +15,7 @@ export default function CombinedDataTable({ data, typeFilters, handleFilter }) {
   const { selectedRow, source, setSelectedRow } = useSelectionStore();
   const rowRefs = useRef({});
 
+  // 타임라인에서 선택된 항목이 있을 때 해당 행이 보이도록 스크롤
   useEffect(() => {
     if (source === "timeline" && selectedRow && rowRefs.current[selectedRow]) {
       rowRefs.current[selectedRow].scrollIntoView({
@@ -105,7 +93,7 @@ export default function CombinedDataTable({ data, typeFilters, handleFilter }) {
                     {cols.map((c) => (
                       <td key={c.accessor} className="px-3 py-2">
                         {c.accessor === "displayTimestamp"
-                          ? formatDateString(row[c.accessor])
+                          ? formatDateTime(row[c.accessor])
                           : row[c.accessor] ?? "-"}
                       </td>
                     ))}
