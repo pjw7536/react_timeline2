@@ -13,6 +13,7 @@ const DATA_TYPES = {
   TIP: "TIP",
   RACB: "RACB",
   CTTTM: "CTTTM",
+  JIRA: "JIRA",
 };
 
 export default function TimelinePage() {
@@ -30,12 +31,13 @@ export default function TimelinePage() {
     [DATA_TYPES.TIP]: true,
     [DATA_TYPES.RACB]: true,
     [DATA_TYPES.CTTTM]: true,
+    [DATA_TYPES.JIRA]: true,
   });
   const handleFilter = (e) =>
     setTypeFilters((p) => ({ ...p, [e.target.name]: e.target.checked }));
 
   const logsByType = useMemo(() => {
-    const g = { EQP: [], TIP: [], RACB: [], CTTTM: [] };
+    const g = { EQP: [], TIP: [], RACB: [], CTTTM: [], JIRA: [] };
     logs.forEach((l) => g[l.logType]?.push(l));
     return g;
   }, [logs]);

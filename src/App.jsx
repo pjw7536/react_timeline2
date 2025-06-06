@@ -4,6 +4,7 @@ import Navbar from "@/shared/Navbar";
 import LoadingSpinner from "@/shared/LoadingSpinner";
 
 const TimelinePage = lazy(() => import("@/pages/TimelinePage"));
+const AppsPage = lazy(() => import("@/pages/AppsPage"));
 
 const HomePage = () => (
   <div className="p-6 text-center">
@@ -39,6 +40,7 @@ export default function App() {
               </Suspense>
             }
           />
+          <Route path="/apps" element={<AppsPage />} />
         </Routes>
       </div>
     </div>

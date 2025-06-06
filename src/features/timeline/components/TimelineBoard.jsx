@@ -8,10 +8,17 @@ export default function TimelineBoard({ dataMap, showLegend }) {
   const tipLogArr = dataMap.TIP || [];
   const ctttmLogArr = dataMap.CTTTM || [];
   const racbLogArr = dataMap.RACB || [];
+  const jiraLogArr = dataMap.JIRA || [];
 
   const allLogs = useMemo(
-    () => [...eqpLogArr, ...tipLogArr, ...ctttmLogArr, ...racbLogArr],
-    [eqpLogArr, tipLogArr, ctttmLogArr, racbLogArr]
+    () => [
+      ...eqpLogArr,
+      ...tipLogArr,
+      ...ctttmLogArr,
+      ...racbLogArr,
+      ...jiraLogArr,
+    ],
+    [eqpLogArr, tipLogArr, ctttmLogArr, racbLogArr, jiraLogArr]
   );
 
   const fullRange = useMemo(() => {
@@ -27,7 +34,8 @@ export default function TimelineBoard({ dataMap, showLegend }) {
         showLegend={showLegend}
       />
       <StackedTimeline
-        dataMap={{ CTTTM: ctttmLogArr, RACB: racbLogArr }}
+        dataMap={{ CTTTM: ctttmLogArr, RACB: racbLogArr, JIRA: jiraLogArr }}
+        range={fullRange}
         showLegend={showLegend}
       />
     </div>

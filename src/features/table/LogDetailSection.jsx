@@ -107,6 +107,30 @@ function renderDetailByType(log) {
           />
         </>
       );
+    case "JIRA":
+      return (
+        <>
+          <Field label="ID" value={log.id} />
+          <Field label="Log Type" value={log.logType} />
+          <Field label="Issue Status" value={log.eventType} />
+          <Field label="Time" value={log.eventTime} />
+          <Field label="Issue Key" value={log.issueKey ?? "-"} />
+          <Field label="Assignee" value={log.assignee ?? "-"} />
+          <Field label="Priority" value={log.priority ?? "-"} />
+          <Field label="Reporter" value={log.reporter ?? "-"} />
+          <Field
+            label="Summary"
+            value={log.summary ?? "-"}
+            className="col-span-2"
+          />
+          <Field
+            label="Description"
+            value={log.description ?? "-"}
+            className="col-span-2"
+          />
+          {log.url && <UrlField url={log.url} />}
+        </>
+      );
     default:
       return (
         <div className="col-span-2 text-slate-500 dark:text-slate-400 py-2">

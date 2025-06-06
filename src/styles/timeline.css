@@ -26,6 +26,9 @@
 .vis-item.bg-yellow-600 { @apply bg-yellow-600 border-yellow-700; }
 .vis-item.bg-green-600  { @apply bg-green-600 border-green-700; }
 .vis-item.bg-amber-600  { @apply bg-amber-600 border-amber-700; }
+.vis-item.bg-purple-600 { @apply bg-purple-600 border-purple-700; }
+.vis-item.bg-gray-600   { @apply bg-gray-600 border-gray-700; }
+.vis-item.bg-orange-600 { @apply bg-orange-600 border-orange-700; }
 
 /* 선택 아이템 */
 .vis-item.vis-selected {

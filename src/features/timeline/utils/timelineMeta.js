@@ -29,4 +29,14 @@ export const groupConfig = {
       TTM_WARN: "bg-yellow-600 border-yellow-700",
     },
   },
+  JIRA: {
+    stateColors: {
+      CREATED: "bg-green-600 border-green-700",
+      IN_PROGRESS: "bg-blue-600 border-blue-700",
+      RESOLVED: "bg-purple-600 border-purple-700",
+      CLOSED: "bg-gray-600 border-gray-700",
+      REOPENED: "bg-orange-600 border-orange-700",
+      BLOCKED: "bg-red-600 border-red-700",
+    },
+  },
 };

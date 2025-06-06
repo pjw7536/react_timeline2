@@ -196,12 +196,12 @@ export default function Navbar() {
           >
             Timeline
           </Link>
-          <a
-            href="#"
+          <Link
+            to="/apps"
             className="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400"
           >
-            Marketplace
-          </a>
+            Apps
+          </Link>
           <a
             href="#"
             className="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400"

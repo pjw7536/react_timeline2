@@ -80,7 +80,14 @@ export function useVisTimeline({ containerRef, groups, items, options }) {
     }
   }, [groups]);
 
-  // 4. 외부에서 선택된 행을 타임라인에 반영
+  // 4. 옵션 변경 시 범위 업데이트 (동기화 개선)
+  useEffect(() => {
+    if (tlRef.current && options.min && options.max) {
+      tlRef.current.setWindow(options.min, options.max, { animation: false });
+    }
+  }, [options.min, options.max]);
+
+  // 5. 외부에서 선택된 행을 타임라인에 반영
   useEffect(() => {
     if (tlRef.current) {
       if (selectedRow && tlRef.current.itemsData.get(selectedRow)) {

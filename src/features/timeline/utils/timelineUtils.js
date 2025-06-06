@@ -54,8 +54,22 @@ export const calcRange = (logs) => {
     .filter(Boolean);
 
   if (!ts.length) {
-    const now = new Date();
-    return { min: now, max: now };
+    // 이벤트가 없을 때 일관된 기본 범위 제공 (오늘 00:00 ~ 23:59)
+    const today = new Date();
+    const startOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+    const endOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      23,
+      59,
+      59
+    );
+    return { min: startOfDay, max: endOfDay };
   }
   return { min: new Date(Math.min(...ts)), max: new Date(Math.max(...ts)) };
 };
