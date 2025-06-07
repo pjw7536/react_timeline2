@@ -40,6 +40,21 @@ export default function App() {
               </Suspense>
             }
           />
+          {/* URL 파라미터를 통한 직접 접근 라우트 추가 */}
+          <Route
+            path="/timeline/:lineId/:sdwtId/:eqpId"
+            element={
+              <Suspense
+                fallback={
+                  <div className="flex items-center justify-center h-[80vh]">
+                    <LoadingSpinner />
+                  </div>
+                }
+              >
+                <TimelinePage />
+              </Suspense>
+            }
+          />
           <Route path="/apps" element={<AppsPage />} />
         </Routes>
       </div>

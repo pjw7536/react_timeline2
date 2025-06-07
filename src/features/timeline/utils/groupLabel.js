@@ -17,12 +17,8 @@ export function makeGroupLabel(type, title, showLegend) {
     WARN: "🟧WARN ",
     TTM_FAIL: "🟥TTM_FAIL ",
     TTM_WARN: "🟨TTM_WARN ",
-    CREATED: "🟩CREATED ",
-    IN_PROGRESS: "🟦IN_PROGRESS ",
-    RESOLVED: "🟪RESOLVED ",
-    CLOSED: "⬜CLOSED ",
-    REOPENED: "🟧REOPENED ",
-    BLOCKED: "🟥BLOCKED ",
+    ISSUED: "🟦ISSUED ",
+    CLOSED: "🟪CLOSED ",
   };
   const config = groupConfig[type];
   if (!config) return `<div style="width:240px"></div>`;
