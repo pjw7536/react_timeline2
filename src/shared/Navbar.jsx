@@ -102,7 +102,7 @@ export default function Navbar() {
 
   return (
     // 상단 고정 네비게이션 바
-    <header className="bg-gray-100 dark:bg-gray-800 shadow-md sticky top-0 z-50  h-15">
+    <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50  h-15">
       <nav
         aria-label="Global"
         className="mx-auto flex max-w-7xl items-center justify-between p-5 lg:px-8 h-15"

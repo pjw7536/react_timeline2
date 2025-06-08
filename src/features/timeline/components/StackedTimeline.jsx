@@ -15,21 +15,21 @@ export default function StackedTimeline({ dataMap, range, showLegend }) {
     () => [
       {
         id: "CTTTM",
-        content: makeGroupLabel("CTTTM", "CTTTM 이벤트", showLegend),
+        content: makeGroupLabel("CTTTM", "CTTTM 로그", showLegend),
         className: showLegend
           ? "custom-group-label legend-mode"
           : "custom-group-label",
       },
       {
         id: "RACB",
-        content: makeGroupLabel("RACB", "RACB 이벤트", showLegend),
+        content: makeGroupLabel("RACB", "RACB 로그", showLegend),
         className: showLegend
           ? "custom-group-label legend-mode"
           : "custom-group-label",
       },
       {
         id: "JIRA",
-        content: makeGroupLabel("JIRA", "JIRA 이벤트", showLegend),
+        content: makeGroupLabel("JIRA", "JIRA 로그", showLegend),
         className: showLegend
           ? "custom-group-label legend-mode"
           : "custom-group-label",

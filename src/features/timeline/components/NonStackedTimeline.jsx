@@ -12,14 +12,14 @@ export default function NonStackedTimeline({ dataMap, range, showLegend }) {
     () => [
       {
         id: "EQP",
-        content: makeGroupLabel("EQP", "EQP 상태", showLegend),
+        content: makeGroupLabel("EQP", "EQP 로그", showLegend),
         className: showLegend
           ? "custom-group-label legend-mode"
           : "custom-group-label",
       },
       {
         id: "TIP",
-        content: makeGroupLabel("TIP", "TIP 상태", showLegend),
+        content: makeGroupLabel("TIP", "TIP 로그", showLegend),
         className: showLegend
           ? "custom-group-label legend-mode"
           : "custom-group-label",
