@@ -126,12 +126,17 @@ export default function TimelinePage() {
 
       {/* 오른쪽 타임라인 패널 - TimelinePanel 없이 직접 구현 */}
       <div className="lg:w-[65%] h-full overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl p-4">
-        <div className="flex items-center justify-between">
+        <div className="flex">
           <h2 className="text-md font-bold text-slate-900 dark:text-white">
             📊 Timeline
           </h2>
-          <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-2">
             {lineId && sdwtId && eqpId && <ShareButton />}
+          </div>
+
+          <div className="flex-1"></div>
+
+          <div className="flex items-end gap-2">
             <LegendToggle
               showLegend={showLegend}
               onToggle={() => setShowLegend((v) => !v)}

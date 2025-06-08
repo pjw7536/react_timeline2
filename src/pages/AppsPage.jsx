@@ -176,7 +176,7 @@ function AppCard({ app, onClick }) {
 
   return (
     <div
-      className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow hover:shadow-lg transition-all 
+      className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow hover:shadow-lg hover:bg-blue-100 dark:hover:bg-slate-700 transition-all 
       duration-300 cursor-pointer border border-slate-200 dark:border-slate-700 flex flex-col w-59 h-60 overflow-hidden relative"
       onClick={() => onClick(app)}
     >
@@ -198,7 +198,7 @@ function AppCard({ app, onClick }) {
 
       <div className="flex flex-col items-center text-center flex-grow overflow-hidden pt-6">
         <div className="text-3xl mb-2">{app.icon}</div>
-        <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-1 truncate w-full">
+        <h3 className="font-semibold text-slate-900 dark:text-white text-xs mb-1 truncate w-full">
           {app.name}
         </h3>
         <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 px-1 mt-3">
@@ -214,7 +214,7 @@ function AppCard({ app, onClick }) {
             className="flex-1 flex items-center justify-center gap-0.5 px-1 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium transition-colors"
           >
             <Globe className="w-3 h-5" />
-            <span className="truncate">웹</span>
+            <span className="truncate">Web</span>
           </button>
         )}
         {app.downloadUrl && (
@@ -263,7 +263,7 @@ function AppDetailModal({ app, onClose }) {
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-slate-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+        className="bg-white dark:bg-slate-800 rounded-xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6">
@@ -271,22 +271,12 @@ function AppDetailModal({ app, onClose }) {
             <div className="flex gap-4">
               <div className="text-6xl">{app.icon}</div>
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                   {app.name}
                 </h2>
-                <p className="text-slate-600 dark:text-slate-400">
+                <p className="text-slate-600 text-sm dark:text-slate-400">
                   {app.category}
                 </p>
-                <div className="flex items-center gap-2 mt-2">
-                  <div className="flex items-center gap-1">
-                    <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                    <span className="font-medium">{app.rating}</span>
-                  </div>
-                  <span className="text-slate-500 dark:text-slate-400">•</span>
-                  <span className="text-slate-600 dark:text-slate-400">
-                    사용 대상: {app.users}
-                  </span>
-                </div>
               </div>
             </div>
             <button
@@ -311,44 +301,44 @@ function AppDetailModal({ app, onClose }) {
 
           <div className="space-y-4">
             <div>
-              <h3 className="font-semibold text-slate-900 dark:text-white mb-2">
+              <h3 className="font-semibold text-slate-900 text-xs dark:text-white mb-2">
                 설명
               </h3>
-              <p className="text-slate-700 dark:text-slate-300">
+              <p className="text-slate-700 text-xs dark:text-slate-300">
                 {app.description}
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-200 dark:border-slate-700">
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   버전
                 </p>
-                <p className="font-medium text-slate-900 dark:text-white">
+                <p className="font-medium text-xs text-slate-900 dark:text-white">
                   {app.version || "N/A"}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   파일 크기
                 </p>
-                <p className="font-medium text-slate-900 dark:text-white">
+                <p className="font-medium text-xs text-slate-900 dark:text-white">
                   {app.size || "N/A"}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-500 text-xs dark:text-slate-400">
                   최종 업데이트
                 </p>
-                <p className="font-medium text-slate-900 dark:text-white">
+                <p className="font-medium text-slate-900 text-xs dark:text-white">
                   {app.lastUpdated}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-500 text-xs dark:text-slate-400">
                   사용 대상
                 </p>
-                <p className="font-medium text-slate-900 dark:text-white">
+                <p className="font-medium text-slate-900 text-xs dark:text-white">
                   {app.users}
                 </p>
               </div>
@@ -356,17 +346,17 @@ function AppDetailModal({ app, onClose }) {
 
             {app.requirements && (
               <div>
-                <h3 className="font-semibold text-slate-900 dark:text-white mb-2">
+                <h3 className="font-semibold text-xs text-slate-900 dark:text-white mb-2">
                   시스템 요구사항
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-xs text-slate-600 text-xs dark:text-slate-400">
                   {app.requirements}
                 </p>
               </div>
             )}
 
             <div className="space-y-3">
-              <h3 className="font-semibold text-slate-900 dark:text-white">
+              <h3 className="font-semibold text-slate-900 text-xs dark:text-white">
                 접속/다운로드
               </h3>
 
@@ -377,10 +367,10 @@ function AppDetailModal({ app, onClose }) {
                 >
                   <Globe className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   <div>
-                    <div className="font-medium text-slate-900 dark:text-white">
+                    <div className="font-medium text-xs text-slate-900 dark:text-white">
                       웹 버전 접속
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                    <div className="text-xs text-slate-600 dark:text-slate-400">
                       {app.webUrl}
                     </div>
                   </div>
@@ -394,10 +384,10 @@ function AppDetailModal({ app, onClose }) {
                 >
                   <div className="w-6 h-6 text-blue-600">💻</div>
                   <div>
-                    <div className="font-medium text-slate-900 dark:text-white">
+                    <div className="font-medium text-xs text-slate-900 dark:text-white">
                       Windows 버전
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                    <div className="text-xs text-slate-600 dark:text-slate-400">
                       {app.downloadUrl}
                     </div>
                   </div>
@@ -406,7 +396,7 @@ function AppDetailModal({ app, onClose }) {
 
               {app.isWebOnly && (
                 <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-xs text-slate-600 dark:text-slate-400">
                     이 서비스는 웹 브라우저를 통해서만 이용 가능합니다.
                   </p>
                 </div>
@@ -442,26 +432,24 @@ export default function AppsPage() {
   return (
     <div className="flex flex-row h-[calc(100vh-85px)] gap-2 mt-3">
       {/* 왼쪽: 필터 섹션 */}
-      <div className="flex flex-col h-full min-h-0 w-[20%] gap-2">
+      <div className="flex flex-col h-full min-h-0 w-[13%] gap-2">
         {/* 안내 메시지 섹션 */}
         <section className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 min-h-0 overflow-auto flex-[1]">
           <div className="space-y-3">
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-              <div className="flex items-start gap-2">
-                <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-blue-800 dark:text-blue-200">
-                  <p className="font-medium mb-1">보안 안내</p>
-                  <p className="text-xs">
-                    모든 사내 프로그램은 승인된 기기에서만 설치 가능합니다.
-                  </p>
-                </div>
+            <div className="flex items-start gap-2">
+              <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <div className="text-xs text-blue-800 dark:text-blue-200">
+                <p className="font-medium mb-1">안내</p>
+                <p className="text-xs">
+                  모든 사내 프로그램은 승인된 기기에서만 설치 가능합니다.
+                </p>
               </div>
             </div>
           </div>
         </section>
         {/* 검색 및 필터 섹션 */}
         <section className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex flex-col flex-[8]">
-          <h2 className="text-md font-bold text-slate-900 dark:text-white mb-3">
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-3">
             🔍 앱 검색
           </h2>
 
@@ -470,10 +458,10 @@ export default function AppsPage() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
             <input
               type="text"
-              placeholder="시스템 이름으로 검색..."
+              placeholder="시스템명 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-xs text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -481,7 +469,7 @@ export default function AppsPage() {
 
           {/* 카테고리 필터 */}
           <div className="mt-2">
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
+            <h3 className="text-xs font-semibold text-slate-900 dark:text-white mb-3">
               카테고리
             </h3>
             <div className="space-y-2">
@@ -489,7 +477,7 @@ export default function AppsPage() {
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`w-full text-left px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
                     selectedCategory === category
                       ? "bg-blue-600 text-white"
                       : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
@@ -504,12 +492,12 @@ export default function AppsPage() {
       </div>
 
       {/* 오른쪽: 앱 목록 */}
-      <div className="w-[80%] h-full overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl p-4">
+      <div className="w-[87%] h-full overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl px-3 pt-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-md font-bold text-slate-900 dark:text-white">
             💼 사내 시스템 & 도구
           </h2>
-          <span className="text-sm text-slate-600 dark:text-slate-400">
+          <span className="text-xs text-slate-600 dark:text-slate-400">
             Total: {filteredApps.length}
           </span>
         </div>

@@ -1,7 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+
+// 스트리밍 텍스트 컴포넌트
+function StreamingText({ text, speed = 30 }) {
+  const [displayedText, setDisplayedText] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    // 텍스트가 변경되면 초기화
+    setDisplayedText("");
+    setCurrentIndex(0);
+  }, [text]);
+
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      const timer = setTimeout(() => {
+        setDisplayedText((prev) => prev + text[currentIndex]);
+        setCurrentIndex((prev) => prev + 1);
+      }, speed);
+
+      return () => clearTimeout(timer);
+    }
+  }, [currentIndex, text, speed]);
+
+  return (
+    <span className="inline-block">
+      {displayedText}
+      {currentIndex < text.length && (
+        <span className="inline-block w-2 h-4 bg-slate-600 dark:bg-slate-400 animate-pulse ml-0.5" />
+      )}
+    </span>
+  );
+}
 
 // 필드 공통 출력용
-function Field({ label, value, className }) {
+function Field({ label, value, className, streaming = false }) {
   return (
     <>
       <div
@@ -12,7 +44,7 @@ function Field({ label, value, className }) {
       >
         {label}
       </div>
-      <div>{value}</div>
+      <div>{streaming ? <StreamingText text={value || "-"} /> : value}</div>
     </>
   );
 }
@@ -104,6 +136,7 @@ function renderDetailByType(log) {
             label="Comment"
             value={log.comment ?? "-"}
             className="col-span-2"
+            streaming={true} // CTTTM의 Comment만 스트리밍 효과 적용
           />
         </>
       );
@@ -155,7 +188,7 @@ export default function LogDetailSection({ log }) {
 
   return (
     <div
-      className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm
+      className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs
       bg-white dark:bg-slate-800 rounded-lg p-2
       text-slate-800 dark:text-slate-100 overflow-auto table-scroll"
     >

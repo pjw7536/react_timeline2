@@ -4,7 +4,7 @@ import React from "react";
 export default function LegendToggle({ showLegend, onToggle }) {
   return (
     <label className="inline-flex items-center cursor-pointer">
-      <span className="text-sm font-medium text-gray-900 dark:text-gray-300 mr-2 font-bold">
+      <span className="text-xs font-medium text-gray-900 dark:text-gray-300 mr-1 font-bold">
         Legend 보기
       </span>
       <input
