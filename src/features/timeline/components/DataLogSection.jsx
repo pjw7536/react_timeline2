@@ -13,7 +13,7 @@ export default function DataLogSection({
   return (
     <section className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex-[2] min-h-0 flex flex-col overflow-hidden">
       {!eqpId && !logsLoading ? (
-        <p className="text-center text-slate-600 dark:text-slate-400 py-10">
+        <p className="text-center text-sm text-slate-600 dark:text-slate-400 py-45">
           EQP를 선택하세요.
         </p>
       ) : logsLoading ? (

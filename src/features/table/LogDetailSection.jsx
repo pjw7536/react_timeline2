@@ -147,8 +147,8 @@ function renderDetailByType(log) {
 export default function LogDetailSection({ log }) {
   if (!log) {
     return (
-      <div className="text-sm text-slate-500 dark:text-slate-400 text-center py-6">
-        테이블이나 타임라인에서 로그를 선택하면 상세정보가 여기에 표시됩니다.
+      <div className="text-sm text-slate-500 dark:text-slate-400 text-center py-17">
+        테이블이나 타임라인에서 로그를 선택하면 상세정보가 표시됩니다.
       </div>
     );
   }

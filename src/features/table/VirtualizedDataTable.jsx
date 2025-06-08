@@ -29,21 +29,61 @@ export default function VirtualizedDataTable({
     }
   }, [selectedRow, source, data]);
 
+  // 컬럼 너비 정의 (px 단위로 통일)
+  const columnWidths = {
+    time: 112, // w-28 = 7rem = 112px
+    logType: 80, // w-20 = 5rem = 80px
+    changeType: 160, // w-40 = 10rem = 160px
+    operator: 70, // w-20 = 5rem = 80px
+    duration: 70, // w-20 = 5rem = 80px
+    url: 70, // w-20 = 5rem = 80px
+  };
+
   // 헤더 컴포넌트
   const TableHeader = useMemo(
     () => (
       <div className="sticky top-0 z-10 bg-gray-200 text-gray-900 dark:bg-gray-600 dark:text-gray-100">
         <div className="flex text-xs font-semibold">
-          <div className="w-32 px-3 py-2 text-center">Time</div>
-          <div className="w-24 px-3 py-2 text-center">LogType</div>
-          <div className="w-40 px-3 py-2 text-center">ChangeType</div>
-          <div className="w-28 px-3 py-2 text-center">Operator</div>
-          <div className="w-20 px-3 py-2 text-center">Duration</div>
-          <div className="w-20 px-3 py-2 text-center">URL</div>
+          <div
+            style={{ width: `${columnWidths.time}px` }}
+            className="px-2 py-2 text-center flex-shrink-0"
+          >
+            Time
+          </div>
+          <div
+            style={{ width: `${columnWidths.logType}px` }}
+            className="px-2 py-2 text-center flex-shrink-0"
+          >
+            LogType
+          </div>
+          <div
+            style={{ width: `${columnWidths.changeType}px` }}
+            className="px-2 py-2 text-center flex-shrink-0"
+          >
+            ChangeType
+          </div>
+          <div
+            style={{ width: `${columnWidths.operator}px` }}
+            className="px-2 py-2 text-center flex-shrink-0"
+          >
+            Operator
+          </div>
+          <div
+            style={{ width: `${columnWidths.duration}px` }}
+            className="px-2 py-2 text-center flex-shrink-0"
+          >
+            Duration
+          </div>
+          <div
+            style={{ width: `${columnWidths.url}px` }}
+            className="px-2 py-2 text-center flex-shrink-0"
+          >
+            URL
+          </div>
         </div>
       </div>
     ),
-    []
+    [columnWidths]
   );
 
   // 필터 체크박스 컴포넌트
@@ -97,10 +137,16 @@ export default function VirtualizedDataTable({
               : "bg-white dark:bg-gray-800"
           }`}
         >
-          <div className="w-32 px-3 py-2 text-xs text-center text-gray-800 dark:text-gray-200">
+          <div
+            style={{ width: `${columnWidths.time}px` }}
+            className="px-2 py-2 text-xs text-center text-gray-800 dark:text-gray-200 flex-shrink-0"
+          >
             {row.displayTimestamp}
           </div>
-          <div className="w-24 px-3 py-2 text-xs text-center text-gray-800 dark:text-gray-200">
+          <div
+            style={{ width: `${columnWidths.logType}px` }}
+            className="px-2 py-2 text-xs text-center text-gray-800 dark:text-gray-200 flex-shrink-0"
+          >
             <span
               className={`
             inline-block px-2 py-1 text-xs font-medium rounded
@@ -134,16 +180,28 @@ export default function VirtualizedDataTable({
               {row.logType}
             </span>
           </div>
-          <div className="w-40 px-3 py-2 text-xs text-center text-gray-800 dark:text-gray-200">
+          <div
+            style={{ width: `${columnWidths.changeType}px` }}
+            className="px-2 py-2 text-xs text-center text-gray-800 dark:text-gray-200 flex-shrink-0"
+          >
             {row.info1}
           </div>
-          <div className="w-28 px-3 py-2 text-xs text-center text-gray-800 dark:text-gray-200">
+          <div
+            style={{ width: `${columnWidths.operator}px` }}
+            className="px-2 py-2 text-xs text-center text-gray-800 dark:text-gray-200 flex-shrink-0"
+          >
             {row.info2}
           </div>
-          <div className="w-20 px-3 py-2 text-xs text-center text-gray-800 dark:text-gray-200">
+          <div
+            style={{ width: `${columnWidths.duration}px` }}
+            className="px-2 py-2 text-xs text-center text-gray-800 dark:text-gray-200 flex-shrink-0"
+          >
             {row.duration}
           </div>
-          <div className="w-20 px-3 py-2 text-xs text-center">
+          <div
+            style={{ width: `${columnWidths.url}px` }}
+            className="px-2 py-2 text-xs text-center flex-shrink-0"
+          >
             {row.url ? (
               <button
                 onClick={handleUrlClick}
@@ -171,7 +229,7 @@ export default function VirtualizedDataTable({
         </div>
       );
     },
-    [data, selectedRow, setSelectedRow]
+    [data, selectedRow, setSelectedRow, columnWidths]
   );
 
   // 리스트 컨테이너의 높이 계산
