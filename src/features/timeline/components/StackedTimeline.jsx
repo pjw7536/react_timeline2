@@ -16,8 +16,6 @@ export default function StackedTimeline({ dataMap, range, showLegend }) {
       {
         id: "CTTTM",
         content: makeGroupLabel("CTTTM", "CTTTM 이벤트", showLegend),
-        height: 150,
-        style: "height: 200px", // ← 꼭 추가!
         className: showLegend
           ? "custom-group-label legend-mode"
           : "custom-group-label",
@@ -25,8 +23,6 @@ export default function StackedTimeline({ dataMap, range, showLegend }) {
       {
         id: "RACB",
         content: makeGroupLabel("RACB", "RACB 이벤트", showLegend),
-        height: 150,
-        style: "height: 200px", // ← 꼭 추가!
         className: showLegend
           ? "custom-group-label legend-mode"
           : "custom-group-label",
@@ -34,8 +30,6 @@ export default function StackedTimeline({ dataMap, range, showLegend }) {
       {
         id: "JIRA",
         content: makeGroupLabel("JIRA", "JIRA 이벤트", showLegend),
-        height: 150,
-        style: "height: 200px", // ← 꼭 추가!
         className: showLegend
           ? "custom-group-label legend-mode"
           : "custom-group-label",
@@ -72,7 +66,7 @@ export default function StackedTimeline({ dataMap, range, showLegend }) {
   return (
     <div className="timeline-container">
       <h3 className="text-sm font-semibold mb-1 text-slate-600 dark:text-slate-300">
-        📍 CTTTM + RACB + JIRA 로그
+        📍 변경점 로그
       </h3>
       {/* 실제 타임라인이 렌더링될 영역 */}
       <div

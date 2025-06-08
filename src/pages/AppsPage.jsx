@@ -440,7 +440,7 @@ export default function AppsPage() {
   }, [searchTerm, selectedCategory]);
 
   return (
-    <div className="flex flex-row h-[calc(100vh-110px)] gap-2 mt-3">
+    <div className="flex flex-row h-[calc(100vh-85px)] gap-2 mt-3">
       {/* 왼쪽: 필터 섹션 */}
       <div className="flex flex-col h-full min-h-0 w-[20%] gap-2">
         {/* 안내 메시지 섹션 */}

@@ -14,6 +14,16 @@
 }
 .dark .vis-item { @apply text-slate-100; }
 
+/* 아이템 내부 content 텍스트 스타일 */
+.vis-item .vis-item-content {
+  font-size: 11px !important;  /* 폰트 크기 조절 */
+  font-weight: 500 !important;  /* 약간 굵게 */
+  padding: 2px 4px !important;  /* 내부 여백 */
+  white-space: nowrap !important;  /* 줄바꿈 방지 */
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;  /* 긴 텍스트는 ... 처리 */
+}
+
 /* 상태 색상 */
 .vis-item.bg-red-500    { @apply bg-red-500 border-red-600; }
 .vis-item.bg-green-500  { @apply bg-green-500 border-green-600; }
@@ -45,13 +55,13 @@
 
 /* 시간축 텍스트 */
 .vis-time-axis .vis-text,
-.vis-time-axis .vis-label { font-size: 13px !important; color: #334155; }
+.vis-time-axis .vis-label { font-size: 12px !important; color: #334155; }
 .dark .vis-time-axis .vis-text,
 .dark .vis-time-axis .vis-label { color: #f1f5f9 !important; }
 
 /* 그룹 라벨 */
-.vis-label.custom-group-label { color: #334155; }
-.dark .vis-label.custom-group-label { color: #f1f5f9 !important; }
+.vis-label.custom-group-label { color: #334155; font-size: 12px !important;}
+.dark .vis-label.custom-group-label { color: #f1f5f9 !important; font-size: 12px !important; }
 
 /* 테이블 스크롤바 */
 .table-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -61,6 +71,47 @@
 .dark .table-scroll::-webkit-scrollbar-thumb { background: #475569; border: 1px solid #1e293b; }
 .dark .table-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
+/* react-window 스크롤바 스타일 */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+
+.dark .scrollbar-thin {
+  scrollbar-color: #475569 #1e293b;
+}
+
+/* 웹킷 브라우저용 스크롤바 */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
 
 /* 그룹 라벨 고정 폭 */
 .vis-label.custom-group-label {
@@ -68,9 +119,8 @@
   min-width: 150px !important;
   max-width: 150px !important;
   display: flex !important;
-  align-items: center !important;  /* 세로 중앙 */
-  justify-content: center !important; /* 가로 중앙 */
-  /* 줄바꿈 방지(원하는 경우) */
+  align-items: center !important;
+  justify-content: center !important;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -78,13 +128,12 @@
 
 /* 그룹 라벨에 legend-mode 클래스가 추가됐을 때만 폰트 크기를 10px로 */
 .vis-label.legend-mode {
-  font-size: 14px !important;
+  font-size: 12px !important;
   font-weight: normal !important;
   letter-spacing: 0 !important;
-  /* 👇 가운데 정렬 핵심! */
   display: flex !important;
-  align-items: center !important;  /* 세로 중앙 */
-  justify-content: center !important; /* 가로 중앙 */
+  align-items: center !important;
+  justify-content: center !important;
   width: 240px !important;
   min-width: 240px !important;
   max-width: 240px !important;

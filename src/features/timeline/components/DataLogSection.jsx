@@ -1,6 +1,6 @@
 // src/features/timeline/components/DataLogSection.jsx
 import React from "react";
-import CombinedDataTable from "@/features/table/CombinedDataTable";
+import VirtualizedDataTable from "@/features/table/VirtualizedDataTable";
 import LoadingSpinner from "@/shared/LoadingSpinner";
 
 export default function DataLogSection({
@@ -11,7 +11,7 @@ export default function DataLogSection({
   handleFilter,
 }) {
   return (
-    <section className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex-[3] min-h-0 flex flex-col overflow-auto">
+    <section className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex-[2] min-h-0 flex flex-col overflow-hidden">
       {!eqpId && !logsLoading ? (
         <p className="text-center text-slate-600 dark:text-slate-400 py-10">
           EQP를 선택하세요.
@@ -21,7 +21,7 @@ export default function DataLogSection({
           <LoadingSpinner />
         </div>
       ) : (
-        <CombinedDataTable
+        <VirtualizedDataTable
           data={tableData}
           typeFilters={typeFilters}
           handleFilter={handleFilter}

@@ -102,10 +102,10 @@ export default function Navbar() {
 
   return (
     // 상단 고정 네비게이션 바
-    <header className="bg-gray-100 dark:bg-gray-800 shadow-md sticky top-0 z-50  h-20">
+    <header className="bg-gray-100 dark:bg-gray-800 shadow-md sticky top-0 z-50  h-15">
       <nav
         aria-label="Global"
-        className="mx-auto flex max-w-7xl items-center justify-between p-5 lg:px-8"
+        className="mx-auto flex max-w-7xl items-center justify-between p-5 lg:px-8 h-15"
       >
         {/* 로고: 메인 페이지로 이동 */}
         <div className="flex lg:flex-1">
@@ -132,7 +132,7 @@ export default function Navbar() {
         {/* 데스크탑 메뉴: Product, Timeline 등 네비게이션 */}
         <PopoverGroup className="hidden lg:flex lg:gap-x-12">
           <Popover className="relative">
-            <PopoverButton className="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 dark:text-gray-100 focus:outline-none">
+            <PopoverButton className="flex items-center gap-x-1 text-xs/6 font-semibold text-gray-900 dark:text-gray-100 focus:outline-none">
               Product
               <ChevronDownIcon
                 aria-hidden="true"
@@ -148,7 +148,7 @@ export default function Navbar() {
                 {products.map((item) => (
                   <div
                     key={item.name}
-                    className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    className="group relative flex items-center gap-x-6 rounded-lg p-4 text-xs/6 hover:bg-gray-50 dark:hover:bg-gray-700"
                   >
                     <div className="flex size-11 flex-none items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-700 group-hover:bg-white dark:group-hover:bg-gray-600">
                       <item.icon
@@ -177,7 +177,7 @@ export default function Navbar() {
                   <a
                     key={item.name}
                     href={item.href}
-                    className="flex items-center justify-center gap-x-2.5 p-3 text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600"
+                    className="flex items-center justify-center gap-x-2.5 p-3 text-xs/6 font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600"
                   >
                     <item.icon
                       aria-hidden="true"
@@ -192,19 +192,19 @@ export default function Navbar() {
           {/* 타임라인 페이지로 이동하는 메뉴 */}
           <Link
             to="/timeline"
-            className="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400"
+            className="text-xs/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400"
           >
             Timeline
           </Link>
           <Link
             to="/apps"
-            className="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400"
+            className="text-xs/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400"
           >
             Apps
           </Link>
           <a
             href="#"
-            className="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400"
+            className="text-xs/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400"
           >
             Company
           </a>
@@ -217,14 +217,14 @@ export default function Navbar() {
             aria-label="Toggle dark mode"
           >
             {darkMode ? (
-              <SunIcon className="size-6" />
+              <SunIcon className="size-5" />
             ) : (
-              <MoonIcon className="size-6" />
+              <MoonIcon className="size-5" />
             )}
           </button>
           <a
             href="#"
-            className="text-sm/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400"
+            className="text-xs/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400"
           >
             Log in <span aria-hidden="true">&rarr;</span>
           </a>

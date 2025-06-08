@@ -1,3 +1,4 @@
+// src/features/timeline/utils/timelineUtils.js
 import { groupConfig } from "./timelineMeta";
 
 /** ➜ 로그 Item.id 생성 (예: RACB_LOG-2025-06-02T12:00:00.000Z) */
@@ -19,10 +20,23 @@ export const processData = (logType, data) => {
       const isRange = !!l.endTime;
       const colorCls = cfg.stateColors[l.eventType] || "bg-gray-300";
 
+      // 폰트 크기를 logType에 따라 다르게 설정
+      const fontSize =
+        {
+          EQP: "12px",
+          TIP: "11px",
+          CTTTM: "10px",
+          RACB: "10px",
+          JIRA: "10px",
+        }[logType] || "11px";
+
       return {
         id: l.id,
         group: logType,
-        content: l.comment || "",
+        // HTML로 직접 스타일 적용
+        content: `<span style="font-size: ${fontSize}; font-weight: 500;">${
+          l.eventType || ""
+        }</span>`,
         start,
         end,
         type: isRange ? "range" : "point",
@@ -54,7 +68,6 @@ export const calcRange = (logs) => {
     .filter(Boolean);
 
   if (!ts.length) {
-    // 이벤트가 없을 때 일관된 기본 범위 제공 (오늘 00:00 ~ 23:59)
     const today = new Date();
     const startOfDay = new Date(
       today.getFullYear(),
