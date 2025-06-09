@@ -1,3 +1,4 @@
+// src/features/timeline/components/TimelineBoard.jsx
 import React, { useMemo } from "react";
 import NonStackedTimeline from "./NonStackedTimeline";
 import StackedTimeline from "./StackedTimeline";
@@ -25,6 +26,13 @@ export default function TimelineBoard({ dataMap, showLegend }) {
     const r = calcRange(allLogs);
     return addBuffer(r.min.getTime(), r.max.getTime());
   }, [allLogs]);
+
+  // 범위 디버깅 (선택사항)
+  console.log("Timeline Range:", {
+    min: fullRange.min.toISOString(),
+    max: fullRange.max.toISOString(),
+    logCount: allLogs.length,
+  });
 
   return (
     <div className="w-full space-y-4">

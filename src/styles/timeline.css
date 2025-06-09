@@ -142,3 +142,15 @@
   text-overflow: ellipsis;
   padding: 0 !important;
 }
+
+/* 가상 스크롤 최적화 */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+  /* 하드웨어 가속 */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
