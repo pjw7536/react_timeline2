@@ -23,8 +23,15 @@ export function transformLogsToTableData(logs, typeFilters) {
         info1: log.eventType,
         info2: log.operator || "-",
         duration: log.duration?.toFixed(0) ?? "-",
-        url: log.url || null, // 여기가 중요!
+        url: log.url || null,
       };
+
+      // TIP 로그인 경우 process/step 정보 추가 표시
+      if (log.logType === "TIP" && (log.process || log.step || log.ppid)) {
+        row.info1 = `${log.eventType} (${log.process || "N/A"}/${
+          log.step || "N/A"
+        })`;
+      }
 
       // 각 행의 URL 디버깅
       if (log.url) {

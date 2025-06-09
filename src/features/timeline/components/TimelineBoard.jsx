@@ -4,7 +4,11 @@ import NonStackedTimeline from "./NonStackedTimeline";
 import StackedTimeline from "./StackedTimeline";
 import { calcRange, addBuffer } from "@/features/timeline/utils/timelineUtils";
 
-export default function TimelineBoard({ dataMap, showLegend }) {
+export default function TimelineBoard({
+  dataMap,
+  showLegend,
+  selectedTipGroups,
+}) {
   const eqpLogArr = dataMap.EQP || [];
   const tipLogArr = dataMap.TIP || [];
   const ctttmLogArr = dataMap.CTTTM || [];
@@ -32,6 +36,7 @@ export default function TimelineBoard({ dataMap, showLegend }) {
     min: fullRange.min.toISOString(),
     max: fullRange.max.toISOString(),
     logCount: allLogs.length,
+    selectedTipGroups: selectedTipGroups, // 디버깅용
   });
 
   return (
@@ -40,6 +45,7 @@ export default function TimelineBoard({ dataMap, showLegend }) {
         dataMap={{ EQP: eqpLogArr, TIP: tipLogArr }}
         range={fullRange}
         showLegend={showLegend}
+        selectedTipGroups={selectedTipGroups}
       />
       <StackedTimeline
         dataMap={{ CTTTM: ctttmLogArr, RACB: racbLogArr, JIRA: jiraLogArr }}

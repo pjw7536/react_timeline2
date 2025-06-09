@@ -73,10 +73,15 @@ export function useVisTimeline({ containerRef, groups, items, options }) {
     }
   }, [items]);
 
-  // 3. 그룹 정보 변경 시 갱신
+  // 3. 그룹 정보 변경 시 갱신 (visibility 처리 포함)
   useEffect(() => {
-    if (tlRef.current) {
-      tlRef.current.setGroups(groups);
+    if (tlRef.current && groups) {
+      // vis-timeline의 그룹 visibility 설정
+      const updatedGroups = groups.map((g) => ({
+        ...g,
+        visible: g.visible !== false,
+      }));
+      tlRef.current.setGroups(updatedGroups);
     }
   }, [groups]);
 

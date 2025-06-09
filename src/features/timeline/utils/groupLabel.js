@@ -1,5 +1,3 @@
-// src/features/timeline/utils/groupLabel.js
-
 import { groupConfig } from "./timelineMeta";
 
 export function makeGroupLabel(type, title, showLegend) {
@@ -25,5 +23,20 @@ export function makeGroupLabel(type, title, showLegend) {
   const legendHtml = Object.keys(config.stateColors)
     .map((state) => `<span>${EMOJI[state] || "▪️"}</span>`)
     .join(" ");
+  return `<div style="width:240px;">${legendHtml}</div>`;
+}
+
+export function makeTipGroupLabel(process, step, ppid, showLegend) {
+  // PPID만 표시하도록 수정
+  const displayText = `<div class="tip-group-label-simple">${
+    ppid || "N/A"
+  }</div>`;
+
+  if (!showLegend) {
+    return `<div style="width:240px">${displayText}</div>`;
+  }
+
+  // Legend 모드일 때는 OPEN/CLOSE 범례 표시
+  const legendHtml = `<span>🟦OPEN </span><span>🟥CLOSE </span>`;
   return `<div style="width:240px;">${legendHtml}</div>`;
 }

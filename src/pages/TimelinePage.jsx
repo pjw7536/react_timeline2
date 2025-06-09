@@ -1,6 +1,7 @@
 // src/pages/TimelinePage.jsx
 import React, { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 import { useLogs } from "@/features/timeline";
 import { useSelectionStore } from "@/shared/store";
 import { useUrlValidation } from "@/features/timeline/hooks/useUrlValidation";
@@ -17,6 +18,8 @@ import LegendToggle from "@/features/timeline/components/LegendToggle";
 import { TimelineBoard } from "@/features/timeline";
 import LogDetailSection from "@/features/table/LogDetailSection";
 import LoadingSpinner from "@/shared/LoadingSpinner";
+import Drawer from "@/shared/Drawer";
+import TimelineSettings from "@/features/timeline/components/TimelineSettings";
 
 export default function TimelinePage() {
   const params = useParams();
@@ -32,7 +35,7 @@ export default function TimelinePage() {
     selectedRow,
   } = useSelectionStore();
 
-  // URL 검증 - setPrcGroup과 setSdwt 추가
+  // URL 검증
   const { isValidating, validationError, isUrlInitialized } = useUrlValidation(
     params,
     lineId,
@@ -43,10 +46,10 @@ export default function TimelinePage() {
     setEqp
   );
 
-  // URL 동기화 - sdwtId 제거
+  // URL 동기화
   useUrlSync(lineId, eqpId, isValidating, isUrlInitialized);
 
-  // 로그 데이터 가져오기 - sdwtId 제거
+  // 로그 데이터 가져오기
   const enabled = Boolean(lineId && eqpId);
   const {
     data: logs = [],
@@ -57,6 +60,8 @@ export default function TimelinePage() {
   // 로컬 상태
   const [typeFilters, setTypeFilters] = useState(DEFAULT_TYPE_FILTERS);
   const [showLegend, setShowLegend] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedTipGroups, setSelectedTipGroups] = useState(["__ALL__"]);
 
   // 필터 핸들러
   const handleFilter = (e) =>
@@ -145,26 +150,30 @@ export default function TimelinePage() {
         </div>
       </div>
 
-      {/* 오른쪽 타임라인 패널 - TimelinePanel 없이 직접 구현 */}
+      {/* 오른쪽 타임라인 패널 */}
       <div className="lg:w-[65%] h-full overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl p-4">
-        <div className="flex">
-          <h2 className="text-md font-bold text-slate-900 dark:text-white">
-            📊 Timeline
-          </h2>
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
+            <h2 className="text-md font-bold text-slate-900 dark:text-white">
+              📊 Timeline
+            </h2>
             {lineId && eqpId && <ShareButton />}
           </div>
 
-          <div className="flex-1"></div>
-
-          <div className="flex items-end gap-2">
-            <LegendToggle
-              showLegend={showLegend}
-              onToggle={() => setShowLegend((v) => !v)}
-            />
-          </div>
+          {/* 설정 버튼 - EQP가 선택되었을 때만 표시 */}
+          {eqpId && !logsLoading && (
+            <button
+              onClick={() => setIsDrawerOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <AdjustmentsHorizontalIcon className="h-4 w-4" />
+              설정
+            </button>
+          )}
         </div>
-        <hr className="my-4 border-slate-300 dark:border-slate-600" />
+
+        <hr className="border-slate-300 dark:border-slate-600" />
+
         {!eqpId && !logsLoading ? (
           <div className="flex items-center justify-center h-full">
             <p className="text-center text-slate-600 dark:text-slate-400">
@@ -176,9 +185,30 @@ export default function TimelinePage() {
             <LoadingSpinner />
           </div>
         ) : (
-          <TimelineBoard dataMap={logsByType} showLegend={showLegend} />
+          <div className="mt-4">
+            <TimelineBoard
+              dataMap={logsByType}
+              showLegend={showLegend}
+              selectedTipGroups={selectedTipGroups}
+            />
+          </div>
         )}
       </div>
+
+      {/* Settings Drawer */}
+      <Drawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        title="타임라인 설정"
+      >
+        <TimelineSettings
+          showLegend={showLegend}
+          onLegendToggle={() => setShowLegend((v) => !v)}
+          tipLogs={logsByType.TIP}
+          selectedTipGroups={selectedTipGroups}
+          onTipFilterChange={setSelectedTipGroups}
+        />
+      </Drawer>
     </div>
   );
 }
