@@ -20,29 +20,39 @@ import LoadingSpinner from "@/shared/LoadingSpinner";
 
 export default function TimelinePage() {
   const params = useParams();
-  const { lineId, sdwtId, eqpId, setLine, setSdwt, setEqp, selectedRow } =
-    useSelectionStore();
+  const {
+    lineId,
+    sdwtId,
+    prcGroup,
+    eqpId,
+    setLine,
+    setSdwt,
+    setPrcGroup,
+    setEqp,
+    selectedRow,
+  } = useSelectionStore();
 
-  // URL 검증
+  // URL 검증 - setPrcGroup과 setSdwt 추가
   const { isValidating, validationError, isUrlInitialized } = useUrlValidation(
     params,
     lineId,
-    sdwtId,
+    eqpId,
     setLine,
     setSdwt,
+    setPrcGroup,
     setEqp
   );
 
-  // URL 동기화
-  useUrlSync(lineId, sdwtId, eqpId, isValidating, isUrlInitialized);
+  // URL 동기화 - sdwtId 제거
+  useUrlSync(lineId, eqpId, isValidating, isUrlInitialized);
 
-  // 로그 데이터 가져오기
+  // 로그 데이터 가져오기 - sdwtId 제거
   const enabled = Boolean(lineId && eqpId);
   const {
     data: logs = [],
     isLoading: logsLoading,
     isError: logsError,
-  } = useLogs({ lineId, sdwtId, eqpId }, enabled);
+  } = useLogs({ lineId, eqpId }, enabled);
 
   // 로컬 상태
   const [typeFilters, setTypeFilters] = useState(DEFAULT_TYPE_FILTERS);
@@ -67,6 +77,15 @@ export default function TimelinePage() {
     () => logs.find((log) => String(log.id) === String(selectedRow)),
     [logs, selectedRow]
   );
+
+  // 검증 중일 때 로딩 표시
+  if (isValidating) {
+    return (
+      <div className="flex items-center justify-center h-[80vh]">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   // 에러 처리
   if (logsError) {
@@ -96,9 +115,11 @@ export default function TimelinePage() {
         <LogViewerSection
           lineId={lineId}
           sdwtId={sdwtId}
+          prcGroup={prcGroup}
           eqpId={eqpId}
           setLine={setLine}
           setSdwt={setSdwt}
+          setPrcGroup={setPrcGroup}
           setEqp={setEqp}
         />
 
@@ -131,7 +152,7 @@ export default function TimelinePage() {
             📊 Timeline
           </h2>
           <div className="flex items-center gap-2">
-            {lineId && sdwtId && eqpId && <ShareButton />}
+            {lineId && eqpId && <ShareButton />}
           </div>
 
           <div className="flex-1"></div>

@@ -1,3 +1,4 @@
+// src/features/drilldown/EqpSelector.jsx
 import React from "react";
 import { useEquipments } from "./hooks/useLineQueries";
 import LoadingSpinner from "@/shared/LoadingSpinner";
@@ -5,12 +6,22 @@ import LoadingSpinner from "@/shared/LoadingSpinner";
 /**
  * EQP 드롭다운
  */
-export default function EqpSelector({ lineId, sdwtId, eqpId, setEqpId }) {
-  // ① 데이터·상태 가져오기
-  const { data: eqps = [], isLoading } = useEquipments(lineId, sdwtId);
+export default function EqpSelector({
+  lineId,
+  sdwtId,
+  prcGroup,
+  eqpId,
+  setEqpId,
+}) {
+  // 데이터·상태 가져오기 - prcGroup 추가
+  const { data: eqps = [], isLoading } = useEquipments(
+    lineId,
+    sdwtId,
+    prcGroup
+  );
 
-  // ② Line 안 고르면 회색 disabled 박스
-  if (!lineId)
+  // Line, SDWT, PRC Group 모두 선택해야 활성화
+  if (!lineId || !sdwtId || !prcGroup)
     return (
       <select
         disabled
@@ -20,14 +31,12 @@ export default function EqpSelector({ lineId, sdwtId, eqpId, setEqpId }) {
       </select>
     );
 
-  // ③ fetch 중이면 스피너
   if (isLoading) return <LoadingSpinner />;
 
-  // ④ 정상 렌더
   return (
     <select
       value={eqpId}
-      onChange={(e) => setEqpId(e.target.value)} // 상태 lift-up
+      onChange={(e) => setEqpId(e.target.value)}
       className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-xs dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 h-8"
       disabled={eqps.length === 0}
     >

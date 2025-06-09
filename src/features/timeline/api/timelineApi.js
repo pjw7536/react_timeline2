@@ -1,12 +1,25 @@
 import { apiClient } from "@/shared/apiClient";
 
 export const timelineApi = {
-  // “라인 목록” 엔드포인트
+  // "라인 목록" 엔드포인트
   fetchLines: () => apiClient("/lines"),
-  // 필요 파라미터는 params 객체로
+  // SDWT 목록
   fetchSDWT: (lineId) => apiClient("/sdwts", { params: { lineId } }),
-  fetchEquipments: (l, s) =>
-    apiClient("/equipments", { params: { lineId: l, sdwtId: s } }),
-  fetchLogs: ({ lineId, sdwtId, eqpId }) =>
-    apiClient("/logs", { params: { lineId, sdwtId, eqpId } }),
+  // PRC Group 목록
+  fetchPrcGroups: (lineId, sdwtId) =>
+    apiClient("/prc-groups", { params: { lineId, sdwtId } }),
+  // Equipment 목록
+  fetchEquipments: (lineId, sdwtId, prcGroup) => {
+    const params = { lineId };
+    if (sdwtId) params.sdwtId = sdwtId;
+    if (prcGroup) params.prcGroup = prcGroup;
+    return apiClient("/equipments", { params });
+  },
+  // 로그 가져오기 - sdwtId 제거
+  fetchLogs: ({ lineId, eqpId }) =>
+    apiClient("/logs", { params: { lineId, eqpId } }),
+
+  // EQP 정보 조회
+  fetchEquipmentInfo: (eqpId, lineId) =>
+    apiClient(`/equipment-info/${eqpId}`, { params: { lineId } }),
 };

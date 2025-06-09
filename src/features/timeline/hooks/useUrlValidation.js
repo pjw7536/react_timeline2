@@ -1,18 +1,16 @@
 // src/features/timeline/hooks/useUrlValidation.js
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  useLines,
-  useSDWT,
-  useEquipments,
-} from "@/features/drilldown/hooks/useLineQueries";
+import { useLines } from "@/features/drilldown/hooks/useLineQueries";
+import { timelineApi } from "@/features/timeline/api/timelineApi";
 
 export function useUrlValidation(
   params,
   lineId,
-  sdwtId,
+  eqpId,
   setLine,
   setSdwt,
+  setPrcGroup,
   setEqp
 ) {
   const [isValidating, setIsValidating] = useState(false);
@@ -21,67 +19,45 @@ export function useUrlValidation(
 
   const navigate = useNavigate();
   const { data: lines = [] } = useLines();
-  const { data: sdwts = [] } = useSDWT(params.lineId || lineId);
-  const { data: eqps = [] } = useEquipments(
-    params.lineId || lineId,
-    params.sdwtId || sdwtId
-  );
 
   useEffect(() => {
     const validateAndSetParams = async () => {
-      if (params.lineId && params.sdwtId && params.eqpId) {
+      if (params.lineId && params.eqpId) {
         setIsValidating(true);
         setValidationError(null);
         setIsUrlInitialized(true);
 
-        setLine(params.lineId);
-        setSdwt(params.sdwtId);
-        setEqp(params.eqpId);
-
         try {
-          let retryCount = 0;
-          const maxRetries = 10;
-
-          while (retryCount < maxRetries) {
-            if (lines.length > 0) {
-              const validLine = lines.find((l) => l.id === params.lineId);
-              if (!validLine) {
-                throw new Error(
-                  `라인 ID "${params.lineId}"를 찾을 수 없습니다.`
-                );
-              }
-
-              if (sdwts.length > 0) {
-                const validSdwt = sdwts.find((s) => s.id === params.sdwtId);
-                if (!validSdwt) {
-                  throw new Error(
-                    `SDWT ID "${params.sdwtId}"를 찾을 수 없습니다.`
-                  );
-                }
-
-                if (eqps.length > 0) {
-                  const validEqp = eqps.find((e) => e.id === params.eqpId);
-                  if (!validEqp) {
-                    throw new Error(
-                      `EQP ID "${params.eqpId}"를 찾을 수 없습니다.`
-                    );
-                  }
-
-                  setIsValidating(false);
-                  return;
-                }
-              }
+          // 라인 검증
+          if (lines.length > 0) {
+            const validLine = lines.find((l) => l.id === params.lineId);
+            if (!validLine) {
+              throw new Error(`라인 ID "${params.lineId}"를 찾을 수 없습니다.`);
             }
-
-            await new Promise((resolve) => setTimeout(resolve, 300));
-            retryCount++;
           }
 
-          setIsValidating(false);
+          // EQP 정보 조회 (SDWT, PRC Group 포함)
+          try {
+            const eqpInfo = await timelineApi.fetchEquipmentInfo(
+              params.eqpId,
+              params.lineId
+            );
+
+            // 모든 정보 설정
+            setLine(params.lineId);
+            setSdwt(eqpInfo.sdwtId);
+            setPrcGroup(eqpInfo.prcGroup);
+            setEqp(params.eqpId);
+
+            setIsValidating(false);
+          } catch (error) {
+            throw new Error(`EQP ID "${params.eqpId}"를 찾을 수 없습니다.`);
+          }
         } catch (error) {
           setValidationError(error.message);
           setLine("");
           setSdwt("");
+          setPrcGroup("");
           setEqp("");
           setTimeout(() => {
             navigate("/timeline");
@@ -97,15 +73,13 @@ export function useUrlValidation(
     }
   }, [
     params.lineId,
-    params.sdwtId,
     params.eqpId,
     lines,
-    sdwts,
-    eqps,
     isUrlInitialized,
     navigate,
     setLine,
     setSdwt,
+    setPrcGroup,
     setEqp,
   ]);
 

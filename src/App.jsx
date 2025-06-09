@@ -40,9 +40,9 @@ export default function App() {
               </Suspense>
             }
           />
-          {/* URL 파라미터를 통한 직접 접근 라우트 추가 */}
+          {/* URL 파라미터를 통한 직접 접근 라우트 - sdwtId 제거 */}
           <Route
-            path="/timeline/:lineId/:sdwtId/:eqpId"
+            path="/timeline/:lineId/:eqpId"
             element={
               <Suspense
                 fallback={

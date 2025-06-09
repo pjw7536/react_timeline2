@@ -4,9 +4,9 @@ import { timelineApi } from "@/features/timeline/api/timelineApi";
 // ① 라인 목록 (언제나 요청)
 export const useLines = () =>
   useQuery({
-    queryKey: ["lines"], // 캐시 키
+    queryKey: ["lines"],
     queryFn: timelineApi.fetchLines,
-    staleTime: 1000 * 60 * 30, // 30분 → fresh 판정
+    staleTime: 1000 * 60 * 30,
   });
 
 // ② SDWT 목록 (lineId 가 있어야 동작)
@@ -14,15 +14,24 @@ export const useSDWT = (lineId) =>
   useQuery({
     queryKey: ["sdwts", lineId],
     queryFn: () => timelineApi.fetchSDWT(lineId),
-    enabled: !!lineId, // ← false면 요청 자체를 안 보냄
+    enabled: !!lineId,
     staleTime: 1000 * 60 * 30,
   });
 
-// ③ EQP 목록 (line + sdwt 모두 골랐을 때만)
-export const useEquipments = (lineId, sdwtId) =>
+// ③ PRC Group 목록 (lineId와 sdwtId가 있어야 동작)
+export const usePrcGroups = (lineId, sdwtId) =>
   useQuery({
-    queryKey: ["equipments", lineId, sdwtId],
-    queryFn: () => timelineApi.fetchEquipments(lineId, sdwtId),
+    queryKey: ["prcGroups", lineId, sdwtId],
+    queryFn: () => timelineApi.fetchPrcGroups(lineId, sdwtId),
     enabled: !!lineId && !!sdwtId,
+    staleTime: 1000 * 60 * 30,
+  });
+
+// ④ EQP 목록 (line + sdwt + prcGroup 모두 골랐을 때만)
+export const useEquipments = (lineId, sdwtId, prcGroup) =>
+  useQuery({
+    queryKey: ["equipments", lineId, sdwtId, prcGroup],
+    queryFn: () => timelineApi.fetchEquipments(lineId, sdwtId, prcGroup),
+    enabled: !!lineId && !!sdwtId && !!prcGroup,
     staleTime: 1000 * 60 * 30,
   });
