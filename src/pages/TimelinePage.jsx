@@ -14,7 +14,6 @@ import { DEFAULT_TYPE_FILTERS } from "@/features/timeline/constants";
 import LogViewerSection from "@/features/timeline/components/LogViewerSection";
 import DataLogSection from "@/features/timeline/components/DataLogSection";
 import ShareButton from "@/features/timeline/components/ShareButton";
-import LegendToggle from "@/features/timeline/components/LegendToggle";
 import { TimelineBoard } from "@/features/timeline";
 import LogDetailSection from "@/features/table/LogDetailSection";
 import LoadingSpinner from "@/shared/LoadingSpinner";

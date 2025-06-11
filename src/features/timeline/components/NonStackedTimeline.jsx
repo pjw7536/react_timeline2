@@ -1,3 +1,4 @@
+// src/features/timeline/components/NonStackedTimeline.jsx
 import React, { useMemo, useRef } from "react";
 import { processData } from "@/features/timeline/utils/timelineUtils";
 import {
@@ -79,23 +80,36 @@ export default function NonStackedTimeline({
     return [...baseGroups, ...tipGroups];
   }, [showLegend, tipGroups]);
 
-  // 아이템 목록 생성
+  // 아이템 목록 생성 (연속성 보장)
   const items = useMemo(() => {
-    const eqpItems = processData("EQP", dataMap.EQP || []);
+    // EQP 아이템은 연속성 보장 (makeRangeContinuous = true)
+    const eqpItems = processData("EQP", dataMap.EQP || [], true);
 
-    // 필터링된 TIP 아이템을 각 그룹에 할당
+    // 필터링된 TIP 아이템을 각 그룹에 할당 (TIP도 range로 변경)
     const tipItems = [];
+
+    // TIP 로그를 그룹별로 분류
+    const tipGroupMap = new Map();
     filteredTipLogs.forEach((log) => {
       const groupKey = `TIP_${log.process || "unknown"}_${
         log.step || "unknown"
       }_${log.ppid || "unknown"}`;
-      const item = processData("TIP", [log])[0];
-      if (item) {
+
+      if (!tipGroupMap.has(groupKey)) {
+        tipGroupMap.set(groupKey, []);
+      }
+      tipGroupMap.get(groupKey).push(log);
+    });
+
+    // 각 TIP 그룹별로 연속성 보장하여 아이템 생성
+    tipGroupMap.forEach((logs, groupKey) => {
+      const groupItems = processData("TIP", logs, true); // TIP도 range로 변경
+      groupItems.forEach((item) => {
         tipItems.push({
           ...item,
           group: groupKey,
         });
-      }
+      });
     });
 
     return [...eqpItems, ...tipItems];
@@ -107,7 +121,7 @@ export default function NonStackedTimeline({
       stack: false,
       min: range.min,
       max: range.max,
-      zoomMin: 60 * 1000,
+      zoomMin: 60 * 60 * 1000, // 10분으로 최소 줌 레벨 증가 (더 줌 아웃 가능)
       margin: { item: 0, axis: 0 },
       groupOrder: "order",
       selectable: true,

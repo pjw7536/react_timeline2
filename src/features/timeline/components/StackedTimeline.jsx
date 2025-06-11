@@ -50,7 +50,7 @@ export default function StackedTimeline({ dataMap, range, showLegend }) {
       stack: true,
       min: range.min,
       max: range.max,
-      zoomMin: 60 * 1000,
+      zoomMin: 60 * 60 * 1000, // 10분으로 최소 줌 레벨 증가 (더 줌 아웃 가능)
       verticalScroll: true,
       groupHeightMode: "fixed",
       groupOrder: (a, b) =>

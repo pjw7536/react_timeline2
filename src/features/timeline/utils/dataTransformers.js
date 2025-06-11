@@ -22,7 +22,7 @@ export function transformLogsToTableData(logs, typeFilters) {
         logType: log.logType,
         info1: log.eventType,
         info2: log.operator || "-",
-        duration: log.duration?.toFixed(0) ?? "-",
+        duration: "-", // duration은 더 이상 계산하지 않음
         url: log.url || null,
       };
 
@@ -31,11 +31,6 @@ export function transformLogsToTableData(logs, typeFilters) {
         row.info1 = `${log.eventType} (${log.process || "N/A"}/${
           log.step || "N/A"
         })`;
-      }
-
-      // 각 행의 URL 디버깅
-      if (log.url) {
-        console.log(`Row ${log.id} has URL:`, log.url);
       }
 
       return row;

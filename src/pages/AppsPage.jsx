@@ -1,15 +1,5 @@
 import React, { useState, useMemo } from "react";
-import {
-  Search,
-  Download,
-  Globe,
-  Star,
-  Filter,
-  FileText,
-  Shield,
-  Database,
-  BarChart,
-} from "lucide-react";
+import { Search, Download, Globe, Shield } from "lucide-react";
 
 // 회사 내부 앱/웹사이트 데이터
 const appsData = [

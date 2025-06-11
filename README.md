@@ -1,12 +1,24 @@
-# React + Vite
+# EQP Timeline
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+EQP(Equipment) 로그 타임라인 시각화 도구입니다.
 
-Currently, two official plugins are available:
+## 기능
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Line/SDWT/PRC Group/EQP 계층별 드릴다운 필터링
+- 다양한 로그 타입 (EQP, TIP, RACB, CTTTM, JIRA) 타임라인 표시
+- 테이블과 타임라인 간 동기화된 선택
+- 다크모드 지원
+- URL 기반 링크 공유
 
-## Expanding the ESLint configuration
+## 개발 환경
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+# 의존성 설치
+npm install
+
+# 개발 서버 실행
+npm run dev
+
+# 빌드
+npm run build
+```

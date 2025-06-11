@@ -1,7 +1,7 @@
 // src/features/timeline/hooks/useUrlValidation.js
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLines } from "@/features/drilldown/hooks/useLineQueries";
+// import { useLines } from "@/features/drilldown/hooks/useLineQueries"; // 불필요한 의존성 제거
 import { timelineApi } from "@/features/timeline/api/timelineApi";
 
 export function useUrlValidation(
@@ -18,7 +18,7 @@ export function useUrlValidation(
   const [isUrlInitialized, setIsUrlInitialized] = useState(false);
 
   const navigate = useNavigate();
-  const { data: lines = [] } = useLines();
+  // const { data: lines = [] } = useLines(); // 불필요한 의존성 제거
 
   useEffect(() => {
     const validateAndSetParams = async () => {
@@ -28,40 +28,28 @@ export function useUrlValidation(
         setIsUrlInitialized(true);
 
         try {
-          // 라인 검증
-          if (lines.length > 0) {
-            const validLine = lines.find((l) => l.id === params.lineId);
-            if (!validLine) {
-              throw new Error(`라인 ID "${params.lineId}"를 찾을 수 없습니다.`);
-            }
+          const eqpInfo = await timelineApi.fetchEquipmentInfo(
+            params.lineId,
+            params.eqpId
+          );
+
+          // 백엔드에서 이미 유효성 검증이 완료됨
+          if (!eqpInfo) {
+            setValidationError("유효하지 않은 Line ID 또는 EQP ID입니다.");
+            setTimeout(() => navigate("/timeline"), 1500);
+            return;
           }
 
-          // EQP 정보 조회 (SDWT, PRC Group 포함)
-          try {
-            const eqpInfo = await timelineApi.fetchEquipmentInfo(
-              params.eqpId,
-              params.lineId
-            );
-
-            // 모든 정보 설정
-            setLine(params.lineId);
-            setSdwt(eqpInfo.sdwtId);
-            setPrcGroup(eqpInfo.prcGroup);
-            setEqp(params.eqpId);
-
-            setIsValidating(false);
-          } catch (error) {
-            throw new Error(`EQP ID "${params.eqpId}"를 찾을 수 없습니다.`);
-          }
-        } catch (error) {
-          setValidationError(error.message);
-          setLine("");
-          setSdwt("");
-          setPrcGroup("");
-          setEqp("");
-          setTimeout(() => {
-            navigate("/timeline");
-          }, 3000);
+          // 상태 업데이트
+          setLine(params.lineId);
+          setSdwt(eqpInfo.sdwtId);
+          setPrcGroup(eqpInfo.prcGroup);
+          setEqp(params.eqpId);
+        } catch {
+          setValidationError("데이터 검증 중 오류가 발생했습니다.");
+          setTimeout(() => navigate("/timeline"), 1500);
+        } finally {
+          setIsValidating(false);
         }
       } else {
         setIsUrlInitialized(true);
@@ -74,7 +62,6 @@ export function useUrlValidation(
   }, [
     params.lineId,
     params.eqpId,
-    lines,
     isUrlInitialized,
     navigate,
     setLine,

@@ -93,12 +93,6 @@ export default function TipFilterChips({
     }
   };
 
-  // 선택 초기화 (전체 선택으로)
-  const handleClearSelection = () => {
-    setSelectedGroups(new Set());
-    setIsAllSelected(true);
-  };
-
   // 그룹이 선택되었는지 확인
   const isGroupSelected = (groupKey) => {
     if (isAllSelected) return true;
