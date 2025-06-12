@@ -1,4 +1,3 @@
-// src/pages/TimelinePage.jsx
 import React, { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
@@ -6,10 +5,7 @@ import { useLogs } from "@/features/timeline";
 import { useSelectionStore } from "@/shared/store";
 import { useUrlValidation } from "@/features/timeline/hooks/useUrlValidation";
 import { useUrlSync } from "@/features/timeline/hooks/useUrlSync";
-import {
-  groupLogsByType,
-  transformLogsToTableData,
-} from "@/features/timeline/utils/dataTransformers";
+import { transformLogsToTableData } from "@/features/timeline/utils/dataTransformers";
 import { DEFAULT_TYPE_FILTERS } from "@/features/timeline/constants";
 import LogViewerSection from "@/features/timeline/components/LogViewerSection";
 import DataLogSection from "@/features/timeline/components/DataLogSection";
@@ -48,7 +44,7 @@ export default function TimelinePage() {
   // URL 동기화
   useUrlSync(lineId, eqpId, isValidating, isUrlInitialized);
 
-  // 로그 데이터 가져오기
+  // 로그 데이터 가져오기 (테이블용)
   const enabled = Boolean(lineId && eqpId);
   const {
     data: logs = [],
@@ -66,8 +62,7 @@ export default function TimelinePage() {
   const handleFilter = (e) =>
     setTypeFilters((prev) => ({ ...prev, [e.target.name]: e.target.checked }));
 
-  // 데이터 변환
-  const logsByType = useMemo(() => groupLogsByType(logs), [logs]);
+  // 테이블 데이터 변환
   const tableData = useMemo(
     () =>
       enabled && !logsLoading
@@ -80,6 +75,12 @@ export default function TimelinePage() {
   const selectedLog = useMemo(
     () => logs.find((log) => String(log.id) === String(selectedRow)),
     [logs, selectedRow]
+  );
+
+  // TIP 로그만 필터링 (Settings Drawer용)
+  const tipLogs = useMemo(
+    () => logs.filter((log) => log.logType === "TIP"),
+    [logs]
   );
 
   // 검증 중일 때 로딩 표시
@@ -186,7 +187,8 @@ export default function TimelinePage() {
         ) : (
           <div className="mt-4">
             <TimelineBoard
-              dataMap={logsByType}
+              lineId={lineId}
+              eqpId={eqpId}
               showLegend={showLegend}
               selectedTipGroups={selectedTipGroups}
             />
@@ -203,7 +205,7 @@ export default function TimelinePage() {
         <TimelineSettings
           showLegend={showLegend}
           onLegendToggle={() => setShowLegend((v) => !v)}
-          tipLogs={logsByType.TIP}
+          tipLogs={tipLogs} // 필터링된 TIP 로그만 전달
           selectedTipGroups={selectedTipGroups}
           onTipFilterChange={setSelectedTipGroups}
         />

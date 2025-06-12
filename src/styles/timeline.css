@@ -60,61 +60,9 @@
 .dark .vis-time-axis .vis-label { color: #f1f5f9 !important; }
 
 /* 그룹 라벨 */
-.vis-label.custom-group-label { color: #334155; font-size: 12px !important;}
-.dark .vis-label.custom-group-label { color: #f1f5f9 !important; font-size: 12px !important; }
-
-/* 테이블 스크롤바 */
-.table-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
-.table-scroll::-webkit-scrollbar-track { background: #ffffff; border-radius: 10px; }
-.table-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; border: 1px solid #e2e8f0; }
-.dark .table-scroll::-webkit-scrollbar-track { background: #1e293b; }
-.dark .table-scroll::-webkit-scrollbar-thumb { background: #475569; border: 1px solid #1e293b; }
-.dark .table-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
-
-/* react-window 스크롤바 스타일 */
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9;
-}
-
-.dark .scrollbar-thin {
-  scrollbar-color: #475569 #1e293b;
-}
-
-/* 웹킷 브라우저용 스크롤바 */
-.scrollbar-thin::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 4px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 4px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
-}
-
-.dark .scrollbar-thin::-webkit-scrollbar-track {
-  background: #1e293b;
-}
-
-.dark .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #475569;
-}
-
-.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
-}
-
-/* 그룹 라벨 고정 폭 */
 .vis-label.custom-group-label {
+  color: #334155;
+  font-size: 12px !important;
   width: 150px !important;
   min-width: 150px !important;
   max-width: 150px !important;
@@ -125,8 +73,58 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.dark .vis-label.custom-group-label {
+  color: #f1f5f9 !important;
+  font-size: 12px !important;
+}
 
-/* 그룹 라벨에 legend-mode 클래스가 추가됐을 때만 폰트 크기를 10px로 */
+/* 테이블 스크롤바 */
+.table-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.table-scroll::-webkit-scrollbar-track { background: #ffffff; border-radius: 10px; }
+.table-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; border: 1px solid #e2e8f0; }
+.dark .table-scroll::-webkit-scrollbar-track { background: #1e293b; }
+.dark .table-scroll::-webkit-scrollbar-thumb { background: #475569; border: 1px solid #1e293b; }
+.dark .table-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+/* react-window & 가상 스크롤 스크롤바 스타일 */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+  /* 하드웨어 가속 */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.dark .scrollbar-thin {
+  scrollbar-color: #475569 #1e293b;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+.dark .scrollbar-thin::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* 그룹 라벨에 legend-mode 클래스가 추가됐을 때만 폰트 크기를 12px로 */
 .vis-label.legend-mode {
   font-size: 12px !important;
   font-weight: normal !important;
@@ -143,17 +141,6 @@
   padding: 0 !important;
 }
 
-/* 가상 스크롤 최적화 */
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9;
-  /* 하드웨어 가속 */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
 /* 간단한 TIP 그룹 라벨 (PPID만 표시) */
 .tip-group-label-simple {
   font-size: 12px;
@@ -161,7 +148,6 @@
   color: #3b82f6;
   text-align: center;
 }
-
 .dark .tip-group-label-simple {
   color: #60a5fa;
 }
@@ -171,16 +157,13 @@
   background-color: rgba(59, 130, 246, 0.05);
   border-left: 3px solid #3b82f6;
 }
-
 .dark .vis-label.tip-group {
   background-color: rgba(59, 130, 246, 0.1);
 }
-
 /* TIP 그룹 hover 효과 */
 .vis-label.tip-group:hover {
   background-color: rgba(59, 130, 246, 0.15);
 }
-
 .dark .vis-label.tip-group:hover {
   background-color: rgba(59, 130, 246, 0.25);
 }
@@ -194,3 +177,28 @@
   border-radius: 6px !important;
   white-space: nowrap !important;
 }
+
+/* x축이 없는 타임라인 스타일 */
+.no-time-axis .vis-panel.vis-bottom {
+  display: none !important;
+}
+
+
+/* 타임라인 간격 조정 (x축이 없으면 간격을 줄임) */
+.timeline-container.no-time-axis {
+  margin-bottom: 5px !important;
+}
+
+/* 마지막 타임라인은 정상 간격 유지 */
+.timeline-container:last-child {
+  margin-bottom: 16px !important;
+}
+
+
+
+/* 컴팩트 모드 */
+.compact-timeline .vis-group {
+  min-height: 20px !important;
+  padding: 2px 0 !important;
+}
+

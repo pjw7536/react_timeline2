@@ -1,7 +1,7 @@
 // src/features/timeline/hooks/useUrlValidation.js
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// import { useLines } from "@/features/drilldown/hooks/useLineQueries"; // 불필요한 의존성 제거
 import { timelineApi } from "@/features/timeline/api/timelineApi";
 
 export function useUrlValidation(
@@ -18,7 +18,6 @@ export function useUrlValidation(
   const [isUrlInitialized, setIsUrlInitialized] = useState(false);
 
   const navigate = useNavigate();
-  // const { data: lines = [] } = useLines(); // 불필요한 의존성 제거
 
   useEffect(() => {
     const validateAndSetParams = async () => {
