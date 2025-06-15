@@ -1,3 +1,4 @@
+// src/features/timeline/pages/TimelinePage.jsx
 import React, { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
@@ -13,7 +14,6 @@ import ShareButton from "@features/timeline/components/ShareButton";
 import { TimelineBoard } from "@features/timeline";
 import { LogDetailSection } from "@features/logdetail";
 import { LoadingSpinner } from "@shared/components";
-import { Drawer } from "@shared/components";
 import TimelineSettings from "@features/timeline/components/TimelineSettings";
 // 각 타임라인의 개별 훅들을 직접 import
 import { useEqpLogs } from "@features/timeline/hooks/useEqpLogs";
@@ -88,7 +88,7 @@ export default function TimelinePage() {
 
   // 로컬 상태 (timeline과 관련 없는 상태들)
   const [typeFilters, setTypeFilters] = useState(DEFAULT_TYPE_FILTERS);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // 설정 패널 열림/닫힘 상태
 
   // 필터 핸들러
   const handleFilter = (e) =>
@@ -173,71 +173,127 @@ export default function TimelinePage() {
         </div>
       </div>
 
-      {/* 오른쪽 타임라인 패널 */}
-      <div className="lg:w-[65%] h-full overflow-visible bg-white dark:bg-slate-800 shadow rounded-xl p-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <h2 className="text-md font-bold text-slate-900 dark:text-white">
-              📊 Timeline
-            </h2>
-            {lineId && eqpId && <ShareButton />}
+      {/* 오른쪽 컨테이너 - 타임라인과 설정 패널을 포함 */}
+      <div className="lg:w-[65%] h-full flex gap-2 transition-all duration-300 ease-in-out">
+        {/* 타임라인 패널 - 설정 패널이 열리면 너비가 줄어듦 */}
+        <div
+          className="
+            overflow-visible bg-white dark:bg-slate-800 shadow rounded-xl p-4
+            transition-[width] duration-300 ease-in-out
+          "
+          style={{ width: isSettingsOpen ? "calc(100% - 20rem)" : "100%" }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <h2 className="text-md font-bold text-slate-900 dark:text-white">
+                📊 Timeline
+              </h2>
+              {lineId && eqpId && <ShareButton />}
+            </div>
+
+            {eqpId && !logsLoading && (
+              <button
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                className={`
+                  inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium 
+                  bg-white dark:bg-slate-700 border rounded-md 
+                  hover:bg-gray-50 dark:hover:bg-slate-600 
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                  transition-colors duration-200
+                  ${
+                    isSettingsOpen
+                      ? "text-blue-600 dark:text-blue-400 border-blue-500 dark:border-blue-400"
+                      : "text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600"
+                  }
+                `}
+              >
+                <AdjustmentsHorizontalIcon className="h-4 w-4" />
+                설정
+              </button>
+            )}
           </div>
 
-          {eqpId && !logsLoading && (
-            <button
-              onClick={() => setIsDrawerOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          <hr className="border-slate-300 dark:border-slate-600" />
+
+          {!eqpId && !logsLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-center text-slate-600 dark:text-slate-400">
+                EQP를 선택하세요.
+              </p>
+            </div>
+          ) : logsLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <div
+              className="mt-4"
+              style={{ position: "relative", overflow: "visible" }}
             >
-              <AdjustmentsHorizontalIcon className="h-4 w-4" />
-              설정
-            </button>
+              <TimelineBoard
+                lineId={lineId}
+                eqpId={eqpId}
+                showLegend={showLegend}
+                selectedTipGroups={selectedTipGroups}
+                eqpLogs={eqpLogs}
+                tipLogs={tipLogs}
+                eventLogs={eventLogs}
+              />
+            </div>
           )}
         </div>
 
-        <hr className="border-slate-300 dark:border-slate-600" />
-
-        {!eqpId && !logsLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-center text-slate-600 dark:text-slate-400">
-              EQP를 선택하세요.
-            </p>
-          </div>
-        ) : logsLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <LoadingSpinner />
-          </div>
-        ) : (
+        {/* 설정 패널 - 슬라이드 애니메이션으로 나타남/사라짐 */}
+        <div
+          className={`
+    relative bg-white dark:bg-slate-800 shadow rounded-xl overflow-hidden
+    transition-all duration-300 ease-in-out
+    ${isSettingsOpen ? "w-80" : "w-0"}
+  `}
+        >
+          {/* 내부 컨텐츠에 transform 애니메이션 적용 */}
           <div
-            className="mt-4"
-            style={{ position: "relative", overflow: "visible" }}
+            className={`
+      absolute inset-0 transform transition-transform duration-300 ease-in-out
+      ${isSettingsOpen ? "translate-x-0" : "translate-x-full"}
+    `}
           >
-            <TimelineBoard
-              lineId={lineId}
-              eqpId={eqpId}
-              showLegend={showLegend}
-              selectedTipGroups={selectedTipGroups}
-              eqpLogs={eqpLogs}
-              tipLogs={tipLogs}
-              eventLogs={eventLogs}
-            />
-          </div>
-        )}
-      </div>
+            <div className="p-4 h-full overflow-y-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  타임라인 설정
+                </h3>
+                <button
+                  onClick={() => setIsSettingsOpen(false)}
+                  className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none"
+                >
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
 
-      {/* Settings Drawer */}
-      <Drawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        title="타임라인 설정"
-      >
-        <TimelineSettings
-          showLegend={showLegend}
-          onLegendToggle={() => setShowLegend(!showLegend)}
-          tipLogs={filteredTipLogs}
-          selectedTipGroups={selectedTipGroups}
-          onTipFilterChange={setSelectedTipGroups}
-        />
-      </Drawer>
+              <TimelineSettings
+                showLegend={showLegend}
+                onLegendToggle={() => setShowLegend(!showLegend)}
+                tipLogs={filteredTipLogs}
+                selectedTipGroups={selectedTipGroups}
+                onTipFilterChange={setSelectedTipGroups}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
