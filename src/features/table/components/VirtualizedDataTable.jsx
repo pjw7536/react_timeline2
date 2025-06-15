@@ -1,7 +1,7 @@
 // src/features/table/VirtualizedDataTable.jsx
 import React, { useEffect, useRef, useCallback, useMemo } from "react";
 import { FixedSizeList as List } from "react-window";
-import { useSelectionStore } from "@/shared/store";
+import { useSelectionStore } from "@shared/store";
 
 /**
  * 가상화된 데이터 테이블 컴포넌트

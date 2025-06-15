@@ -1,7 +1,7 @@
 // src/features/drilldown/EqpSelector.jsx
 import React from "react";
 import { useEquipments } from "./hooks/useLineQueries";
-import LoadingSpinner from "@/shared/LoadingSpinner";
+import { LoadingSpinner } from "@shared/components";
 
 /**
  * EQP 드롭다운

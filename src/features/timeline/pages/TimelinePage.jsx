@@ -1,23 +1,23 @@
 import React, { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
-import { useSelectionStore } from "@/shared/store";
-import { useUrlValidation } from "@/features/timeline/hooks/useUrlValidation";
-import { useUrlSync } from "@/features/timeline/hooks/useUrlSync";
-import { transformLogsToTableData } from "@/features/timeline/utils/dataTransformers";
-import { DEFAULT_TYPE_FILTERS } from "@/features/timeline/constants";
-import LogViewerSection from "@/features/timeline/components/LogViewerSection";
-import DataLogSection from "@/features/timeline/components/DataLogSection";
-import ShareButton from "@/features/timeline/components/ShareButton";
-import { TimelineBoard } from "@/features/timeline";
-import LogDetailSection from "@/features/table/LogDetailSection";
-import LoadingSpinner from "@/shared/LoadingSpinner";
-import Drawer from "@/shared/Drawer";
-import TimelineSettings from "@/features/timeline/components/TimelineSettings";
+import { useSelectionStore } from "@shared/store";
+import { useUrlValidation } from "@features/timeline/hooks/useUrlValidation";
+import { useUrlSync } from "@features/timeline/hooks/useUrlSync";
+import { transformLogsToTableData } from "@features/timeline/utils/dataTransformers";
+import { DEFAULT_TYPE_FILTERS } from "@features/timeline/constants";
+import LogViewerSection from "@features/timeline/components/LogViewerSection";
+import DataLogSection from "@features/timeline/components/DataLogSection";
+import ShareButton from "@features/timeline/components/ShareButton";
+import { TimelineBoard } from "@features/timeline";
+import LogDetailSection from "@features/table/components/LogDetailSection";
+import { LoadingSpinner } from "@shared/components";
+import { Drawer } from "@shared/components";
+import TimelineSettings from "@features/timeline/components/TimelineSettings";
 // 각 타임라인의 개별 훅들을 직접 import
-import { useEqpLogs } from "@/features/timeline/hooks/useEqpLogs";
-import { useTipLogs } from "@/features/timeline/hooks/useTipLogs";
-import { useEventLogs } from "@/features/timeline/hooks/useEventLogs";
+import { useEqpLogs } from "@features/timeline/hooks/useEqpLogs";
+import { useTipLogs } from "@features/timeline/hooks/useTipLogs";
+import { useEventLogs } from "@features/timeline/hooks/useEventLogs";
 
 export default function TimelinePage() {
   const params = useParams();

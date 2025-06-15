@@ -1,22 +1,22 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite"; // ✅ v4용 Vite 플러그인
+import tailwindcss from "@tailwindcss/vite";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [
-    react({
-      // 선택) React Fast-Refresh & props-on-export 경고 제어 등
-    }),
-    tailwindcss(), // ← PostCSS도 자동 연결
-  ],
+  plugins: [react(), tailwindcss()],
 
   resolve: {
-    // '@/foo' → 'src/foo'
-    alias: { "@": path.resolve(__dirname, "src") },
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+      "@features": path.resolve(__dirname, "src/features"),
+      "@shared": path.resolve(__dirname, "src/shared"),
+      "@layouts": path.resolve(__dirname, "src/layouts"),
+      "@app": path.resolve(__dirname, "src/app"),
+    },
   },
 
   server: {

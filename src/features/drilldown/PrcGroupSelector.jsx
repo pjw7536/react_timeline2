@@ -1,7 +1,7 @@
 // src/features/drilldown/PrcGroupSelector.jsx
 import React from "react";
 import { usePrcGroups } from "./hooks/useLineQueries";
-import LoadingSpinner from "@/shared/LoadingSpinner";
+import { LoadingSpinner } from "@shared/components";
 
 /**
  * PRC Group 드롭다운

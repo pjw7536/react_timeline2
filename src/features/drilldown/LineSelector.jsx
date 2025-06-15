@@ -1,6 +1,6 @@
 import React from "react";
 import { useLines } from "./hooks/useLineQueries";
-import LoadingSpinner from "@/shared/LoadingSpinner";
+import { LoadingSpinner } from "@shared/components";
 
 /**
  * 라인 목록 드롭다운

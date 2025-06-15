@@ -1,5 +1,646 @@
 ﻿
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\drilldown\hooks\useLineQueries.js -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\app\App.jsx -----
+
+// src/app/App.jsx
+import React, { Suspense, lazy } from "react";
+import { Routes, Route } from "react-router-dom";
+import Navbar from "@layouts/MainLayout/Navbar";
+import { LoadingSpinner } from "@shared/components";
+
+const TimelinePage = lazy(() =>
+  import("@features/timeline/pages/TimelinePage")
+);
+const AppsPage = lazy(() => import("@features/apps/pages/AppsPage"));
+
+const HomePage = () => (
+  <div className="p-6 text-center">
+    <h1 className="text-2xl font-bold">홈페이지 🎉</h1>
+    {/* ... */}
+  </div>
+);
+
+export default function App() {
+  return (
+    <div className="h-screen flex flex-col overflow-hidden">
+      <Navbar />
+      <div className="flex-1 overflow-hidden px-4">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/timeline"
+            element={
+              <Suspense
+                fallback={
+                  <div className="flex items-center justify-center h-[80vh]">
+                    <LoadingSpinner />
+                  </div>
+                }
+              >
+                <TimelinePage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/timeline/:lineId/:eqpId"
+            element={
+              <Suspense
+                fallback={
+                  <div className="flex items-center justify-center h-[80vh]">
+                    <LoadingSpinner />
+                  </div>
+                }
+              >
+                <TimelinePage />
+              </Suspense>
+            }
+          />
+          <Route path="/apps" element={<AppsPage />} />
+        </Routes>
+      </div>
+    </div>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\app\main.jsx -----
+
+// src/app/main.jsx
+import React, { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import App from "./App";
+import "@shared/styles/index.css";
+
+const qc = new QueryClient();
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <QueryClientProvider client={qc}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </QueryClientProvider>
+  </StrictMode>
+);
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\app\routes.jsx -----
+
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import { TimelinePage } from "@features/timeline";
+import { AppsPage } from "@features/apps";
+
+const HomePage = () => (
+  <div className="p-6 text-center">
+    <h1 className="text-2xl font-bold">홈페이지 🎉</h1>
+    {/* ... */}
+  </div>
+);
+
+export default function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/timeline" element={<TimelinePage />} />
+      <Route path="/timeline/:lineId/:eqpId" element={<TimelinePage />} />
+      <Route path="/apps" element={<AppsPage />} />
+    </Routes>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\apps\pages\AppsPage.jsx -----
+
+import React, { useState, useMemo } from "react";
+import { Search, Download, Globe, Shield } from "lucide-react";
+
+// 회사 내부 앱/웹사이트 데이터
+const appsData = [
+  {
+    id: 1,
+    name: "ERP System",
+    category: "업무시스템",
+    rating: 4.2,
+    users: "전체 직원",
+    icon: "📊",
+    description: "전사 자원 관리 시스템. 재무, 인사, 구매 등 통합 관리",
+    screenshots: [],
+    price: "무료",
+    webUrl: "https://erp.company.local",
+    downloadUrl: "/downloads/apps/ERP_Setup_v3.2.1.exe",
+    lastUpdated: "2025-01-15",
+    size: "156 MB",
+    version: "3.2.1",
+  },
+  {
+    id: 2,
+    name: "HR Portal",
+    category: "인사관리",
+    rating: 4.5,
+    users: "전체 직원",
+    icon: "👥",
+    description: "급여명세서, 휴가신청, 증명서 발급 등 인사 업무 처리",
+    price: "무료",
+    webUrl: "https://hr.company.local",
+    downloadUrl: null,
+    lastUpdated: "2025-01-20",
+    isWebOnly: true,
+  },
+  {
+    id: 3,
+    name: "VPN Client",
+    category: "보안도구",
+    rating: 4.0,
+    users: "재택근무자",
+    icon: "🔒",
+    description: "안전한 원격 접속을 위한 회사 VPN 클라이언트",
+    price: "무료",
+    webUrl: null,
+    downloadUrl: "/downloads/apps/CompanyVPN_v2.1.0.exe",
+    lastUpdated: "2025-01-10",
+    size: "45 MB",
+    version: "2.1.0",
+    requirements: "Windows 10 이상",
+  },
+  {
+    id: 4,
+    name: "품질관리 시스템",
+    category: "생산관리",
+    rating: 4.3,
+    users: "생산팀, 품질팀",
+    icon: "✅",
+    description: "제품 품질 검사 데이터 입력 및 분석 시스템",
+    price: "무료",
+    webUrl: "https://qms.company.local",
+    downloadUrl: "/downloads/apps/QMS_Client_v1.5.2.exe",
+    lastUpdated: "2025-01-18",
+    size: "89 MB",
+    version: "1.5.2",
+  },
+  {
+    id: 5,
+    name: "메신저 Plus",
+    category: "커뮤니케이션",
+    rating: 4.6,
+    users: "전체 직원",
+    icon: "💬",
+    description: "사내 메신저. 파일 공유, 화상회의 기능 포함",
+    price: "무료",
+    webUrl: null,
+    downloadUrl: "/downloads/apps/MessengerPlus_v4.0.1.exe",
+    lastUpdated: "2025-01-22",
+    size: "120 MB",
+    version: "4.0.1",
+  },
+  {
+    id: 6,
+    name: "문서보안 솔루션",
+    category: "보안도구",
+    rating: 3.8,
+    users: "전체 직원",
+    icon: "🛡️",
+    description: "기밀문서 암호화 및 권한 관리 프로그램",
+    price: "무료",
+    webUrl: null,
+    downloadUrl: "/downloads/apps/DocSecurity_v2.3.0.exe",
+    lastUpdated: "2025-01-12",
+    size: "67 MB",
+    version: "2.3.0",
+    requirements: "Windows 10 이상, 관리자 권한 필요",
+  },
+  {
+    id: 7,
+    name: "재고관리 시스템",
+    category: "생산관리",
+    rating: 4.1,
+    users: "물류팀, 구매팀",
+    icon: "📦",
+    description: "실시간 재고 현황 조회 및 입출고 관리",
+    price: "무료",
+    webUrl: "https://inventory.company.local",
+    lastUpdated: "2025-01-19",
+    isWebOnly: true,
+  },
+  {
+    id: 8,
+    name: "업무일지 작성기",
+    category: "업무시스템",
+    rating: 4.4,
+    users: "전체 직원",
+    icon: "📝",
+    description: "일일 업무 보고서 작성 및 관리 도구",
+    price: "무료",
+    webUrl: "https://report.company.local",
+    downloadUrl: "/downloads/apps/WorkReport_v1.2.0.exe",
+    lastUpdated: "2025-01-21",
+    size: "32 MB",
+    version: "1.2.0",
+  },
+];
+
+const categories = [
+  "전체",
+  "업무시스템",
+  "인사관리",
+  "생산관리",
+  "보안도구",
+  "커뮤니케이션",
+];
+
+// 앱 카드 컴포넌트
+function AppCard({ app, onClick }) {
+  const handleWebClick = (e) => {
+    e.stopPropagation();
+    if (app.webUrl) {
+      window.open(app.webUrl, "_blank");
+    }
+  };
+
+  const handleDownload = (e) => {
+    e.stopPropagation();
+    const downloadLink = app.downloadUrl;
+
+    if (downloadLink) {
+      if (
+        window.confirm(
+          `${app.name} ${
+            app.version || ""
+          }을(를) 다운로드하시겠습니까?\n\n파일 크기: ${
+            app.size || "알 수 없음"
+          }`
+        )
+      ) {
+        window.location.href = downloadLink;
+      }
+    } else if (app.isWebOnly) {
+      alert("이 서비스는 웹에서만 이용 가능합니다.");
+    }
+  };
+
+  return (
+    <div
+      className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow hover:shadow-lg hover:bg-blue-100 dark:hover:bg-slate-700 transition-all 
+      duration-300 cursor-pointer border border-slate-200 dark:border-slate-700 flex flex-col w-59 h-60 overflow-hidden relative"
+      onClick={() => onClick(app)}
+    >
+      {/* 카테고리 - 왼쪽 상단 */}
+      <div className="absolute top-2 left-2">
+        <span className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-slate-700 dark:text-slate-300 text-xs">
+          {app.category}
+        </span>
+      </div>
+
+      {/* 버전 - 오른쪽 상단 */}
+      {app.version && (
+        <div className="absolute top-2 right-2">
+          <span className="text-slate-500 dark:text-slate-400 text-xs">
+            v{app.version}
+          </span>
+        </div>
+      )}
+
+      <div className="flex flex-col items-center text-center flex-grow overflow-hidden pt-6">
+        <div className="text-3xl mb-2">{app.icon}</div>
+        <h3 className="font-semibold text-slate-900 dark:text-white text-xs mb-1 truncate w-full">
+          {app.name}
+        </h3>
+        <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 px-1 mt-3">
+          {app.description}
+        </p>
+      </div>
+
+      {/* 버튼 영역 - 항상 하단에 고정 */}
+      <div className="flex gap-1 mt-2">
+        {app.webUrl && (
+          <button
+            onClick={handleWebClick}
+            className="flex-1 flex items-center justify-center gap-0.5 px-1 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium transition-colors"
+          >
+            <Globe className="w-3 h-5" />
+            <span className="truncate">Web</span>
+          </button>
+        )}
+        {app.downloadUrl && (
+          <button
+            onClick={handleDownload}
+            className="flex-1 flex items-center justify-center gap-0.5 px-1 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs font-medium transition-colors"
+          >
+            <Download className="w-3 h-5" />
+            <span className="truncate">설치</span>
+          </button>
+        )}
+        {app.isWebOnly && !app.webUrl && (
+          <span className="flex-1 text-center px-1 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded text-xs">
+            웹 전용
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// 앱 상세 모달
+function AppDetailModal({ app, onClose }) {
+  if (!app) return null;
+
+  const handleDownload = () => {
+    const downloadLink = app.downloadUrl;
+    if (downloadLink) {
+      if (
+        window.confirm(
+          `${app.name} ${
+            app.version || ""
+          }을(를) 다운로드하시겠습니까?\n\n파일 크기: ${
+            app.size || "알 수 없음"
+          }`
+        )
+      ) {
+        window.location.href = downloadLink;
+      }
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white dark:bg-slate-800 rounded-xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6">
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex gap-4">
+              <div className="text-6xl">{app.icon}</div>
+              <div>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                  {app.name}
+                </h2>
+                <p className="text-slate-600 text-sm dark:text-slate-400">
+                  {app.category}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-semibold text-slate-900 text-xs dark:text-white mb-2">
+                설명
+              </h3>
+              <p className="text-slate-700 text-xs dark:text-slate-300">
+                {app.description}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-200 dark:border-slate-700">
+              <div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  버전
+                </p>
+                <p className="font-medium text-xs text-slate-900 dark:text-white">
+                  {app.version || "N/A"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  파일 크기
+                </p>
+                <p className="font-medium text-xs text-slate-900 dark:text-white">
+                  {app.size || "N/A"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 text-xs dark:text-slate-400">
+                  최종 업데이트
+                </p>
+                <p className="font-medium text-slate-900 text-xs dark:text-white">
+                  {app.lastUpdated}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-500 text-xs dark:text-slate-400">
+                  사용 대상
+                </p>
+                <p className="font-medium text-slate-900 text-xs dark:text-white">
+                  {app.users}
+                </p>
+              </div>
+            </div>
+
+            {app.requirements && (
+              <div>
+                <h3 className="font-semibold text-xs text-slate-900 dark:text-white mb-2">
+                  시스템 요구사항
+                </h3>
+                <p className="text-xs text-slate-600 text-xs dark:text-slate-400">
+                  {app.requirements}
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <h3 className="font-semibold text-slate-900 text-xs dark:text-white">
+                접속/다운로드
+              </h3>
+
+              {app.webUrl && (
+                <button
+                  onClick={() => window.open(app.webUrl, "_blank")}
+                  className="w-full flex items-center gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors text-left"
+                >
+                  <Globe className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  <div>
+                    <div className="font-medium text-xs text-slate-900 dark:text-white">
+                      웹 버전 접속
+                    </div>
+                    <div className="text-xs text-slate-600 dark:text-slate-400">
+                      {app.webUrl}
+                    </div>
+                  </div>
+                </button>
+              )}
+
+              {app.downloadUrl && (
+                <button
+                  onClick={handleDownload}
+                  className="w-full flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-lg transition-colors text-left"
+                >
+                  <div className="w-6 h-6 text-blue-600">💻</div>
+                  <div>
+                    <div className="font-medium text-xs text-slate-900 dark:text-white">
+                      Windows 버전
+                    </div>
+                    <div className="text-xs text-slate-600 dark:text-slate-400">
+                      {app.downloadUrl}
+                    </div>
+                  </div>
+                </button>
+              )}
+
+              {app.isWebOnly && (
+                <div className="p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                  <p className="text-xs text-slate-600 dark:text-slate-400">
+                    이 서비스는 웹 브라우저를 통해서만 이용 가능합니다.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 메인 앱스토어 컴포넌트
+export default function AppsPage() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("전체");
+  const [selectedApp, setSelectedApp] = useState(null);
+
+  // 필터링된 앱 목록
+  const filteredApps = useMemo(() => {
+    let apps = appsData.filter((app) => {
+      const matchesSearch =
+        app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        app.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "전체" || app.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+
+    return apps;
+  }, [searchTerm, selectedCategory]);
+
+  return (
+    <div className="flex flex-row h-[calc(100vh-85px)] gap-2 mt-3">
+      {/* 왼쪽: 필터 섹션 */}
+      <div className="flex flex-col h-full min-h-0 w-[13%] gap-2">
+        {/* 안내 메시지 섹션 */}
+        <section className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 min-h-0 overflow-auto flex-[1]">
+          <div className="space-y-3">
+            <div className="flex items-start gap-2">
+              <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <div className="text-xs text-blue-800 dark:text-blue-200">
+                <p className="font-medium mb-1">안내</p>
+                <p className="text-xs">
+                  모든 사내 프로그램은 승인된 기기에서만 설치 가능합니다.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* 검색 및 필터 섹션 */}
+        <section className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex flex-col flex-[8]">
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-3">
+            🔍 앱 검색
+          </h2>
+
+          {/* 검색창 */}
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="시스템명 검색..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-xs text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <hr className="my-2 border-slate-300 dark:border-slate-600" />
+
+          {/* 카테고리 필터 */}
+          <div className="mt-2">
+            <h3 className="text-xs font-semibold text-slate-900 dark:text-white mb-3">
+              카테고리
+            </h3>
+            <div className="space-y-2">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`w-full text-left px-4 py-2 rounded-lg text-xs font-medium transition-colors ${
+                    selectedCategory === category
+                      ? "bg-blue-600 text-white"
+                      : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* 오른쪽: 앱 목록 */}
+      <div className="w-[87%] h-full overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl px-3 pt-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-md font-bold text-slate-900 dark:text-white">
+            💼 사내 시스템 & 도구
+          </h2>
+          <span className="text-xs text-slate-600 dark:text-slate-400">
+            Total: {filteredApps.length}
+          </span>
+        </div>
+        <hr className="mb-4 border-slate-300 dark:border-slate-600" />
+
+        {filteredApps.length === 0 ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-center text-slate-600 dark:text-slate-400">
+              검색 결과가 없습니다.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-2 items-start content-start overflow-y-auto h-[calc(100%-60px)]">
+            {filteredApps.map((app) => (
+              <AppCard key={app.id} app={app} onClick={setSelectedApp} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 앱 상세 모달 */}
+      {selectedApp && (
+        <AppDetailModal
+          app={selectedApp}
+          onClose={() => setSelectedApp(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\apps\index.js -----
+
+export { default as AppsPage } from './pages/AppsPage';
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\drilldown\hooks\useLineQueries.js -----
 
 import { useQuery } from "@tanstack/react-query";
 import { timelineApi } from "@/features/timeline/api/timelineApi";
@@ -40,12 +681,12 @@ export const useEquipments = (lineId, sdwtId, prcGroup) =>
   });
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\drilldown\EqpSelector.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\drilldown\EqpSelector.jsx -----
 
 // src/features/drilldown/EqpSelector.jsx
 import React from "react";
 import { useEquipments } from "./hooks/useLineQueries";
-import LoadingSpinner from "@/shared/LoadingSpinner";
+import { LoadingSpinner } from "@shared/components";
 
 /**
  * EQP 드롭다운
@@ -95,7 +736,7 @@ export default function EqpSelector({
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\drilldown\index.js -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\drilldown\index.js -----
 
 // src/features/drilldown/index.js
 export { default as LineSelector } from "./LineSelector";
@@ -104,11 +745,11 @@ export { default as PrcGroupSelector } from "./PrcGroupSelector";
 export { default as EqpSelector } from "./EqpSelector";
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\drilldown\LineSelector.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\drilldown\LineSelector.jsx -----
 
 import React from "react";
 import { useLines } from "./hooks/useLineQueries";
-import LoadingSpinner from "@/shared/LoadingSpinner";
+import { LoadingSpinner } from "@shared/components";
 
 /**
  * 라인 목록 드롭다운
@@ -135,12 +776,12 @@ export default function LineSelector({ lineId, setLineId }) {
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\drilldown\PrcGroupSelector.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\drilldown\PrcGroupSelector.jsx -----
 
 // src/features/drilldown/PrcGroupSelector.jsx
 import React from "react";
 import { usePrcGroups } from "./hooks/useLineQueries";
-import LoadingSpinner from "@/shared/LoadingSpinner";
+import { LoadingSpinner } from "@shared/components";
 
 /**
  * PRC Group 드롭다운
@@ -183,11 +824,11 @@ export default function PrcGroupSelector({
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\drilldown\SDWTSelector.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\drilldown\SDWTSelector.jsx -----
 
 import React from "react";
 import { useSDWT } from "./hooks/useLineQueries";
-import LoadingSpinner from "@/shared/LoadingSpinner";
+import { LoadingSpinner } from "@shared/components";
 
 /**
  * SDWT 드롭다운
@@ -224,7 +865,231 @@ export default function SDWTSelector({ lineId, sdwtId, setSdwtId }) {
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\table\LogDetailSection.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\logs\components\CtttmLogDetail.jsx -----
+
+// src/features/table/components/logDetails/CtttmLogDetail.jsx
+import React from "react";
+import Field from "./Field";
+
+export default function CtttmLogDetail({ log }) {
+  return (
+    <>
+      <Field label="ID" value={log.id} />
+      <Field label="Log Type" value={log.logType} />
+      <Field label="CTTTM" value={log.eventType} />
+      <Field label="Time" value={log.eventTime} />
+      <Field label="Recipe" value={log.recipe} />
+      <Field label="Operator" value={log.operator} />
+      <Field label="Duration" value={log.duration?.toFixed(1)} />
+      <Field
+        label="Comment"
+        value={log.comment}
+        className="col-span-2"
+        streaming={true}
+      />
+    </>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\logs\components\EqpLogDetail.jsx -----
+
+// src/features/table/components/logDetails/EqpLogDetail.jsx
+import React from "react";
+import Field from "./Field";
+
+export default function EqpLogDetail({ log }) {
+  return (
+    <>
+      <Field label="ID" value={log.id} />
+      <Field label="Log Type" value={log.logType} />
+      <Field label="EQP State" value={log.eventType} />
+      <Field label="Time" value={log.eventTime} />
+      <Field label="End Time" value={log.endTime} />
+      <Field label="Operator" value={log.operator} />
+      <Field label="Duration" value={log.duration?.toFixed(1)} />
+      <Field label="Comment" value={log.comment} className="col-span-2" />
+    </>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\logs\components\Field.jsx -----
+
+// src/features/table/components/logDetails/Field.jsx
+import React from "react";
+import StreamingText from "./StreamingText";
+
+/**
+ * 필드 공통 출력 컴포넌트
+ */
+export default function Field({
+  label,
+  value,
+  className = "",
+  streaming = false,
+}) {
+  return (
+    <>
+      <div
+        className={`font-semibold text-slate-700 dark:text-slate-200 ${className}`}
+      >
+        {label}
+      </div>
+      <div>
+        {streaming ? <StreamingText text={value || "-"} /> : value || "-"}
+      </div>
+    </>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\logs\components\JiraLogDetail.jsx -----
+
+// src/features/table/components/logDetails/JiraLogDetail.jsx
+import React from "react";
+import Field from "./Field";
+import UrlField from "./UrlField";
+
+export default function JiraLogDetail({ log }) {
+  return (
+    <>
+      <Field label="ID" value={log.id} />
+      <Field label="Log Type" value={log.logType} />
+      <Field label="Issue Status" value={log.eventType} />
+      <Field label="Time" value={log.eventTime} />
+      <Field label="Issue Key" value={log.issueKey} />
+      <Field label="Assignee" value={log.assignee} />
+      <Field label="Priority" value={log.priority} />
+      <Field label="Reporter" value={log.reporter} />
+      <Field label="Summary" value={log.summary} className="col-span-2" />
+      <Field
+        label="Description"
+        value={log.description}
+        className="col-span-2"
+      />
+      <UrlField url={log.url} />
+    </>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\logs\components\RacbLogDetail.jsx -----
+
+// src/features/table/components/logDetails/RacbLogDetail.jsx
+import React from "react";
+import Field from "./Field";
+import UrlField from "./UrlField";
+
+export default function RacbLogDetail({ log }) {
+  return (
+    <>
+      <Field label="ID" value={log.id} />
+      <Field label="Log Type" value={log.logType} />
+      <Field label="RACB Alarm" value={log.eventType} />
+      <Field label="Time" value={log.eventTime} />
+      <Field label="Operator" value={log.operator} />
+      <Field label="Comment" value={log.comment} className="col-span-2" />
+      <UrlField url={log.url} />
+    </>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\logs\components\StreamingText.jsx -----
+
+// src/features/table/components/logDetails/StreamingText.jsx
+import React, { useState, useEffect } from "react";
+
+/**
+ * 스트리밍 텍스트 애니메이션 컴포넌트
+ */
+export default function StreamingText({ text, speed = 30 }) {
+  const [displayedText, setDisplayedText] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    setDisplayedText("");
+    setCurrentIndex(0);
+  }, [text]);
+
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      const timer = setTimeout(() => {
+        setDisplayedText((prev) => prev + text[currentIndex]);
+        setCurrentIndex((prev) => prev + 1);
+      }, speed);
+
+      return () => clearTimeout(timer);
+    }
+  }, [currentIndex, text, speed]);
+
+  return (
+    <span className="inline-block">
+      {displayedText}
+      {currentIndex < text.length && (
+        <span className="inline-block w-2 h-4 bg-slate-600 dark:bg-slate-400 animate-pulse ml-0.5" />
+      )}
+    </span>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\logs\components\TipLogDetail.jsx -----
+
+// src/features/table/components/logDetails/TipLogDetail.jsx
+import React from "react";
+import Field from "./Field";
+import UrlField from "./UrlField";
+
+export default function TipLogDetail({ log }) {
+  return (
+    <>
+      <Field label="ID" value={log.id} />
+      <Field label="Log Type" value={log.logType} />
+      <Field label="TIP Event" value={log.eventType} />
+      <Field label="Time" value={log.eventTime} />
+      <Field label="Operator" value={log.operator} />
+      <Field label="Level" value={log.level} />
+      <Field label="Comment" value={log.comment} className="col-span-2" />
+      <UrlField url={log.url} />
+    </>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\logs\components\UrlField.jsx -----
+
+// src/features/table/components/logDetails/UrlField.jsx
+import React from "react";
+
+/**
+ * URL 필드 컴포넌트
+ */
+export default function UrlField({ url }) {
+  if (!url) return null;
+
+  return (
+    <>
+      <div className="font-semibold text-slate-700 dark:text-slate-200">
+        URL
+      </div>
+      <div>
+        <a
+          href={url}
+          className="text-blue-600 dark:text-blue-400 underline break-all"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {url}
+        </a>
+      </div>
+    </>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\table\components\LogDetailSection.jsx -----
 
 import React, { useState, useEffect } from "react";
 
@@ -426,12 +1291,12 @@ export default function LogDetailSection({ log }) {
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\table\VirtualizedDataTable.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\table\components\VirtualizedDataTable.jsx -----
 
 // src/features/table/VirtualizedDataTable.jsx
 import React, { useEffect, useRef, useCallback, useMemo } from "react";
 import { FixedSizeList as List } from "react-window";
-import { useSelectionStore } from "@/shared/store";
+import { useSelectionStore } from "@shared/store";
 
 /**
  * 가상화된 데이터 테이블 컴포넌트
@@ -786,9 +1651,15 @@ export default function VirtualizedDataTable({
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\api\timelineApi.js -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\table\index.js -----
 
-import { apiClient } from "@/shared/apiClient";
+export { default as VirtualizedDataTable } from './components/VirtualizedDataTable';
+export { default as LogDetailSection } from './components/LogDetailSection';
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\api\timelineApi.js -----
+
+import { apiClient } from "@shared/services/api/client";
 
 export const timelineApi = {
   // "라인 목록" 엔드포인트
@@ -819,12 +1690,96 @@ export const timelineApi = {
 };
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\components\DataLogSection.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\components\BaseTimeline.jsx -----
+
+import React, { useRef, useMemo } from "react";
+import { useVisTimeline } from "../hooks/useVisTimeline";
+
+/**
+ * 재사용 가능한 기본 Timeline 컴포넌트
+ * @param {Object} props
+ * @param {Array} props.groups - 타임라인 그룹 정의
+ * @param {Array} props.items - 타임라인 아이템
+ * @param {Object} props.options - vis-timeline 옵션
+ * @param {string} props.title - 타임라인 제목
+ * @param {ReactNode} props.headerExtra - 헤더 추가 요소
+ * @param {boolean} props.showTimeAxis - x축 표시 여부
+ */
+export default function BaseTimeline({
+  groups,
+  items,
+  options = {},
+  title,
+  headerExtra,
+  className = "",
+  style = {},
+  showTimeAxis = true,
+}) {
+  const containerRef = useRef(null);
+
+  const mergedOptions = useMemo(
+    () => ({
+      margin: { item: 0, axis: 0 },
+      groupOrder: "order",
+      selectable: true,
+      verticalScroll: true,
+      tooltip: {
+        followMouse: true,
+        overflowMethod: "cap",
+      },
+      showMajorLabels: showTimeAxis,
+      showMinorLabels: showTimeAxis,
+      // 높이 관련 옵션
+      ...options,
+    }),
+    [options, showTimeAxis]
+  );
+
+  useVisTimeline({
+    containerRef,
+    groups,
+    items,
+    options: mergedOptions,
+  });
+
+  // 동적 스타일 계산
+  const containerStyle = useMemo(() => {
+    const baseStyle = {
+      ...style,
+    };
+
+    return baseStyle;
+  }, [style]);
+
+  return (
+    <div
+      className={`timeline-container relative ${className} ${
+        !showTimeAxis ? "no-time-axis" : ""
+      }`}
+    >
+      {(title || headerExtra) && (
+        <div className="flex items-center justify-between mb-1">
+          {title && (
+            <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+              {title}
+            </h3>
+          )}
+          {headerExtra}
+        </div>
+      )}
+
+      <div ref={containerRef} className="timeline" style={containerStyle} />
+    </div>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\components\DataLogSection.jsx -----
 
 // src/features/timeline/components/DataLogSection.jsx
 import React from "react";
-import VirtualizedDataTable from "@/features/table/VirtualizedDataTable";
-import LoadingSpinner from "@/shared/LoadingSpinner";
+import VirtualizedDataTable from "@features/table/components/VirtualizedDataTable";
+import { LoadingSpinner } from "@shared/components";
 
 export default function DataLogSection({
   eqpId,
@@ -855,7 +1810,154 @@ export default function DataLogSection({
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\components\LegendToggle.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\components\EqpTimeline.jsx -----
+
+import React, { useMemo } from "react";
+import BaseTimeline from "./BaseTimeline";
+import { processData } from "../utils/timelineUtils";
+import { makeGroupLabel } from "../utils/groupLabel";
+
+export default function EqpTimeline({
+  lineId,
+  eqpId,
+  range,
+  showLegend,
+  showTimeAxis = false,
+  height = 10, // EQP는 단일 그룹이므로 낮은 높이
+  eqpLogs = [], // props로 데이터 받기
+}) {
+  const groups = useMemo(
+    () => [
+      {
+        id: "EQP",
+        content: makeGroupLabel("EQP", "EQP 로그", showLegend),
+        className: showLegend
+          ? "custom-group-label legend-mode"
+          : "custom-group-label",
+        order: 1,
+      },
+    ],
+    [showLegend]
+  );
+
+  const items = useMemo(() => processData("EQP", eqpLogs, true), [eqpLogs]);
+
+  const options = useMemo(
+    () => ({
+      stack: false,
+      min: range.min,
+      max: range.max,
+      zoomMin: 60 * 60 * 1000,
+    }),
+    [range]
+  );
+
+  return (
+    <BaseTimeline
+      groups={groups}
+      items={items}
+      options={options}
+      title="⚙️ EQP 상태"
+      showTimeAxis={showTimeAxis}
+      height={height}
+      minHeight={80}
+      maxHeight={200}
+      headerExtra={
+        <span className="text-xs text-slate-500">{eqpLogs.length}개 로그</span>
+      }
+    />
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\components\EventTimeline.jsx -----
+
+import React, { useMemo } from "react";
+import BaseTimeline from "./BaseTimeline";
+import { processData } from "../utils/timelineUtils";
+import { makeGroupLabel } from "../utils/groupLabel";
+
+// CTTTM, RACB, JIRA를 하나로 묶은 이벤트 타임라인
+export default function EventTimeline({
+  lineId,
+  eqpId,
+  range,
+  showLegend,
+  showTimeAxis = true,
+  eventLogs = [], // props로 데이터 받기
+}) {
+  const groups = useMemo(
+    () => [
+      {
+        id: "CTTTM",
+        content: makeGroupLabel("CTTTM", "CTTTM", showLegend),
+        className: showLegend
+          ? "custom-group-label legend-mode"
+          : "custom-group-label",
+        order: 1,
+      },
+      {
+        id: "RACB",
+        content: makeGroupLabel("RACB", "RACB", showLegend),
+        className: showLegend
+          ? "custom-group-label legend-mode"
+          : "custom-group-label",
+        order: 2,
+      },
+      {
+        id: "JIRA",
+        content: makeGroupLabel("JIRA", "JIRA", showLegend),
+        className: showLegend
+          ? "custom-group-label legend-mode"
+          : "custom-group-label",
+        order: 3,
+      },
+    ],
+    [showLegend]
+  );
+
+  const items = useMemo(() => {
+    const ctttmItems = processData(
+      "CTTTM",
+      eventLogs.filter((l) => l.logType === "CTTTM")
+    );
+    const racbItems = processData(
+      "RACB",
+      eventLogs.filter((l) => l.logType === "RACB")
+    );
+    const jiraItems = processData(
+      "JIRA",
+      eventLogs.filter((l) => l.logType === "JIRA")
+    );
+
+    return [...ctttmItems, ...racbItems, ...jiraItems];
+  }, [eventLogs]);
+
+  const options = useMemo(
+    () => ({
+      stack: true,
+      min: range.min,
+      max: range.max,
+      zoomMin: 60 * 60 * 1000,
+      height: 200,
+    }),
+    [range]
+  );
+
+  return (
+    <BaseTimeline
+      groups={groups}
+      items={items}
+      options={options}
+      title="📍 이벤트 로그"
+      showTimeAxis={showTimeAxis}
+      style={{ height: "200px" }}
+    />
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\components\LegendToggle.jsx -----
 
 // src/features/timeline/components/LegendToggle.jsx
 import React from "react";
@@ -879,12 +1981,12 @@ export default function LegendToggle({ showLegend, onToggle }) {
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\components\LogViewerSection.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\components\LogViewerSection.jsx -----
 
 // src/features/timeline/components/LogViewerSection.jsx
 import React from "react";
-import { LineSelector, SDWTSelector, EqpSelector } from "@/features/drilldown";
-import PrcGroupSelector from "@/features/drilldown/PrcGroupSelector";
+import { LineSelector, SDWTSelector, EqpSelector } from "@features/drilldown";
+import PrcGroupSelector from "@features/drilldown/PrcGroupSelector";
 
 export default function LogViewerSection({
   lineId,
@@ -923,175 +2025,7 @@ export default function LogViewerSection({
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\components\NonStackedTimeline.jsx -----
-
-// src/features/timeline/components/NonStackedTimeline.jsx
-import React, { useMemo, useRef } from "react";
-import { processData } from "@/features/timeline/utils/timelineUtils";
-import {
-  makeGroupLabel,
-  makeTipGroupLabel,
-} from "@/features/timeline/utils/groupLabel";
-import { useVisTimeline } from "../hooks/useVisTimeline";
-
-export default function NonStackedTimeline({
-  dataMap,
-  range,
-  showLegend,
-  selectedTipGroups,
-}) {
-  const containerRef = useRef(null);
-
-  // 필터링된 TIP 로그
-  const filteredTipLogs = useMemo(() => {
-    if (!dataMap.TIP) return [];
-
-    // 선택된 그룹이 없으면 빈 배열 반환 (TIP 로그 숨김)
-    if (!selectedTipGroups || selectedTipGroups.length === 0) return [];
-
-    // 특별한 값 "__ALL__"이 포함되어 있으면 전체 표시
-    if (selectedTipGroups.includes("__ALL__")) return dataMap.TIP;
-
-    return dataMap.TIP.filter((log) => {
-      const groupKey = `${log.process || "unknown"}_${log.step || "unknown"}_${
-        log.ppid || "unknown"
-      }`;
-      return selectedTipGroups.includes(groupKey);
-    });
-  }, [dataMap.TIP, selectedTipGroups]);
-
-  // TIP 그룹 동적 생성 (필터링된 로그 기반)
-  const tipGroups = useMemo(() => {
-    const groupMap = new Map();
-
-    filteredTipLogs.forEach((log) => {
-      const groupKey = `TIP_${log.process || "unknown"}_${
-        log.step || "unknown"
-      }_${log.ppid || "unknown"}`;
-      if (!groupMap.has(groupKey)) {
-        groupMap.set(groupKey, {
-          id: groupKey,
-          content: makeTipGroupLabel(
-            log.process,
-            log.step,
-            log.ppid,
-            showLegend
-          ),
-          className: showLegend
-            ? "custom-group-label tip-group legend-mode"
-            : "custom-group-label tip-group",
-          order: 100 + groupMap.size,
-          title: `Process: ${log.process || "N/A"} | Step: ${
-            log.step || "N/A"
-          } | PPID: ${log.ppid || "N/A"}`,
-        });
-      }
-    });
-
-    return Array.from(groupMap.values()).sort((a, b) => a.order - b.order);
-  }, [filteredTipLogs, showLegend]);
-
-  // 전체 그룹 정의
-  const groups = useMemo(() => {
-    const baseGroups = [
-      {
-        id: "EQP",
-        content: makeGroupLabel("EQP", "EQP 로그", showLegend),
-        className: showLegend
-          ? "custom-group-label legend-mode"
-          : "custom-group-label",
-        order: 1,
-      },
-    ];
-
-    return [...baseGroups, ...tipGroups];
-  }, [showLegend, tipGroups]);
-
-  // 아이템 목록 생성 (연속성 보장)
-  const items = useMemo(() => {
-    // EQP 아이템은 연속성 보장 (makeRangeContinuous = true)
-    const eqpItems = processData("EQP", dataMap.EQP || [], true);
-
-    // 필터링된 TIP 아이템을 각 그룹에 할당 (TIP도 range로 변경)
-    const tipItems = [];
-
-    // TIP 로그를 그룹별로 분류
-    const tipGroupMap = new Map();
-    filteredTipLogs.forEach((log) => {
-      const groupKey = `TIP_${log.process || "unknown"}_${
-        log.step || "unknown"
-      }_${log.ppid || "unknown"}`;
-
-      if (!tipGroupMap.has(groupKey)) {
-        tipGroupMap.set(groupKey, []);
-      }
-      tipGroupMap.get(groupKey).push(log);
-    });
-
-    // 각 TIP 그룹별로 연속성 보장하여 아이템 생성
-    tipGroupMap.forEach((logs, groupKey) => {
-      const groupItems = processData("TIP", logs, true); // TIP도 range로 변경
-      groupItems.forEach((item) => {
-        tipItems.push({
-          ...item,
-          group: groupKey,
-        });
-      });
-    });
-
-    return [...eqpItems, ...tipItems];
-  }, [dataMap.EQP, filteredTipLogs]);
-
-  // vis-timeline 옵션 설정
-  const options = useMemo(
-    () => ({
-      stack: false,
-      min: range.min,
-      max: range.max,
-      zoomMin: 60 * 60 * 1000, // 10분으로 최소 줌 레벨 증가 (더 줌 아웃 가능)
-      margin: { item: 0, axis: 0 },
-      groupOrder: "order",
-      selectable: true,
-      verticalScroll: true,
-      maxHeight: 400,
-      tooltip: {
-        followMouse: true,
-        overflowMethod: "cap",
-      },
-    }),
-    [range]
-  );
-
-  useVisTimeline({ containerRef, groups, items, options });
-
-  return (
-    <div className="timeline-container relative">
-      {/* 타임라인 헤더 */}
-      <div className="flex items-center justify-between mb-1">
-        <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300">
-          ⛓ EQP + TIP 로그
-        </h3>
-        {selectedTipGroups &&
-          selectedTipGroups.length > 0 &&
-          selectedTipGroups[0] !== "__ALL__" && (
-            <span className="text-xs text-slate-500 dark:text-slate-400">
-              {tipGroups.length}개의 TIP 그룹 표시 중
-            </span>
-          )}
-      </div>
-
-      {/* 타임라인 */}
-      <div
-        ref={containerRef}
-        className="timeline"
-        style={{ minHeight: "200px" }}
-      />
-    </div>
-  );
-}
-
-
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\components\ShareButton.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\components\ShareButton.jsx -----
 
 // src/features/timeline/components/ShareButton.jsx
 import React, { useState } from "react";
@@ -1170,151 +2104,62 @@ export default function ShareButton() {
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\components\StackedTimeline.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\components\TimelineBoard.jsx -----
 
-import React, { useMemo, useRef } from "react";
-import { processData } from "@/features/timeline/utils/timelineUtils";
-import { makeGroupLabel } from "@/features/timeline/utils/groupLabel";
-import { useVisTimeline } from "../hooks/useVisTimeline";
-
-/**
- * CTTTM_LOG + RACB_LOG + JIRA 를 stack=true 로 보여주는 타임라인
- */
-export default function StackedTimeline({ dataMap, range, showLegend }) {
-  // vis-timeline 이 그려질 DOM 요소 ref
-  const containerRef = useRef(null);
-
-  // 그룹(CTTTM, RACB, JIRA) 정의
-  const groups = useMemo(
-    () => [
-      {
-        id: "CTTTM",
-        content: makeGroupLabel("CTTTM", "CTTTM 로그", showLegend),
-        className: showLegend
-          ? "custom-group-label legend-mode"
-          : "custom-group-label",
-      },
-      {
-        id: "RACB",
-        content: makeGroupLabel("RACB", "RACB 로그", showLegend),
-        className: showLegend
-          ? "custom-group-label legend-mode"
-          : "custom-group-label",
-      },
-      {
-        id: "JIRA",
-        content: makeGroupLabel("JIRA", "JIRA 로그", showLegend),
-        className: showLegend
-          ? "custom-group-label legend-mode"
-          : "custom-group-label",
-      },
-    ],
-    [showLegend]
-  );
-
-  // 타임라인에 표시할 아이템 배열
-  const items = useMemo(
-    () => groups.flatMap((g) => processData(g.id, dataMap[g.id] || [])),
-    [dataMap, groups]
-  );
-
-  // vis-timeline 옵션 정의 - 외부에서 전달받은 range 사용
-  const options = useMemo(
-    () => ({
-      stack: true,
-      min: range.min,
-      max: range.max,
-      zoomMin: 60 * 60 * 1000, // 10분으로 최소 줌 레벨 증가 (더 줌 아웃 가능)
-      verticalScroll: true,
-      groupHeightMode: "fixed",
-      groupOrder: (a, b) =>
-        ["CTTTM", "RACB", "JIRA"].indexOf(a.id) -
-        ["CTTTM", "RACB", "JIRA"].indexOf(b.id),
-    }),
-    [range]
-  );
-
-  // 커스텀 훅으로 vis-timeline 생성 및 업데이트 처리
-  useVisTimeline({ containerRef, groups, items, options });
-
-  return (
-    <div className="timeline-container">
-      <h3 className="text-sm font-semibold mb-1 text-slate-600 dark:text-slate-300">
-        📍 변경점 로그
-      </h3>
-      {/* 실제 타임라인이 렌더링될 영역 */}
-      <div
-        ref={containerRef}
-        className="timeline"
-        style={{ height: "650px", overflow: "hidden" }}
-      />
-    </div>
-  );
-}
-
-
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\components\TimelineBoard.jsx -----
-
-// src/features/timeline/components/TimelineBoard.jsx
-import React, { useMemo } from "react";
-import NonStackedTimeline from "./NonStackedTimeline";
-import StackedTimeline from "./StackedTimeline";
-import { calcRange, addBuffer } from "@/features/timeline/utils/timelineUtils";
+import EqpTimeline from "./EqpTimeline";
+import TipTimeline from "./TipTimeline";
+import EventTimeline from "./EventTimeline";
+import { useTimelineRange } from "../hooks/useTimelineRange";
 
 export default function TimelineBoard({
-  dataMap,
+  lineId,
+  eqpId,
   showLegend,
   selectedTipGroups,
+  // 새로 추가: 각 타임라인의 로그 데이터를 props로 받기
+  eqpLogs = [],
+  tipLogs = [],
+  eventLogs = [],
 }) {
-  const eqpLogArr = dataMap.EQP || [];
-  const tipLogArr = dataMap.TIP || [];
-  const ctttmLogArr = dataMap.CTTTM || [];
-  const racbLogArr = dataMap.RACB || [];
-  const jiraLogArr = dataMap.JIRA || [];
-
-  const allLogs = useMemo(
-    () => [
-      ...eqpLogArr,
-      ...tipLogArr,
-      ...ctttmLogArr,
-      ...racbLogArr,
-      ...jiraLogArr,
-    ],
-    [eqpLogArr, tipLogArr, ctttmLogArr, racbLogArr, jiraLogArr]
-  );
-
-  const fullRange = useMemo(() => {
-    const r = calcRange(allLogs);
-    return addBuffer(r.min.getTime(), r.max.getTime());
-  }, [allLogs]);
-
-  // 범위 디버깅 (선택사항)
-  console.log("Timeline Range:", {
-    min: fullRange.min.toISOString(),
-    max: fullRange.max.toISOString(),
-    logCount: allLogs.length,
-    selectedTipGroups: selectedTipGroups, // 디버깅용
-  });
+  // 모든 로그를 합쳐서 범위 계산
+  const allLogs = [...eqpLogs, ...tipLogs, ...eventLogs];
+  const range = useTimelineRange(allLogs);
 
   return (
-    <div className="w-full space-y-4">
-      <NonStackedTimeline
-        dataMap={{ EQP: eqpLogArr, TIP: tipLogArr }}
-        range={fullRange}
+    <div className="w-full space-y-0">
+      <EqpTimeline
+        lineId={lineId}
+        eqpId={eqpId}
+        range={range}
+        showLegend={showLegend}
+        showTimeAxis={false}
+        eqpLogs={eqpLogs} // 데이터를 props로 전달
+      />
+
+      <TipTimeline
+        lineId={lineId}
+        eqpId={eqpId}
+        range={range}
         showLegend={showLegend}
         selectedTipGroups={selectedTipGroups}
+        showTimeAxis={false}
+        tipLogs={tipLogs} // 데이터를 props로 전달
       />
-      <StackedTimeline
-        dataMap={{ CTTTM: ctttmLogArr, RACB: racbLogArr, JIRA: jiraLogArr }}
-        range={fullRange}
+
+      <EventTimeline
+        lineId={lineId}
+        eqpId={eqpId}
+        range={range}
         showLegend={showLegend}
+        showTimeAxis={true}
+        eventLogs={eventLogs} // 데이터를 props로 전달
       />
     </div>
   );
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\components\TimelineSettings.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\components\TimelineSettings.jsx -----
 
 import React from "react";
 import LegendToggle from "./LegendToggle";
@@ -1363,7 +2208,7 @@ export default function TimelineSettings({
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\components\TipFilterChips.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\components\TipFilterChips.jsx -----
 
 import React, { useMemo, useState, useEffect } from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
@@ -1544,7 +2389,143 @@ export default function TipFilterChips({
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\constants\index.js -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\components\TipTimeline.jsx -----
+
+import React, { useMemo } from "react";
+import BaseTimeline from "./BaseTimeline";
+import { processData } from "../utils/timelineUtils";
+import { makeTipGroupLabel } from "../utils/groupLabel";
+
+export default function TipTimeline({
+  tipLogs = [], // 부모에서 전달받은 TIP 로그
+  range,
+  showLegend,
+  selectedTipGroups = ["__ALL__"],
+  showTimeAxis = true,
+}) {
+  // 필터링된 TIP 로그
+  const filteredTipLogs = useMemo(() => {
+    if (!tipLogs.length) return [];
+    if (selectedTipGroups.includes("__ALL__")) return tipLogs;
+
+    return tipLogs.filter((log) => {
+      const groupKey = `${log.process || "unknown"}_${log.step || "unknown"}_${
+        log.ppid || "unknown"
+      }`;
+      return selectedTipGroups.includes(groupKey);
+    });
+  }, [tipLogs, selectedTipGroups]);
+
+  // 동적 그룹 생성
+  const { groups, items } = useMemo(() => {
+    const groupMap = new Map();
+    const processedItems = [];
+
+    filteredTipLogs.forEach((log) => {
+      const groupKey = `TIP_${log.process || "unknown"}_${
+        log.step || "unknown"
+      }_${log.ppid || "unknown"}`;
+
+      if (!groupMap.has(groupKey)) {
+        groupMap.set(groupKey, {
+          id: groupKey,
+          content: makeTipGroupLabel(
+            log.process,
+            log.step,
+            log.ppid,
+            showLegend
+          ),
+          className: showLegend
+            ? "custom-group-label tip-group legend-mode"
+            : "custom-group-label tip-group",
+          order: 100 + groupMap.size,
+          title: `Process: ${log.process || "N/A"} | Step: ${
+            log.step || "N/A"
+          } | PPID: ${log.ppid || "N/A"}`,
+        });
+      }
+    });
+
+    // 각 그룹별로 아이템 생성
+    const groupedLogs = new Map();
+    filteredTipLogs.forEach((log) => {
+      const groupKey = `TIP_${log.process || "unknown"}_${
+        log.step || "unknown"
+      }_${log.ppid || "unknown"}`;
+
+      if (!groupedLogs.has(groupKey)) {
+        groupedLogs.set(groupKey, []);
+      }
+      groupedLogs.get(groupKey).push(log);
+    });
+
+    groupedLogs.forEach((logs, groupKey) => {
+      const items = processData("TIP", logs, true);
+      items.forEach((item) => {
+        processedItems.push({ ...item, group: groupKey });
+      });
+    });
+
+    return {
+      groups: Array.from(groupMap.values()).sort((a, b) => a.order - b.order),
+      items: processedItems,
+    };
+  }, [filteredTipLogs, showLegend]);
+
+  const options = useMemo(
+    () => ({
+      stack: false,
+      min: range.min,
+      max: range.max,
+      zoomMin: 60 * 60 * 1000,
+      groupHeightMode: "auto",
+      maxHeight: 400,
+      verticalScroll: true,
+    }),
+    [range]
+  );
+
+  // TIP 로그가 없거나 필터링 결과가 없을 때
+  if (tipLogs.length === 0 || groups.length === 0) {
+    return (
+      <div className="timeline-container relative">
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+            🔧 TIP 로그
+          </h3>
+          <span className="text-xs text-slate-500">
+            {tipLogs.length === 0 ? "로그 없음" : "선택된 그룹 없음"}
+          </span>
+        </div>
+        <div className="h-20 flex items-center justify-center bg-slate-50 dark:bg-slate-800 rounded-lg">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {tipLogs.length === 0
+              ? "TIP 로그가 없습니다"
+              : "표시할 TIP 그룹을 선택하세요"}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <BaseTimeline
+      groups={groups}
+      items={items}
+      options={options}
+      title="🔧 TIP 로그"
+      showTimeAxis={showTimeAxis}
+      headerExtra={
+        <span className="text-xs text-slate-500">
+          {groups.length}개 그룹, {filteredTipLogs.length}개 로그
+        </span>
+      }
+    />
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\constants\index.js -----
 
 export const DATA_TYPES = {
   EQP: "EQP",
@@ -1563,22 +2544,107 @@ export const DEFAULT_TYPE_FILTERS = {
 };
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\hooks\useLogQueries.js -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\hooks\index.js -----
 
-// src/features/timeline/hooks/useLogQueries.js
+export { useVisTimeline } from "./useVisTimeline";
+export { useTimelineRange } from "./useTimelineRange";
+export { useEqpLogs } from "./useEqpLogs";
+export { useEventLogs } from "./useEventLogs";
+export { useTipLogs } from "./useTipLogs";
+export { useUrlValidation } from "./useUrlValidation";
+export { useUrlSync } from "./useUrlSync";
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\hooks\useEqpLogs.js -----
+
 import { useQuery } from "@tanstack/react-query";
-import { timelineApi } from "@/features/timeline/api/timelineApi";
+import { apiClient } from "@shared/services/api/client";
 
-export const useLogs = ({ lineId, eqpId }, enabled) =>
-  useQuery({
-    queryKey: ["logs", lineId, eqpId],
-    queryFn: () => timelineApi.fetchLogs({ lineId, eqpId }),
-    enabled,
+export const useEqpLogs = (lineId, eqpId) => {
+  return useQuery({
+    queryKey: ["logs", "eqp", lineId, eqpId],
+    queryFn: () =>
+      apiClient("/logs/eqp", {
+        params: { lineId, eqpId },
+      }),
+    enabled: !!lineId && !!eqpId,
     staleTime: 1000 * 60 * 5,
   });
+};
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\hooks\useUrlSync.js -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\hooks\useEventLogs.js -----
+
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@shared/services/api/client";
+
+export const useEventLogs = (lineId, eqpId) => {
+  return useQuery({
+    queryKey: ["logs", "event", lineId, eqpId],
+    queryFn: () =>
+      apiClient("/logs/event", {
+        params: { lineId, eqpId },
+      }),
+    enabled: !!lineId && !!eqpId,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\hooks\useTimelineRange.js -----
+
+import { useMemo } from "react";
+import { calcRange, addBuffer } from "../utils/timelineUtils";
+
+/**
+ * 로그 배열을 받아서 타임라인 범위를 계산하는 훅
+ * @param {Array} logs - 모든 로그 데이터가 합쳐진 배열
+ */
+export function useTimelineRange(logs = []) {
+  const range = useMemo(() => {
+    if (logs.length === 0) {
+      // 로그가 없을 때 기본 범위 (오늘 하루)
+      const today = new Date();
+      const startOfToday = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+      );
+      const endOfToday = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate() + 1
+      );
+      return addBuffer(startOfToday.getTime(), endOfToday.getTime());
+    }
+
+    const { min, max } = calcRange(logs);
+    return addBuffer(min.getTime(), max.getTime());
+  }, [logs]);
+
+  return range;
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\hooks\useTipLogs.js -----
+
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@shared/services/api/client";
+
+export const useTipLogs = (lineId, eqpId) => {
+  return useQuery({
+    queryKey: ["logs", "tip", lineId, eqpId],
+    queryFn: () =>
+      apiClient("/logs/tip", {
+        params: { lineId, eqpId },
+      }),
+    enabled: !!lineId && !!eqpId,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\hooks\useUrlSync.js -----
 
 // src/features/timeline/hooks/useUrlSync.js
 import { useEffect } from "react";
@@ -1608,12 +2674,12 @@ export function useUrlSync(lineId, eqpId, isValidating, isUrlInitialized) {
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\hooks\useUrlValidation.js -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\hooks\useUrlValidation.js -----
 
 // src/features/timeline/hooks/useUrlValidation.js
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// import { useLines } from "@/features/drilldown/hooks/useLineQueries"; // 불필요한 의존성 제거
 import { timelineApi } from "@/features/timeline/api/timelineApi";
 
 export function useUrlValidation(
@@ -1630,7 +2696,6 @@ export function useUrlValidation(
   const [isUrlInitialized, setIsUrlInitialized] = useState(false);
 
   const navigate = useNavigate();
-  // const { data: lines = [] } = useLines(); // 불필요한 의존성 제거
 
   useEffect(() => {
     const validateAndSetParams = async () => {
@@ -1686,11 +2751,11 @@ export function useUrlValidation(
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\hooks\useVisTimeline.js -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\hooks\useVisTimeline.js -----
 
 import { useEffect, useRef } from "react";
 import { DataSet } from "vis-data";
-import { useSelectionStore } from "@/shared/store";
+import { useSelectionStore } from "@shared/store";
 
 /**
  * vis-timeline 생성을 공통 처리하는 훅
@@ -1797,404 +2862,28 @@ export function useVisTimeline({ containerRef, groups, items, options }) {
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\utils\dataTransformers.js -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\pages\TimelinePage.jsx -----
 
-// src/features/timeline/utils/dataTransformers.js
-import { formatDateTime } from "@/shared/dateUtils";
-
-export function groupLogsByType(logs) {
-  const groups = { EQP: [], TIP: [], RACB: [], CTTTM: [], JIRA: [] };
-  logs.forEach((log) => {
-    if (groups[log.logType]) {
-      groups[log.logType].push(log);
-    }
-  });
-  return groups;
-}
-
-export function transformLogsToTableData(logs, typeFilters) {
-  const transformed = logs
-    .filter((log) => typeFilters[log.logType])
-    .map((log) => {
-      const row = {
-        id: log.id,
-        timestamp: new Date(log.eventTime).getTime(),
-        displayTimestamp: formatDateTime(log.eventTime),
-        logType: log.logType,
-        info1: log.eventType,
-        info2: log.operator || "-",
-        duration: "-", // duration은 더 이상 계산하지 않음
-        url: log.url || null,
-      };
-
-      // TIP 로그인 경우 process/step 정보 추가 표시
-      if (log.logType === "TIP" && (log.process || log.step || log.ppid)) {
-        row.info1 = `${log.eventType} (${log.process || "N/A"}/${
-          log.step || "N/A"
-        })`;
-      }
-
-      return row;
-    })
-    .sort((a, b) => b.timestamp - a.timestamp);
-
-  return transformed;
-}
-
-
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\utils\groupLabel.js -----
-
-import { groupConfig } from "./timelineMeta";
-
-export function makeGroupLabel(type, title, showLegend) {
-  if (!showLegend) {
-    return `<div style="width:240px">${title}</div>`;
-  }
-  const EMOJI = {
-    RUN: "🟦RUN ",
-    IDLE: "🟨IDLE ",
-    PM: "🟩PM ",
-    DOWN: "🟥DOWN ",
-    OPEN: "🟦OPEN ",
-    CLOSE: "🟥CLOSE ",
-    ALARM: "🟥ALARM ",
-    WARN: "🟧WARN ",
-    TTM_FAIL: "🟥TTM_FAIL ",
-    TTM_WARN: "🟨TTM_WARN ",
-    ISSUED: "🟦ISSUED ",
-    CLOSED: "🟪CLOSED ",
-  };
-  const config = groupConfig[type];
-  if (!config) return `<div style="width:240px"></div>`;
-  const legendHtml = Object.keys(config.stateColors)
-    .map((state) => `<span>${EMOJI[state] || "▪️"}</span>`)
-    .join(" ");
-  return `<div style="width:240px;">${legendHtml}</div>`;
-}
-
-export function makeTipGroupLabel(process, step, ppid, showLegend) {
-  // PPID만 표시하도록 수정
-  const displayText = `<div class="tip-group-label-simple">${
-    ppid || "N/A"
-  }</div>`;
-
-  if (!showLegend) {
-    return `<div style="width:240px">${displayText}</div>`;
-  }
-
-  // Legend 모드일 때는 OPEN/CLOSE 범례 표시
-  const legendHtml = `<span>🟦OPEN </span><span>🟥CLOSE </span>`;
-  return `<div style="width:240px;">${legendHtml}</div>`;
-}
-
-
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\utils\timelineMeta.js -----
-
-/**
- * 각 로그 타입(logType)별 컬러 매핑
- * Tailwind 색상 클래스로 작성 (timeline.css @apply 로 색 지정)
- */
-export const groupConfig = {
-  EQP: {
-    stateColors: {
-      RUN: "bg-blue-600 border-blue-700",
-      IDLE: "bg-yellow-600 border-yellow-700",
-      PM: "bg-green-600 border-green-700",
-      DOWN: "bg-red-600 border-red-700",
-    },
-  },
-  TIP: {
-    stateColors: {
-      OPEN: "bg-blue-600 border-blue-700",
-      CLOSE: "bg-red-600 border-red-700",
-    },
-  },
-  RACB: {
-    stateColors: {
-      ALARM: "bg-red-600 border-red-700",
-      WARN: "bg-amber-600 border-amber-700",
-    },
-  },
-  CTTTM: {
-    stateColors: {
-      TTM_FAIL: "bg-red-600 border-red-700",
-      TTM_WARN: "bg-yellow-600 border-yellow-700",
-    },
-  },
-  JIRA: {
-    stateColors: {
-      ISSUED: "bg-blue-600 border-blue-700",
-      CLOSED: "bg-purple-600 border-purple-700",
-    },
-  },
-};
-
-
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\utils\timelineUtils.js -----
-
-// src/features/timeline/utils/timelineUtils.js
-import { groupConfig } from "./timelineMeta";
-
-/** ➜ 로그 Item.id 생성 (예: RACB_LOG-2025-06-02T12:00:00.000Z) */
-export const makeItemId = (group, time) => {
-  const iso = new Date(time).toISOString().replace(/\.\d+Z$/, ".000Z");
-  return `${group}-${iso}`;
-};
-
-/** ➜ vis-timeline 아이템 변환 */
-export const processData = (logType, data, makeRangeContinuous = false) => {
-  const cfg = groupConfig[logType];
-  if (!cfg) return [];
-
-  // 데이터를 eventTime 순으로 정렬
-  const sortedData = data
-    .filter((l) => l && l.eventTime)
-    .sort((a, b) => new Date(a.eventTime) - new Date(b.eventTime));
-
-  return sortedData.map((l, index) => {
-    const start = new Date(l.eventTime);
-    let end = start; // 기본값은 point 형태
-    let isRange = false;
-
-    // makeRangeContinuous가 true인 경우 range로 만들기
-    if (makeRangeContinuous) {
-      if (index < sortedData.length - 1) {
-        // 다음 로그의 eventTime을 현재 로그의 endTime으로 설정
-        end = new Date(sortedData[index + 1].eventTime);
-      } else {
-        // 마지막 로그인 경우, 오늘 00:00:00으로 설정
-        const today = new Date(start);
-        end = new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate() + 1,
-          0,
-          0,
-          0,
-          0
-        ); // 오늘 자정(다음날 00:00:00)
-      }
-      isRange = true;
-    }
-
-    const colorCls = cfg.stateColors[l.eventType] || "bg-gray-300";
-
-    // 폰트 크기를 logType에 따라 다르게 설정
-    const fontSize =
-      {
-        EQP: "12px",
-        TIP: "11px",
-        CTTTM: "10px",
-        RACB: "10px",
-        JIRA: "10px",
-      }[logType] || "11px";
-
-    return {
-      id: l.id,
-      group: logType,
-      // HTML로 직접 스타일 적용
-      content: `<span style="font-size: ${fontSize}; font-weight: 500;">${
-        l.eventType || ""
-      }</span>`,
-      start,
-      end,
-      type: isRange ? "range" : "point",
-      className: colorCls,
-      title: [
-        l.comment,
-        l.operator ? `👤 ${l.operator}` : null,
-        l.url ? `🔗 ${l.url}` : null,
-      ]
-        .filter(Boolean)
-        .join("\n"),
-    };
-  });
-};
-
-/**
- * TIP 데이터를 process, step, ppid로 서브그룹화
- * @param {Array} tipData - TIP 로그 데이터
- * @returns {{groups: Array, items: Array}} - 그룹과 아이템 배열
- */
-export const processTipDataWithSubgroups = (tipData) => {
-  const subgroupMap = new Map();
-  const items = [];
-
-  // TIP 데이터를 그룹별로 분류하고 정렬
-  const groupedData = new Map();
-  tipData.forEach((log) => {
-    const process = log.process || "unknown";
-    const step = log.step || "unknown";
-    const ppid = log.ppid || "unknown";
-    const subgroupKey = `TIP_${process}_${step}_${ppid}`;
-
-    if (!groupedData.has(subgroupKey)) {
-      groupedData.set(subgroupKey, []);
-    }
-    groupedData.get(subgroupKey).push(log);
-  });
-
-  // 각 그룹별로 처리
-  groupedData.forEach((logs, subgroupKey) => {
-    const [, process, step, ppid] = subgroupKey.split("_");
-
-    if (!subgroupMap.has(subgroupKey)) {
-      subgroupMap.set(subgroupKey, {
-        id: subgroupKey,
-        content: `<div class="tip-subgroup-label">
-          <span class="process">${process}</span>
-          <span class="separator">/</span>
-          <span class="step">${step}</span>
-          <span class="separator">/</span>
-          <span class="ppid">${ppid}</span>
-        </div>`,
-        className: "tip-subgroup",
-        treeLevel: 2, // TIP의 하위 레벨
-        showNested: false, // 기본적으로 접힌 상태
-      });
-    }
-
-    // 그룹 내 로그들을 eventTime 순으로 정렬
-    const sortedLogs = logs.sort(
-      (a, b) => new Date(a.eventTime) - new Date(b.eventTime)
-    );
-
-    // 각 로그를 range 형태로 아이템 생성
-    sortedLogs.forEach((log, index) => {
-      const start = new Date(log.eventTime);
-      let end = start;
-
-      // 다음 로그가 있으면 그 시간을 end로, 없으면 오늘 자정으로 설정
-      if (index < sortedLogs.length - 1) {
-        end = new Date(sortedLogs[index + 1].eventTime);
-      } else {
-        const today = new Date(start);
-        end = new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate() + 1,
-          0,
-          0,
-          0,
-          0
-        ); // 오늘 자정(다음날 00:00:00)
-      }
-
-      const cfg = groupConfig.TIP;
-      const colorCls = cfg.stateColors[log.eventType] || "bg-gray-300";
-
-      items.push({
-        id: log.id,
-        group: subgroupKey, // 서브그룹에 할당
-        content: `<span style="font-size: 11px; font-weight: 500;">${
-          log.eventType || ""
-        }</span>`,
-        start,
-        end,
-        type: "range", // range 형태로 변경
-        className: colorCls,
-        title: [
-          `Process: ${process}`,
-          `Step: ${step}`,
-          `PPID: ${ppid}`,
-          log.comment,
-          log.operator ? `👤 ${log.operator}` : null,
-          log.url ? `🔗 ${log.url}` : null,
-        ]
-          .filter(Boolean)
-          .join("\n"),
-        // 원본 데이터 보존 (선택 시 필요)
-        originalData: log,
-      });
-    });
-  });
-
-  // 서브그룹을 정렬 (process -> step -> ppid 순)
-  const sortedGroups = Array.from(subgroupMap.values()).sort((a, b) => {
-    const [, processA, stepA, ppidA] = a.id.split("_");
-    const [, processB, stepB, ppidB] = b.id.split("_");
-
-    if (processA !== processB) return processA.localeCompare(processB);
-    if (stepA !== stepB) return stepA.localeCompare(stepB);
-    return ppidA.localeCompare(ppidB);
-  });
-
-  return {
-    groups: sortedGroups,
-    items,
-  };
-};
-
-/** ±3일 버퍼 (최대 줌 아웃을 위해 버퍼 확대) */
-export const addBuffer = (min, max) => {
-  const B = 15 * 24 * 60 * 60 * 1000; // 15일
-  return { min: new Date(min - B), max: new Date(max + B) };
-};
-
-/** 전체 로그 범위 계산 - eventTime만 사용하도록 수정 */
-export const calcRange = (logs) => {
-  // eventTime만 추출
-  const eventTimes = logs
-    .filter((l) => l && l.eventTime)
-    .map((l) => new Date(l.eventTime).getTime())
-    .filter((time) => !isNaN(time));
-
-  if (!eventTimes.length) {
-    const today = new Date();
-    const startOfDay = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    );
-    const endOfDay = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      23,
-      59,
-      59
-    );
-    return { min: startOfDay, max: endOfDay };
-  }
-
-  // eventTime의 최소값과 최대값
-  const minTime = Math.min(...eventTimes);
-  const maxTime = Math.max(...eventTimes);
-
-  return { min: new Date(minTime), max: new Date(maxTime) };
-};
-
-
------ C:\Users\pjw75\Desktop\eqp-timeline\src\features\timeline\index.js -----
-
-export * from "./api/timelineApi";
-export * from "./hooks/useLogQueries";
-export { default as TimelineBoard } from "./components/TimelineBoard";
-
-
------ C:\Users\pjw75\Desktop\eqp-timeline\src\pages\TimelinePage.jsx -----
-
-// src/pages/TimelinePage.jsx
 import React, { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
-import { useLogs } from "@/features/timeline";
-import { useSelectionStore } from "@/shared/store";
-import { useUrlValidation } from "@/features/timeline/hooks/useUrlValidation";
-import { useUrlSync } from "@/features/timeline/hooks/useUrlSync";
-import {
-  groupLogsByType,
-  transformLogsToTableData,
-} from "@/features/timeline/utils/dataTransformers";
-import { DEFAULT_TYPE_FILTERS } from "@/features/timeline/constants";
-import LogViewerSection from "@/features/timeline/components/LogViewerSection";
-import DataLogSection from "@/features/timeline/components/DataLogSection";
-import ShareButton from "@/features/timeline/components/ShareButton";
-import { TimelineBoard } from "@/features/timeline";
-import LogDetailSection from "@/features/table/LogDetailSection";
-import LoadingSpinner from "@/shared/LoadingSpinner";
-import Drawer from "@/shared/Drawer";
-import TimelineSettings from "@/features/timeline/components/TimelineSettings";
+import { useSelectionStore } from "@shared/store";
+import { useUrlValidation } from "@features/timeline/hooks/useUrlValidation";
+import { useUrlSync } from "@features/timeline/hooks/useUrlSync";
+import { transformLogsToTableData } from "@features/timeline/utils/dataTransformers";
+import { DEFAULT_TYPE_FILTERS } from "@features/timeline/constants";
+import LogViewerSection from "@features/timeline/components/LogViewerSection";
+import DataLogSection from "@features/timeline/components/DataLogSection";
+import ShareButton from "@features/timeline/components/ShareButton";
+import { TimelineBoard } from "@features/timeline";
+import LogDetailSection from "@features/table/components/LogDetailSection";
+import { LoadingSpinner } from "@shared/components";
+import { Drawer } from "@shared/components";
+import TimelineSettings from "@features/timeline/components/TimelineSettings";
+// 각 타임라인의 개별 훅들을 직접 import
+import { useEqpLogs } from "@features/timeline/hooks/useEqpLogs";
+import { useTipLogs } from "@features/timeline/hooks/useTipLogs";
+import { useEventLogs } from "@features/timeline/hooks/useEventLogs";
 
 export default function TimelinePage() {
   const params = useParams();
@@ -2224,13 +2913,37 @@ export default function TimelinePage() {
   // URL 동기화
   useUrlSync(lineId, eqpId, isValidating, isUrlInitialized);
 
-  // 로그 데이터 가져오기
+  // 각 타임라인의 로그 데이터를 개별적으로 가져오기
   const enabled = Boolean(lineId && eqpId);
-  const {
-    data: logs = [],
-    isLoading: logsLoading,
-    isError: logsError,
-  } = useLogs({ lineId, eqpId }, enabled);
+  const { data: eqpLogs = [], isLoading: eqpLoading } = useEqpLogs(
+    lineId,
+    eqpId
+  );
+  const { data: tipLogs = [], isLoading: tipLoading } = useTipLogs(
+    lineId,
+    eqpId
+  );
+  const { data: eventLogs = [], isLoading: eventLoading } = useEventLogs(
+    lineId,
+    eqpId
+  );
+
+  // 로딩 상태 계산
+  const logsLoading = eqpLoading || tipLoading || eventLoading;
+
+  // 모든 로그 데이터를 하나로 합치기
+  const mergedLogs = useMemo(() => {
+    if (!enabled) return [];
+
+    // 모든 로그를 배열로 합치기
+    const allLogs = [...eqpLogs, ...tipLogs, ...eventLogs];
+
+    // 시간순으로 정렬 (최신순)
+    return allLogs.sort(
+      (a, b) =>
+        new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
+    );
+  }, [eqpLogs, tipLogs, eventLogs, enabled]);
 
   // 로컬 상태
   const [typeFilters, setTypeFilters] = useState(DEFAULT_TYPE_FILTERS);
@@ -2242,20 +2955,25 @@ export default function TimelinePage() {
   const handleFilter = (e) =>
     setTypeFilters((prev) => ({ ...prev, [e.target.name]: e.target.checked }));
 
-  // 데이터 변환
-  const logsByType = useMemo(() => groupLogsByType(logs), [logs]);
+  // 테이블 데이터 변환 (병합된 로그 사용)
   const tableData = useMemo(
     () =>
       enabled && !logsLoading
-        ? transformLogsToTableData(logs, typeFilters)
+        ? transformLogsToTableData(mergedLogs, typeFilters)
         : [],
-    [logs, logsLoading, enabled, typeFilters]
+    [mergedLogs, logsLoading, enabled, typeFilters]
   );
 
-  // 선택된 로그
+  // 선택된 로그 (병합된 로그에서 찾기)
   const selectedLog = useMemo(
-    () => logs.find((log) => String(log.id) === String(selectedRow)),
-    [logs, selectedRow]
+    () => mergedLogs.find((log) => String(log.id) === String(selectedRow)),
+    [mergedLogs, selectedRow]
+  );
+
+  // TIP 로그만 필터링 (Settings Drawer용)
+  const filteredTipLogs = useMemo(
+    () => mergedLogs.filter((log) => log.logType === "TIP"),
+    [mergedLogs]
   );
 
   // 검증 중일 때 로딩 표시
@@ -2267,14 +2985,7 @@ export default function TimelinePage() {
     );
   }
 
-  // 에러 처리
-  if (logsError) {
-    return (
-      <div className="flex items-center justify-center h-[80vh]">
-        <p className="text-red-500">로그 로딩 오류!</p>
-      </div>
-    );
-  }
+  // 에러 상황 체크 (개별 에러는 각 훅에서 처리됨)
 
   // 검증 에러 표시
   if (validationError) {
@@ -2362,9 +3073,13 @@ export default function TimelinePage() {
         ) : (
           <div className="mt-4">
             <TimelineBoard
-              dataMap={logsByType}
+              lineId={lineId}
+              eqpId={eqpId}
               showLegend={showLegend}
               selectedTipGroups={selectedTipGroups}
+              eqpLogs={eqpLogs}
+              tipLogs={tipLogs}
+              eventLogs={eventLogs}
             />
           </div>
         )}
@@ -2379,7 +3094,7 @@ export default function TimelinePage() {
         <TimelineSettings
           showLegend={showLegend}
           onLegendToggle={() => setShowLegend((v) => !v)}
-          tipLogs={logsByType.TIP}
+          tipLogs={filteredTipLogs} // 병합된 로그에서 필터링된 TIP 로그 전달
           selectedTipGroups={selectedTipGroups}
           onTipFilterChange={setSelectedTipGroups}
         />
@@ -2389,134 +3104,261 @@ export default function TimelinePage() {
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\shared\apiClient.js -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\styles\timeline.css -----
 
-const DEFAULT_TIMEOUT = 10000; // 10초
-const MAX_RETRIES = 3;
+/* ─────────────────────────────────────────────────────────────────────────
+   vis-timeline 커스터마이징
+───────────────────────────────────────────────────────────────────────── */
 
-/**
- * 개선된 API 클라이언트
- * @param {string} url - API 엔드포인트
- * @param {Object} options - 요청 옵션
- * @param {number} options.timeout - 타임아웃 (ms)
- * @param {number} options.retries - 재시도 횟수
- * @param {Object} options.params - 쿼리 파라미터
- */
-export const apiClient = async (
-  url,
-  { params, timeout = DEFAULT_TIMEOUT, retries = MAX_RETRIES, ...opts } = {}
-) => {
-  // 기본 URL 유효성 검사
-  const baseUrl = import.meta.env.VITE_API_BASE_URL;
-  if (!baseUrl) {
-    throw new Error(
-      "API_BASE_URL이 설정되지 않았습니다. 환경변수를 확인해주세요."
-    );
-  }
+.timeline-container { margin-bottom: 16px; }
 
-  // 쿼리스트링 생성
-  const qs = params ? "?" + new URLSearchParams(params) : "";
-  const fullUrl = baseUrl + url + qs;
+/* 공통 아이템 */
+.vis-item {
+  border: 1px solid transparent;
+  color: #1e293b;
+  border-radius: 0 !important;
+  margin-right: -1px;
+  box-shadow: none !important;
+  pointer-events: all !important;
+}
+.dark .vis-item { color: #f1f5f9; }
 
-  // AbortController로 타임아웃 처리
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
+/* 아이템 내부 content 텍스트 스타일 */
+.vis-item .vis-item-content {
+  font-size: 11px !important;  /* 폰트 크기 조절 */
+  font-weight: 500 !important;  /* 약간 굵게 */
+  padding: 2px 4px !important;  /* 내부 여백 */
+  white-space: nowrap !important;  /* 줄바꿈 방지 */
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;  /* 긴 텍스트는 ... 처리 */
+}
 
-  const executeRequest = async (attempt = 1) => {
-    try {
-      const response = await fetch(fullUrl, {
-        headers: {
-          "Content-Type": "application/json",
-          ...opts.headers,
-        },
-        signal: controller.signal,
-        ...opts,
-      });
+/* 상태 색상 */
+.vis-item.bg-red-500    { background-color: #ef4444; border-color: #dc2626; }
+.vis-item.bg-green-500  { background-color: #22c55e; border-color: #16a34a; }
+.vis-item.bg-blue-500   { background-color: #3b82f6; border-color: #2563eb; }
+.vis-item.bg-yellow-500 { background-color: #eab308; border-color: #ca8a04; }
+.vis-item.bg-gray-300   { background-color: #d1d5db; border-color: #9ca3af; }
+/* 600 계열 */
+.vis-item.bg-red-600    { background-color: #dc2626; border-color: #b91c1c; }
+.vis-item.bg-blue-600   { background-color: #2563eb; border-color: #1d4ed8; }
+.vis-item.bg-yellow-600 { background-color: #ca8a04; border-color: #a16207; }
+.vis-item.bg-green-600  { background-color: #16a34a; border-color: #15803d; }
+.vis-item.bg-amber-600  { background-color: #d97706; border-color: #b45309; }
+.vis-item.bg-purple-600 { background-color: #9333ea; border-color: #7c3aed; }
+.vis-item.bg-gray-600   { background-color: #4b5563; border-color: #374151; }
+.vis-item.bg-orange-600 { background-color: #ea580c; border-color: #c2410c; }
 
-      clearTimeout(timeoutId);
+/* 선택 아이템 */
+.vis-item.vis-selected {
+  outline: 2px dashed #fb923c !important;  
+  outline-offset: -2px !important;              
+  background-color: rgba(251, 146, 60, 0.2) !important; 
+  filter: brightness(1.1) !important;
+  z-index: 10 !important;
+}
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        let errorMessage;
+/* 레인지/포인트 */
+.vis-item.vis-range { pointer-events: all !important; min-height: 20px !important; }
+.vis-item.vis-point { pointer-events: all !important; }
 
-        // HTTP 상태 코드별 메시지
-        switch (response.status) {
-          case 400:
-            errorMessage = "잘못된 요청입니다.";
-            break;
-          case 401:
-            errorMessage = "인증이 필요합니다.";
-            break;
-          case 403:
-            errorMessage = "접근 권한이 없습니다.";
-            break;
-          case 404:
-            errorMessage = "요청한 데이터를 찾을 수 없습니다.";
-            break;
-          case 500:
-            errorMessage = "서버 오류가 발생했습니다.";
-            break;
-          case 503:
-            errorMessage = "서비스를 일시적으로 사용할 수 없습니다.";
-            break;
-          default:
-            errorMessage = errorText || `HTTP ${response.status} 오류`;
-        }
+/* 시간축 텍스트 */
+.vis-time-axis .vis-text,
+.vis-time-axis .vis-label { font-size: 12px !important; color: #334155; }
+.dark .vis-time-axis .vis-text,
+.dark .vis-time-axis .vis-label { color: #f1f5f9 !important; }
 
-        const error = new Error(errorMessage);
-        error.status = response.status;
-        error.url = fullUrl;
-        throw error;
-      }
+/* 그룹 라벨 */
+.vis-label.custom-group-label {
+  color: #334155;
+  font-size: 12px !important;
+  width: 150px !important;
+  min-width: 150px !important;
+  max-width: 150px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dark .vis-label.custom-group-label {
+  color: #f1f5f9 !important;
+  font-size: 12px !important;
+}
 
-      return response.json();
-    } catch (error) {
-      clearTimeout(timeoutId);
+/* 테이블 스크롤바 */
+.table-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.table-scroll::-webkit-scrollbar-track { background: #ffffff; border-radius: 10px; }
+.table-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; border: 1px solid #e2e8f0; }
+.dark .table-scroll::-webkit-scrollbar-track { background: #1e293b; }
+.dark .table-scroll::-webkit-scrollbar-thumb { background: #475569; border: 1px solid #1e293b; }
+.dark .table-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
-      // 타임아웃 에러 처리
-      if (error.name === "AbortError") {
-        throw new Error(`요청 시간이 초과되었습니다. (${timeout}ms)`);
-      }
+/* react-window & 가상 스크롤 스크롤바 스타일 */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+  /* 하드웨어 가속 */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.dark .scrollbar-thin {
+  scrollbar-color: #475569 #1e293b;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+.dark .scrollbar-thin::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
 
-      // 네트워크 에러이고 재시도 가능한 경우
-      if (attempt < retries && isRetryableError(error)) {
-        console.warn(
-          `API 요청 실패 (${attempt}/${retries}): ${error.message}. 재시도 중...`
-        );
-        await delay(Math.pow(2, attempt) * 1000); // 지수 백오프
-        return executeRequest(attempt + 1);
-      }
+/* 그룹 라벨에 legend-mode 클래스가 추가됐을 때만 폰트 크기를 12px로 */
+.vis-label.legend-mode {
+  font-size: 12px !important;
+  font-weight: normal !important;
+  letter-spacing: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 240px !important;
+  min-width: 240px !important;
+  max-width: 240px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 !important;
+}
 
-      // 마지막 에러는 그대로 throw
-      throw error;
+/* 간단한 TIP 그룹 라벨 (PPID만 표시) */
+.tip-group-label-simple {
+  font-size: 12px;
+  font-weight: 600;
+  color: #3b82f6;
+  text-align: center;
+}
+.dark .tip-group-label-simple {
+  color: #60a5fa;
+}
+
+/* TIP 그룹 스타일 */
+.vis-label.tip-group {
+  background-color: rgba(59, 130, 246, 0.05);
+  border-left: 3px solid #3b82f6;
+}
+.dark .vis-label.tip-group {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+/* TIP 그룹 hover 효과 */
+.vis-label.tip-group:hover {
+  background-color: rgba(59, 130, 246, 0.15);
+}
+.dark .vis-label.tip-group:hover {
+  background-color: rgba(59, 130, 246, 0.25);
+}
+
+/* 툴팁 스타일 개선 */
+.vis-tooltip {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+  color: white !important;
+  font-size: 11px !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  white-space: nowrap !important;
+}
+
+/* x축이 없는 타임라인 스타일 */
+.no-time-axis .vis-panel.vis-bottom {
+  display: none !important;
+}
+
+
+/* 타임라인 간격 조정 (x축이 없으면 간격을 줄임) */
+.timeline-container.no-time-axis {
+  margin-bottom: 5px !important;
+}
+
+/* 마지막 타임라인은 정상 간격 유지 */
+.timeline-container:last-child {
+  margin-bottom: 16px !important;
+}
+
+
+
+/* 컴팩트 모드 */
+.compact-timeline .vis-group {
+  min-height: 20px !important;
+  padding: 2px 0 !important;
+}
+
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\utils\dataTransformers.js -----
+
+// src/features/timeline/utils/dataTransformers.js
+import { formatDateTime } from "./dateUtils";
+
+export function groupLogsByType(logs) {
+  const groups = { EQP: [], TIP: [], RACB: [], CTTTM: [], JIRA: [] };
+  logs.forEach((log) => {
+    if (groups[log.logType]) {
+      groups[log.logType].push(log);
     }
-  };
-
-  return executeRequest();
-};
-
-/**
- * 재시도 가능한 에러인지 확인
- */
-function isRetryableError(error) {
-  // 네트워크 에러나 5xx 서버 에러는 재시도 가능
-  return (
-    !error.status || // 네트워크 에러
-    error.status >= 500 || // 서버 에러
-    error.status === 408 || // Request Timeout
-    error.status === 429 // Too Many Requests
-  );
+  });
+  return groups;
 }
 
-/**
- * 지연 함수
- */
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+export function transformLogsToTableData(logs, typeFilters) {
+  const transformed = logs
+    .filter((log) => typeFilters[log.logType])
+    .map((log) => {
+      const row = {
+        id: log.id,
+        timestamp: new Date(log.eventTime).getTime(),
+        displayTimestamp: formatDateTime(log.eventTime),
+        logType: log.logType,
+        info1: log.eventType,
+        info2: log.operator || "-",
+        duration: "-", // duration은 더 이상 계산하지 않음
+        url: log.url || null,
+      };
+
+      // TIP 로그인 경우 process/step 정보 추가 표시
+      if (log.logType === "TIP" && (log.process || log.step || log.ppid)) {
+        row.info1 = `${log.eventType} (${log.process || "N/A"}/${
+          log.step || "N/A"
+        })`;
+      }
+
+      return row;
+    })
+    .sort((a, b) => b.timestamp - a.timestamp);
+
+  return transformed;
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\shared\dateUtils.js -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\utils\dateUtils.js -----
 
 /**
  * Format a Date (or date-like value) as 'YY/MM/DD HH:mm'.
@@ -2538,60 +3380,248 @@ export function formatDateTime(date) {
 
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\shared\Drawer.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\utils\groupLabel.js -----
 
-import React from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { groupConfig } from "./timelineMeta";
 
-export default function Drawer({ isOpen, onClose, title, children }) {
-  return (
-    <>
-      {/* 배경 오버레이 - 완전 투명 */}
-      {isOpen && (
-        <div className="fixed inset-0 bg-black/20 z-40" onClick={onClose} />
-      )}
+export function makeGroupLabel(type, title, showLegend) {
+  if (!showLegend) {
+    return `<div style="width:240px">${title}</div>`;
+  }
+  const EMOJI = {
+    RUN: "🟦RUN ",
+    IDLE: "🟨IDLE ",
+    PM: "🟩PM ",
+    DOWN: "🟥DOWN ",
+    OPEN: "🟦OPEN ",
+    CLOSE: "🟥CLOSE ",
+    ALARM: "🟥ALARM ",
+    WARN: "🟧WARN ",
+    TTM_FAIL: "🟥TTM_FAIL ",
+    TTM_WARN: "🟨TTM_WARN ",
+    ISSUED: "🟦ISSUED ",
+    CLOSED: "🟪CLOSED ",
+  };
+  const config = groupConfig[type];
+  if (!config) return `<div style="width:240px"></div>`;
+  const legendHtml = Object.keys(config.stateColors)
+    .map((state) => `<span>${EMOJI[state] || "▪️"}</span>`)
+    .join(" ");
+  return `<div style="width:240px;">${legendHtml}</div>`;
+}
 
-      {/* 드로어 패널 - navbar 아래부터 시작 */}
-      <div
-        className={`fixed right-0 top-[125px] h-[calc(100vh-150px)] w-80 bg-white dark:bg-slate-800 shadow-xl z-40 rounded-l-2xl transform transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        {/* 헤더 */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            {title}
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none"
-          >
-            <XMarkIcon className="h-6 w-6" />
-          </button>
-        </div>
+export function makeTipGroupLabel(process, step, ppid, showLegend) {
+  // PPID만 표시하도록 수정
+  const displayText = `<div class="tip-group-label-simple">${
+    ppid || "N/A"
+  }</div>`;
 
-        {/* 컨텐츠 */}
-        <div className="p-4 overflow-y-auto h-[calc(100%-4rem)]">
-          {children}
-        </div>
-      </div>
-    </>
-  );
+  if (!showLegend) {
+    return `<div style="width:240px">${displayText}</div>`;
+  }
+
+  // Legend 모드일 때는 OPEN/CLOSE 범례 표시
+  const legendHtml = `<span>🟦OPEN </span><span>🟥CLOSE </span>`;
+  return `<div style="width:240px;">${legendHtml}</div>`;
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\shared\LoadingSpinner.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\utils\timelineMeta.js -----
 
-export default function LoadingSpinner() {
-  return (
-    <div className="flex justify-center items-center" role="status">
-      <div className="animate-spin rounded-full h-5 w-5 border-4 border-blue-500 border-t-transparent" />
-    </div>
-  );
-}
+/**
+ * 각 로그 타입(logType)별 컬러 매핑
+ * Tailwind 색상 클래스로 작성 (timeline.css @apply 로 색 지정)
+ */
+export const groupConfig = {
+  EQP: {
+    stateColors: {
+      RUN: "bg-blue-600 border-blue-700",
+      IDLE: "bg-yellow-600 border-yellow-700",
+      PM: "bg-green-600 border-green-700",
+      DOWN: "bg-red-600 border-red-700",
+    },
+  },
+  TIP: {
+    stateColors: {
+      OPEN: "bg-blue-600 border-blue-700",
+      CLOSE: "bg-red-600 border-red-700",
+    },
+  },
+  RACB: {
+    stateColors: {
+      ALARM: "bg-red-600 border-red-700",
+      WARN: "bg-amber-600 border-amber-700",
+    },
+  },
+  CTTTM: {
+    stateColors: {
+      TTM_FAIL: "bg-red-600 border-red-700",
+      TTM_WARN: "bg-yellow-600 border-yellow-700",
+    },
+  },
+  JIRA: {
+    stateColors: {
+      ISSUED: "bg-blue-600 border-blue-700",
+      CLOSED: "bg-purple-600 border-purple-700",
+    },
+  },
+};
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\shared\Navbar.jsx -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\utils\timelineUtils.js -----
+
+// 미사용 함수 제거하고 필요한 것만 남김
+import { groupConfig } from "./timelineMeta";
+
+/** ➜ vis-timeline 아이템 변환 */
+export const processData = (logType, data, makeRangeContinuous = false) => {
+  const cfg = groupConfig[logType];
+  if (!cfg) return [];
+
+  // 데이터를 eventTime 순으로 정렬
+  const sortedData = data
+    .filter((l) => l && l.eventTime)
+    .sort((a, b) => new Date(a.eventTime) - new Date(b.eventTime));
+
+  return sortedData.map((l, index) => {
+    const start = new Date(l.eventTime);
+    let end = start; // 기본값은 point 형태
+    let isRange = false;
+
+    // makeRangeContinuous가 true인 경우 range로 만들기
+    if (makeRangeContinuous) {
+      if (index < sortedData.length - 1) {
+        // 다음 로그의 eventTime을 현재 로그의 endTime으로 설정
+        end = new Date(sortedData[index + 1].eventTime);
+      } else {
+        // 마지막 로그인 경우, 오늘 00:00:00으로 설정
+        const today = new Date(start);
+        end = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate() + 1,
+          0,
+          0,
+          0,
+          0
+        );
+      }
+      isRange = true;
+    }
+
+    const colorCls = cfg.stateColors[l.eventType] || "bg-gray-300";
+
+    // 폰트 크기를 logType에 따라 다르게 설정
+    const fontSize =
+      {
+        EQP: "12px",
+        TIP: "11px",
+        CTTTM: "10px",
+        RACB: "10px",
+        JIRA: "10px",
+      }[logType] || "11px";
+
+    return {
+      id: l.id,
+      group: logType,
+      content: `<span style="font-size: ${fontSize}; font-weight: 500;">${
+        l.eventType || ""
+      }</span>`,
+      start,
+      end,
+      type: isRange ? "range" : "point",
+      className: colorCls,
+      title: [
+        l.comment,
+        l.operator ? `👤 ${l.operator}` : null,
+        l.url ? `🔗 ${l.url}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    };
+  });
+};
+
+/** 전체 로그 범위 계산 */
+export const calcRange = (logs) => {
+  if (!logs || logs.length === 0) {
+    // 로그가 없을 때 기본값
+    const now = new Date();
+    return {
+      min: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+      max: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1),
+    };
+  }
+
+  // eventTime이 있는 로그만 필터링
+  const validLogs = logs.filter((log) => log && log.eventTime);
+
+  if (validLogs.length === 0) {
+    const now = new Date();
+    return {
+      min: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+      max: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1),
+    };
+  }
+
+  // 모든 시간을 추출 (eventTime과 endTime 모두 고려)
+  const allTimes = [];
+
+  validLogs.forEach((log) => {
+    const eventTime = new Date(log.eventTime).getTime();
+    if (!isNaN(eventTime)) {
+      allTimes.push(eventTime);
+    }
+
+    // endTime도 있다면 포함
+    if (log.endTime) {
+      const endTime = new Date(log.endTime).getTime();
+      if (!isNaN(endTime)) {
+        allTimes.push(endTime);
+      }
+    }
+  });
+
+  if (allTimes.length === 0) {
+    const now = new Date();
+    return {
+      min: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+      max: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1),
+    };
+  }
+
+  const minTime = Math.min(...allTimes);
+  const maxTime = Math.max(...allTimes);
+
+  return {
+    min: new Date(minTime),
+    max: new Date(maxTime),
+  };
+};
+
+/** 버퍼 추가 (줌 아웃을 위해 여유 공간 추가) */
+export const addBuffer = (min, max) => {
+  const range = max - min;
+  const bufferRatio = 0.1; // 전체 범위의 10%를 버퍼로
+  const buffer = Math.max(range * bufferRatio, 24 * 60 * 60 * 1000); // 최소 1일
+
+  return {
+    min: new Date(min - buffer),
+    max: new Date(max + buffer),
+  };
+};
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\features\timeline\index.js -----
+
+export * from "./api/timelineApi";
+export { default as TimelineBoard } from "./components/TimelineBoard";
+export { default as TimelinePage } from "./pages/TimelinePage";
+export * from "./hooks";
+import "./styles/timeline.css";
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\layouts\MainLayout\Navbar.jsx -----
 
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -2938,7 +3968,198 @@ export default function Navbar() {
 }
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\shared\store.js -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\shared\components\Drawer\index.jsx -----
+
+import React from "react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+
+export default function Drawer({ isOpen, onClose, title, children }) {
+  return (
+    <>
+      {/* 배경 오버레이 - 완전 투명 */}
+      {isOpen && (
+        <div className="fixed inset-0 bg-black/20 z-40" onClick={onClose} />
+      )}
+
+      {/* 드로어 패널 - navbar 아래부터 시작 */}
+      <div
+        className={`fixed right-0 top-[125px] h-[calc(100vh-150px)] w-80 bg-white dark:bg-slate-800 shadow-xl z-40 rounded-l-2xl transform transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* 헤더 */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+            {title}
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none"
+          >
+            <XMarkIcon className="h-6 w-6" />
+          </button>
+        </div>
+
+        {/* 컨텐츠 */}
+        <div className="p-4 overflow-y-auto h-[calc(100%-4rem)]">
+          {children}
+        </div>
+      </div>
+    </>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\shared\components\LoadingSpinner\index.jsx -----
+
+export default function LoadingSpinner() {
+  return (
+    <div className="flex justify-center items-center" role="status">
+      <div className="animate-spin rounded-full h-5 w-5 border-4 border-blue-500 border-t-transparent" />
+    </div>
+  );
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\shared\components\index.js -----
+
+export { default as LoadingSpinner } from './LoadingSpinner';
+export { default as Drawer } from './Drawer';
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\shared\services\api\client.js -----
+
+const DEFAULT_TIMEOUT = 10000; // 10초
+const MAX_RETRIES = 3;
+
+/**
+ * 개선된 API 클라이언트
+ * @param {string} url - API 엔드포인트
+ * @param {Object} options - 요청 옵션
+ * @param {number} options.timeout - 타임아웃 (ms)
+ * @param {number} options.retries - 재시도 횟수
+ * @param {Object} options.params - 쿼리 파라미터
+ */
+export const apiClient = async (
+  url,
+  { params, timeout = DEFAULT_TIMEOUT, retries = MAX_RETRIES, ...opts } = {}
+) => {
+  // 기본 URL 유효성 검사
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  if (!baseUrl) {
+    throw new Error(
+      "API_BASE_URL이 설정되지 않았습니다. 환경변수를 확인해주세요."
+    );
+  }
+
+  // 쿼리스트링 생성
+  const qs = params ? "?" + new URLSearchParams(params) : "";
+  const fullUrl = baseUrl + url + qs;
+
+  // AbortController로 타임아웃 처리
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  const executeRequest = async (attempt = 1) => {
+    try {
+      const response = await fetch(fullUrl, {
+        headers: {
+          "Content-Type": "application/json",
+          ...opts.headers,
+        },
+        signal: controller.signal,
+        ...opts,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage;
+
+        // HTTP 상태 코드별 메시지
+        switch (response.status) {
+          case 400:
+            errorMessage = "잘못된 요청입니다.";
+            break;
+          case 401:
+            errorMessage = "인증이 필요합니다.";
+            break;
+          case 403:
+            errorMessage = "접근 권한이 없습니다.";
+            break;
+          case 404:
+            errorMessage = "요청한 데이터를 찾을 수 없습니다.";
+            break;
+          case 500:
+            errorMessage = "서버 오류가 발생했습니다.";
+            break;
+          case 503:
+            errorMessage = "서비스를 일시적으로 사용할 수 없습니다.";
+            break;
+          default:
+            errorMessage = errorText || `HTTP ${response.status} 오류`;
+        }
+
+        const error = new Error(errorMessage);
+        error.status = response.status;
+        error.url = fullUrl;
+        throw error;
+      }
+
+      return response.json();
+    } catch (error) {
+      clearTimeout(timeoutId);
+
+      // 타임아웃 에러 처리
+      if (error.name === "AbortError") {
+        throw new Error(`요청 시간이 초과되었습니다. (${timeout}ms)`);
+      }
+
+      // 네트워크 에러이고 재시도 가능한 경우
+      if (attempt < retries && isRetryableError(error)) {
+        console.warn(
+          `API 요청 실패 (${attempt}/${retries}): ${error.message}. 재시도 중...`
+        );
+        await delay(Math.pow(2, attempt) * 1000); // 지수 백오프
+        return executeRequest(attempt + 1);
+      }
+
+      // 마지막 에러는 그대로 throw
+      throw error;
+    }
+  };
+
+  return executeRequest();
+};
+
+/**
+ * 재시도 가능한 에러인지 확인
+ */
+function isRetryableError(error) {
+  // 네트워크 에러나 5xx 서버 에러는 재시도 가능
+  return (
+    !error.status || // 네트워크 에러
+    error.status >= 500 || // 서버 에러
+    error.status === 408 || // Request Timeout
+    error.status === 429 // Too Many Requests
+  );
+}
+
+/**
+ * 지연 함수
+ */
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\shared\store\index.js -----
+
+export { useSelectionStore } from "./selectionStore";
+
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\shared\store\selectionStore.js -----
 
 import { create } from "zustand";
 
@@ -2973,303 +4194,17 @@ export const useSelectionStore = create((set) => ({
 }));
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\src\styles\timeline.css -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\src\shared\styles\index.css -----
 
-/* ─────────────────────────────────────────────────────────────────────────
-   vis-timeline 커스터마이징
-───────────────────────────────────────────────────────────────────────── */
-
-.timeline-container { margin-bottom: 16px; }
-
-/* 공통 아이템 */
-.vis-item {
-  @apply border border-transparent text-slate-800;
-  border-radius: 0 !important;
-  margin-right: -1px;
-  box-shadow: none !important;
-  pointer-events: all !important;
-}
-.dark .vis-item { @apply text-slate-100; }
-
-/* 아이템 내부 content 텍스트 스타일 */
-.vis-item .vis-item-content {
-  font-size: 11px !important;  /* 폰트 크기 조절 */
-  font-weight: 500 !important;  /* 약간 굵게 */
-  padding: 2px 4px !important;  /* 내부 여백 */
-  white-space: nowrap !important;  /* 줄바꿈 방지 */
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;  /* 긴 텍스트는 ... 처리 */
-}
-
-/* 상태 색상 */
-.vis-item.bg-red-500    { @apply bg-red-500 border-red-600; }
-.vis-item.bg-green-500  { @apply bg-green-500 border-green-600; }
-.vis-item.bg-blue-500   { @apply bg-blue-500 border-blue-600; }
-.vis-item.bg-yellow-500 { @apply bg-yellow-500 border-yellow-600; }
-.vis-item.bg-gray-300   { @apply bg-gray-300 border-gray-400; }
-/* 600 계열 */
-.vis-item.bg-red-600    { @apply bg-red-600  border-red-700; }
-.vis-item.bg-blue-600   { @apply bg-blue-600 border-blue-700; }
-.vis-item.bg-yellow-600 { @apply bg-yellow-600 border-yellow-700; }
-.vis-item.bg-green-600  { @apply bg-green-600 border-green-700; }
-.vis-item.bg-amber-600  { @apply bg-amber-600 border-amber-700; }
-.vis-item.bg-purple-600 { @apply bg-purple-600 border-purple-700; }
-.vis-item.bg-gray-600   { @apply bg-gray-600 border-gray-700; }
-.vis-item.bg-orange-600 { @apply bg-orange-600 border-orange-700; }
-
-/* 선택 아이템 */
-.vis-item.vis-selected {
-  outline: 2px dashed #fb923c !important;  
-  outline-offset: -2px !important;              
-  background-color: rgba(251, 146, 60, 0.2) !important; 
-  filter: brightness(1.1) !important;
-  z-index: 10 !important;
-}
-
-/* 레인지/포인트 */
-.vis-item.vis-range { pointer-events: all !important; min-height: 20px !important; }
-.vis-item.vis-point { pointer-events: all !important; }
-
-/* 시간축 텍스트 */
-.vis-time-axis .vis-text,
-.vis-time-axis .vis-label { font-size: 12px !important; color: #334155; }
-.dark .vis-time-axis .vis-text,
-.dark .vis-time-axis .vis-label { color: #f1f5f9 !important; }
-
-/* 그룹 라벨 */
-.vis-label.custom-group-label { color: #334155; font-size: 12px !important;}
-.dark .vis-label.custom-group-label { color: #f1f5f9 !important; font-size: 12px !important; }
-
-/* 테이블 스크롤바 */
-.table-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
-.table-scroll::-webkit-scrollbar-track { background: #ffffff; border-radius: 10px; }
-.table-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; border: 1px solid #e2e8f0; }
-.dark .table-scroll::-webkit-scrollbar-track { background: #1e293b; }
-.dark .table-scroll::-webkit-scrollbar-thumb { background: #475569; border: 1px solid #1e293b; }
-.dark .table-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
-
-/* react-window 스크롤바 스타일 */
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9;
-}
-
-.dark .scrollbar-thin {
-  scrollbar-color: #475569 #1e293b;
-}
-
-/* 웹킷 브라우저용 스크롤바 */
-.scrollbar-thin::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 4px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 4px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
-}
-
-.dark .scrollbar-thin::-webkit-scrollbar-track {
-  background: #1e293b;
-}
-
-.dark .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #475569;
-}
-
-.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
-}
-
-/* 그룹 라벨 고정 폭 */
-.vis-label.custom-group-label {
-  width: 150px !important;
-  min-width: 150px !important;
-  max-width: 150px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* 그룹 라벨에 legend-mode 클래스가 추가됐을 때만 폰트 크기를 10px로 */
-.vis-label.legend-mode {
-  font-size: 12px !important;
-  font-weight: normal !important;
-  letter-spacing: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 240px !important;
-  min-width: 240px !important;
-  max-width: 240px !important;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 0 !important;
-}
-
-/* 가상 스크롤 최적화 */
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9;
-  /* 하드웨어 가속 */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-/* 간단한 TIP 그룹 라벨 (PPID만 표시) */
-.tip-group-label-simple {
-  font-size: 12px;
-  font-weight: 600;
-  color: #3b82f6;
-  text-align: center;
-}
-
-.dark .tip-group-label-simple {
-  color: #60a5fa;
-}
-
-/* TIP 그룹 스타일 */
-.vis-label.tip-group {
-  background-color: rgba(59, 130, 246, 0.05);
-  border-left: 3px solid #3b82f6;
-}
-
-.dark .vis-label.tip-group {
-  background-color: rgba(59, 130, 246, 0.1);
-}
-
-/* TIP 그룹 hover 효과 */
-.vis-label.tip-group:hover {
-  background-color: rgba(59, 130, 246, 0.15);
-}
-
-.dark .vis-label.tip-group:hover {
-  background-color: rgba(59, 130, 246, 0.25);
-}
-
-/* 툴팁 스타일 개선 */
-.vis-tooltip {
-  background-color: rgba(0, 0, 0, 0.9) !important;
-  color: white !important;
-  font-size: 11px !important;
-  padding: 8px 12px !important;
-  border-radius: 6px !important;
-  white-space: nowrap !important;
-}
-
------ C:\Users\pjw75\Desktop\eqp-timeline\src\App.jsx -----
-
-import React, { Suspense, lazy } from "react";
-import { Routes, Route, Link } from "react-router-dom";
-import Navbar from "@/shared/Navbar";
-import LoadingSpinner from "@/shared/LoadingSpinner";
-
-const TimelinePage = lazy(() => import("@/pages/TimelinePage"));
-const AppsPage = lazy(() => import("@/pages/AppsPage"));
-
-const HomePage = () => (
-  <div className="p-6 text-center">
-    <h1 className="text-2xl font-bold">홈페이지 🎉</h1>
-    <p>
-      상단의{" "}
-      <Link className="text-indigo-600" to="/timeline">
-        Timeline
-      </Link>{" "}
-      메뉴를 눌러 EQP 로그를 확인하세요.
-    </p>
-  </div>
-);
-
-export default function App() {
-  return (
-    <div className="h-screen flex flex-col overflow-hidden">
-      <Navbar />
-      <div className="flex-1 overflow-hidden px-4">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route
-            path="/timeline"
-            element={
-              <Suspense
-                fallback={
-                  <div className="flex items-center justify-center h-[80vh]">
-                    <LoadingSpinner />
-                  </div>
-                }
-              >
-                <TimelinePage />
-              </Suspense>
-            }
-          />
-          {/* URL 파라미터를 통한 직접 접근 라우트 - sdwtId 제거 */}
-          <Route
-            path="/timeline/:lineId/:eqpId"
-            element={
-              <Suspense
-                fallback={
-                  <div className="flex items-center justify-center h-[80vh]">
-                    <LoadingSpinner />
-                  </div>
-                }
-              >
-                <TimelinePage />
-              </Suspense>
-            }
-          />
-          <Route path="/apps" element={<AppsPage />} />
-        </Routes>
-      </div>
-    </div>
-  );
-}
-
-
------ C:\Users\pjw75\Desktop\eqp-timeline\src\index.css -----
-
+/* src/shared/styles/index.css */
 @import "tailwindcss";
 
-/* === vis-timeline 공통 스타일 === */
+/* 다크모드 설정 */
 @custom-variant dark (&:where(.dark, .dark *));
-@import "./styles/timeline.css";
-
------ C:\Users\pjw75\Desktop\eqp-timeline\src\main.jsx -----
-
-import React, { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import App from "@/App";
-import "@/index.css";
-
-const qc = new QueryClient();
-
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <QueryClientProvider client={qc}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </QueryClientProvider>
-  </StrictMode>
-);
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\eslint.config.js -----
+
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\eslint.config.js -----
 
 import js from '@eslint/js'
 import globals from 'globals'
@@ -3306,7 +4241,7 @@ export default [
 ]
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\index.html -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\index.html -----
 
 <!doctype html>
 <html lang="en" class="bg-slate-50 dark:bg-slate-900">
@@ -3327,12 +4262,13 @@ export default [
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="/src/app/main.jsx"></script>
+
   </body>
 </html>
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\tailwind.config.js -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\tailwind.config.js -----
 
 /** @type {import('tailwindcss').Config} */
 import forms from "@tailwindcss/forms";
@@ -3358,27 +4294,27 @@ export default {
 };
 
 
------ C:\Users\pjw75\Desktop\eqp-timeline\vite.config.js -----
+----- C:\Users\pjw75\Desktop\Code\eqp-timeline\vite.config.js -----
 
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite"; // ✅ v4용 Vite 플러그인
+import tailwindcss from "@tailwindcss/vite";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [
-    react({
-      // 선택) React Fast-Refresh & props-on-export 경고 제어 등
-    }),
-    tailwindcss(), // ← PostCSS도 자동 연결
-  ],
+  plugins: [react(), tailwindcss()],
 
   resolve: {
-    // '@/foo' → 'src/foo'
-    alias: { "@": path.resolve(__dirname, "src") },
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+      "@features": path.resolve(__dirname, "src/features"),
+      "@shared": path.resolve(__dirname, "src/shared"),
+      "@layouts": path.resolve(__dirname, "src/layouts"),
+      "@app": path.resolve(__dirname, "src/app"),
+    },
   },
 
   server: {

@@ -1,5 +1,5 @@
 // src/features/timeline/utils/dataTransformers.js
-import { formatDateTime } from "@/shared/dateUtils";
+import { formatDateTime } from "./dateUtils";
 
 export function groupLogsByType(logs) {
   const groups = { EQP: [], TIP: [], RACB: [], CTTTM: [], JIRA: [] };

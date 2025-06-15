@@ -1,4 +1,4 @@
-import { apiClient } from "@/shared/apiClient";
+import { apiClient } from "@shared/services/api/client";
 
 export const timelineApi = {
   // "라인 목록" 엔드포인트

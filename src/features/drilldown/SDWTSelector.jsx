@@ -1,6 +1,6 @@
 import React from "react";
 import { useSDWT } from "./hooks/useLineQueries";
-import LoadingSpinner from "@/shared/LoadingSpinner";
+import { LoadingSpinner } from "@shared/components";
 
 /**
  * SDWT 드롭다운

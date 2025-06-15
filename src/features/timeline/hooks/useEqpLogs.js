@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@/shared/apiClient";
+import { apiClient } from "@shared/services/api/client";
 
 export const useEqpLogs = (lineId, eqpId) => {
   return useQuery({

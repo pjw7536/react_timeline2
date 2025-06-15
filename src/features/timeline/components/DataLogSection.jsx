@@ -1,7 +1,7 @@
 // src/features/timeline/components/DataLogSection.jsx
 import React from "react";
-import VirtualizedDataTable from "@/features/table/VirtualizedDataTable";
-import LoadingSpinner from "@/shared/LoadingSpinner";
+import VirtualizedDataTable from "@features/table/components/VirtualizedDataTable";
+import { LoadingSpinner } from "@shared/components";
 
 export default function DataLogSection({
   eqpId,

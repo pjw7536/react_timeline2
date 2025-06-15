@@ -6,13 +6,14 @@
 
 /* 공통 아이템 */
 .vis-item {
-  @apply border border-transparent text-slate-800;
+  border: 1px solid transparent;
+  color: #1e293b;
   border-radius: 0 !important;
   margin-right: -1px;
   box-shadow: none !important;
   pointer-events: all !important;
 }
-.dark .vis-item { @apply text-slate-100; }
+.dark .vis-item { color: #f1f5f9; }
 
 /* 아이템 내부 content 텍스트 스타일 */
 .vis-item .vis-item-content {
@@ -25,20 +26,20 @@
 }
 
 /* 상태 색상 */
-.vis-item.bg-red-500    { @apply bg-red-500 border-red-600; }
-.vis-item.bg-green-500  { @apply bg-green-500 border-green-600; }
-.vis-item.bg-blue-500   { @apply bg-blue-500 border-blue-600; }
-.vis-item.bg-yellow-500 { @apply bg-yellow-500 border-yellow-600; }
-.vis-item.bg-gray-300   { @apply bg-gray-300 border-gray-400; }
+.vis-item.bg-red-500    { background-color: #ef4444; border-color: #dc2626; }
+.vis-item.bg-green-500  { background-color: #22c55e; border-color: #16a34a; }
+.vis-item.bg-blue-500   { background-color: #3b82f6; border-color: #2563eb; }
+.vis-item.bg-yellow-500 { background-color: #eab308; border-color: #ca8a04; }
+.vis-item.bg-gray-300   { background-color: #d1d5db; border-color: #9ca3af; }
 /* 600 계열 */
-.vis-item.bg-red-600    { @apply bg-red-600  border-red-700; }
-.vis-item.bg-blue-600   { @apply bg-blue-600 border-blue-700; }
-.vis-item.bg-yellow-600 { @apply bg-yellow-600 border-yellow-700; }
-.vis-item.bg-green-600  { @apply bg-green-600 border-green-700; }
-.vis-item.bg-amber-600  { @apply bg-amber-600 border-amber-700; }
-.vis-item.bg-purple-600 { @apply bg-purple-600 border-purple-700; }
-.vis-item.bg-gray-600   { @apply bg-gray-600 border-gray-700; }
-.vis-item.bg-orange-600 { @apply bg-orange-600 border-orange-700; }
+.vis-item.bg-red-600    { background-color: #dc2626; border-color: #b91c1c; }
+.vis-item.bg-blue-600   { background-color: #2563eb; border-color: #1d4ed8; }
+.vis-item.bg-yellow-600 { background-color: #ca8a04; border-color: #a16207; }
+.vis-item.bg-green-600  { background-color: #16a34a; border-color: #15803d; }
+.vis-item.bg-amber-600  { background-color: #d97706; border-color: #b45309; }
+.vis-item.bg-purple-600 { background-color: #9333ea; border-color: #7c3aed; }
+.vis-item.bg-gray-600   { background-color: #4b5563; border-color: #374151; }
+.vis-item.bg-orange-600 { background-color: #ea580c; border-color: #c2410c; }
 
 /* 선택 아이템 */
 .vis-item.vis-selected {

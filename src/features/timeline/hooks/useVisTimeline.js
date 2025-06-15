@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { DataSet } from "vis-data";
-import { useSelectionStore } from "@/shared/store";
+import { useSelectionStore } from "@shared/store";
 
 /**
  * vis-timeline 생성을 공통 처리하는 훅

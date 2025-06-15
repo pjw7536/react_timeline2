@@ -1,0 +1,6 @@
+/* src/shared/styles/index.css */
+@import "tailwindcss";
+
+/* 다크모드 설정 */
+@custom-variant dark (&:where(.dark, .dark *));
+

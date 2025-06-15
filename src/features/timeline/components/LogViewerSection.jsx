@@ -1,7 +1,7 @@
 // src/features/timeline/components/LogViewerSection.jsx
 import React from "react";
-import { LineSelector, SDWTSelector, EqpSelector } from "@/features/drilldown";
-import PrcGroupSelector from "@/features/drilldown/PrcGroupSelector";
+import { LineSelector, SDWTSelector, EqpSelector } from "@features/drilldown";
+import PrcGroupSelector from "@features/drilldown/PrcGroupSelector";
 
 export default function LogViewerSection({
   lineId,
