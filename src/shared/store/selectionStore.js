@@ -16,16 +16,5 @@ export const useSelectionStore = create((set) => ({
   setPrcGroup: (id) => set({ prcGroup: id, eqpId: "" }), // PRC Group setter 추가
   setEqp: (id) => set({ eqpId: id }),
 
-  /* —— C. vis-timeline 인스턴스 풀 —— */
-  pool: [],
-  register: (tl) => set((s) => ({ pool: [...s.pool, tl] })),
-  unregister: (tl) => set((s) => ({ pool: s.pool.filter((t) => t !== tl) })),
-
-  syncRange: (self, start, end) =>
-    set((state) => {
-      state.pool.forEach((tl) => {
-        if (tl !== self) tl.setWindow(start, end, { animation: false });
-      });
-      return state;
-    }),
+  // vis-timeline 관련 부분은 timelineStore로 이동됨
 }));

@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 import { useSelectionStore } from "@shared/store";
+import { useTimelineStore } from "@features/timeline/store/timelineStore";
 import { useUrlValidation } from "@features/timeline/hooks/useUrlValidation";
 import { useUrlSync } from "@features/timeline/hooks/useUrlSync";
 import { transformLogsToTableData } from "@features/timeline/utils/dataTransformers";
@@ -21,6 +22,8 @@ import { useEventLogs } from "@features/timeline/hooks/useEventLogs";
 
 export default function TimelinePage() {
   const params = useParams();
+
+  // Selection Store (드릴다운 상태와 선택 상태)
   const {
     lineId,
     sdwtId,
@@ -32,6 +35,10 @@ export default function TimelinePage() {
     setEqp,
     selectedRow,
   } = useSelectionStore();
+
+  // Timeline Store (timeline 전용 상태)
+  const { showLegend, selectedTipGroups, setShowLegend, setSelectedTipGroups } =
+    useTimelineStore();
 
   // URL 검증
   const { isValidating, validationError, isUrlInitialized } = useUrlValidation(
@@ -79,11 +86,9 @@ export default function TimelinePage() {
     );
   }, [eqpLogs, tipLogs, eventLogs, enabled]);
 
-  // 로컬 상태
+  // 로컬 상태 (timeline과 관련 없는 상태들)
   const [typeFilters, setTypeFilters] = useState(DEFAULT_TYPE_FILTERS);
-  const [showLegend, setShowLegend] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedTipGroups, setSelectedTipGroups] = useState(["__ALL__"]);
 
   // 필터 핸들러
   const handleFilter = (e) =>
@@ -118,8 +123,6 @@ export default function TimelinePage() {
       </div>
     );
   }
-
-  // 에러 상황 체크 (개별 에러는 각 훅에서 처리됨)
 
   // 검증 에러 표시
   if (validationError) {
@@ -227,8 +230,8 @@ export default function TimelinePage() {
       >
         <TimelineSettings
           showLegend={showLegend}
-          onLegendToggle={() => setShowLegend((v) => !v)}
-          tipLogs={filteredTipLogs} // 병합된 로그에서 필터링된 TIP 로그 전달
+          onLegendToggle={() => setShowLegend(!showLegend)}
+          tipLogs={filteredTipLogs}
           selectedTipGroups={selectedTipGroups}
           onTipFilterChange={setSelectedTipGroups}
         />

@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { TimelinePage } from "@features/timeline";
-import { AppsPage } from "@features/apps";
+import { AppStorePage } from "@features/appstore";
 
 const HomePage = () => (
   <div className="p-6 text-center">
@@ -16,7 +16,7 @@ export default function AppRoutes() {
       <Route path="/" element={<HomePage />} />
       <Route path="/timeline" element={<TimelinePage />} />
       <Route path="/timeline/:lineId/:eqpId" element={<TimelinePage />} />
-      <Route path="/apps" element={<AppsPage />} />
+      <Route path="/appstore" element={<AppStorePage />} />
     </Routes>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { DataSet } from "vis-data";
 import { useSelectionStore } from "@shared/store";
+import { useTimelineStore } from "../store/timelineStore";
 
 /**
  * vis-timeline 생성을 공통 처리하는 훅
@@ -13,9 +14,12 @@ import { useSelectionStore } from "@shared/store";
 export function useVisTimeline({ containerRef, groups, items, options }) {
   // vis-timeline 인스턴스 보관용 ref
   const tlRef = useRef(null);
-  // 전역 스토어에서 타임라인 풀 관리 및 선택 상태 제어 함수 사용
-  const { register, unregister, syncRange, setSelectedRow, selectedRow } =
-    useSelectionStore();
+
+  // 선택 상태는 shared store에서 가져오기
+  const { setSelectedRow, selectedRow } = useSelectionStore();
+
+  // timeline 관련 상태는 timeline store에서 가져오기
+  const { register, unregister, syncRange } = useTimelineStore();
 
   // 1. 컴포넌트 마운트 시 한 번만 인스턴스 생성
   useEffect(() => {
@@ -64,7 +68,7 @@ export function useVisTimeline({ containerRef, groups, items, options }) {
         tlRef.current.destroy();
       }
     };
-  }, []);
+  }, [register, unregister, syncRange, setSelectedRow]);
 
   // 2. 아이템 배열이 바뀌면 교체
   useEffect(() => {

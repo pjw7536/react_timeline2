@@ -400,7 +400,7 @@ function AppDetailModal({ app, onClose }) {
 }
 
 // 메인 앱스토어 컴포넌트
-export default function AppsPage() {
+export default function AppStorePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const [selectedApp, setSelectedApp] = useState(null);
