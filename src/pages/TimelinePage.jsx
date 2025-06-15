@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
-import { useLogs } from "@/features/timeline";
 import { useSelectionStore } from "@/shared/store";
 import { useUrlValidation } from "@/features/timeline/hooks/useUrlValidation";
 import { useUrlSync } from "@/features/timeline/hooks/useUrlSync";
@@ -15,6 +14,10 @@ import LogDetailSection from "@/features/table/LogDetailSection";
 import LoadingSpinner from "@/shared/LoadingSpinner";
 import Drawer from "@/shared/Drawer";
 import TimelineSettings from "@/features/timeline/components/TimelineSettings";
+// 각 타임라인의 개별 훅들을 직접 import
+import { useEqpLogs } from "@/features/timeline/hooks/useEqpLogs";
+import { useTipLogs } from "@/features/timeline/hooks/useTipLogs";
+import { useEventLogs } from "@/features/timeline/hooks/useEventLogs";
 
 export default function TimelinePage() {
   const params = useParams();
@@ -44,13 +47,37 @@ export default function TimelinePage() {
   // URL 동기화
   useUrlSync(lineId, eqpId, isValidating, isUrlInitialized);
 
-  // 로그 데이터 가져오기 (테이블용)
+  // 각 타임라인의 로그 데이터를 개별적으로 가져오기
   const enabled = Boolean(lineId && eqpId);
-  const {
-    data: logs = [],
-    isLoading: logsLoading,
-    isError: logsError,
-  } = useLogs({ lineId, eqpId }, enabled);
+  const { data: eqpLogs = [], isLoading: eqpLoading } = useEqpLogs(
+    lineId,
+    eqpId
+  );
+  const { data: tipLogs = [], isLoading: tipLoading } = useTipLogs(
+    lineId,
+    eqpId
+  );
+  const { data: eventLogs = [], isLoading: eventLoading } = useEventLogs(
+    lineId,
+    eqpId
+  );
+
+  // 로딩 상태 계산
+  const logsLoading = eqpLoading || tipLoading || eventLoading;
+
+  // 모든 로그 데이터를 하나로 합치기
+  const mergedLogs = useMemo(() => {
+    if (!enabled) return [];
+
+    // 모든 로그를 배열로 합치기
+    const allLogs = [...eqpLogs, ...tipLogs, ...eventLogs];
+
+    // 시간순으로 정렬 (최신순)
+    return allLogs.sort(
+      (a, b) =>
+        new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
+    );
+  }, [eqpLogs, tipLogs, eventLogs, enabled]);
 
   // 로컬 상태
   const [typeFilters, setTypeFilters] = useState(DEFAULT_TYPE_FILTERS);
@@ -62,25 +89,25 @@ export default function TimelinePage() {
   const handleFilter = (e) =>
     setTypeFilters((prev) => ({ ...prev, [e.target.name]: e.target.checked }));
 
-  // 테이블 데이터 변환
+  // 테이블 데이터 변환 (병합된 로그 사용)
   const tableData = useMemo(
     () =>
       enabled && !logsLoading
-        ? transformLogsToTableData(logs, typeFilters)
+        ? transformLogsToTableData(mergedLogs, typeFilters)
         : [],
-    [logs, logsLoading, enabled, typeFilters]
+    [mergedLogs, logsLoading, enabled, typeFilters]
   );
 
-  // 선택된 로그
+  // 선택된 로그 (병합된 로그에서 찾기)
   const selectedLog = useMemo(
-    () => logs.find((log) => String(log.id) === String(selectedRow)),
-    [logs, selectedRow]
+    () => mergedLogs.find((log) => String(log.id) === String(selectedRow)),
+    [mergedLogs, selectedRow]
   );
 
   // TIP 로그만 필터링 (Settings Drawer용)
-  const tipLogs = useMemo(
-    () => logs.filter((log) => log.logType === "TIP"),
-    [logs]
+  const filteredTipLogs = useMemo(
+    () => mergedLogs.filter((log) => log.logType === "TIP"),
+    [mergedLogs]
   );
 
   // 검증 중일 때 로딩 표시
@@ -92,14 +119,7 @@ export default function TimelinePage() {
     );
   }
 
-  // 에러 처리
-  if (logsError) {
-    return (
-      <div className="flex items-center justify-center h-[80vh]">
-        <p className="text-red-500">로그 로딩 오류!</p>
-      </div>
-    );
-  }
+  // 에러 상황 체크 (개별 에러는 각 훅에서 처리됨)
 
   // 검증 에러 표시
   if (validationError) {
@@ -191,6 +211,9 @@ export default function TimelinePage() {
               eqpId={eqpId}
               showLegend={showLegend}
               selectedTipGroups={selectedTipGroups}
+              eqpLogs={eqpLogs}
+              tipLogs={tipLogs}
+              eventLogs={eventLogs}
             />
           </div>
         )}
@@ -205,7 +228,7 @@ export default function TimelinePage() {
         <TimelineSettings
           showLegend={showLegend}
           onLegendToggle={() => setShowLegend((v) => !v)}
-          tipLogs={tipLogs} // 필터링된 TIP 로그만 전달
+          tipLogs={filteredTipLogs} // 병합된 로그에서 필터링된 TIP 로그 전달
           selectedTipGroups={selectedTipGroups}
           onTipFilterChange={setSelectedTipGroups}
         />

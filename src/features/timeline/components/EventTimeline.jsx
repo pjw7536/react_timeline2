@@ -1,9 +1,7 @@
 import React, { useMemo } from "react";
 import BaseTimeline from "./BaseTimeline";
-import { useEventLogs } from "../hooks/useEventLogs";
 import { processData } from "../utils/timelineUtils";
 import { makeGroupLabel } from "../utils/groupLabel";
-import LoadingSpinner from "@/shared/LoadingSpinner";
 
 // CTTTM, RACB, JIRA를 하나로 묶은 이벤트 타임라인
 export default function EventTimeline({
@@ -12,10 +10,8 @@ export default function EventTimeline({
   range,
   showLegend,
   showTimeAxis = true,
+  eventLogs = [], // props로 데이터 받기
 }) {
-  // 이벤트 로그들을 한번에 가져오기
-  const { data: eventLogs = [], isLoading } = useEventLogs(lineId, eqpId);
-
   const groups = useMemo(
     () => [
       {
@@ -73,14 +69,6 @@ export default function EventTimeline({
     }),
     [range]
   );
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-32">
-        <LoadingSpinner />
-      </div>
-    );
-  }
 
   return (
     <BaseTimeline

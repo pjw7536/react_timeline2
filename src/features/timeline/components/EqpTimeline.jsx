@@ -1,9 +1,7 @@
 import React, { useMemo } from "react";
 import BaseTimeline from "./BaseTimeline";
-import { useEqpLogs } from "../hooks/useEqpLogs";
 import { processData } from "../utils/timelineUtils";
 import { makeGroupLabel } from "../utils/groupLabel";
-import LoadingSpinner from "@/shared/LoadingSpinner";
 
 export default function EqpTimeline({
   lineId,
@@ -12,9 +10,8 @@ export default function EqpTimeline({
   showLegend,
   showTimeAxis = false,
   height = 10, // EQP는 단일 그룹이므로 낮은 높이
+  eqpLogs = [], // props로 데이터 받기
 }) {
-  const { data: eqpLogs = [], isLoading } = useEqpLogs(lineId, eqpId);
-
   const groups = useMemo(
     () => [
       {
@@ -40,14 +37,6 @@ export default function EqpTimeline({
     }),
     [range]
   );
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-32">
-        <LoadingSpinner />
-      </div>
-    );
-  }
 
   return (
     <BaseTimeline
