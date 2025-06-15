@@ -7,7 +7,9 @@ import { LoadingSpinner } from "@shared/components";
 const TimelinePage = lazy(() =>
   import("@features/timeline/pages/TimelinePage")
 );
-const AppsPage = lazy(() => import("@features/appstore/pages/AppStorePage"));
+const AppStorePage = lazy(() =>
+  import("@features/appstore/pages/AppStorePage")
+);
 
 const HomePage = () => (
   <div className="p-6 text-center">
@@ -51,7 +53,7 @@ export default function App() {
               </Suspense>
             }
           />
-          <Route path="/appstore" element={<AppsPage />} />
+          <Route path="/appstore" element={<AppStorePage />} />
         </Routes>
       </div>
     </div>

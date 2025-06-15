@@ -1,1 +1,1 @@
-export { default as AppStorePage } from "./pages/AppsPage";
+export { default as AppStorePage } from "./pages/AppStorePage";

@@ -11,7 +11,7 @@ import LogViewerSection from "@features/timeline/components/LogViewerSection";
 import DataLogSection from "@features/timeline/components/DataLogSection";
 import ShareButton from "@features/timeline/components/ShareButton";
 import { TimelineBoard } from "@features/timeline";
-import LogDetailSection from "@features/table/components/LogDetailSection";
+import { LogDetailSection } from "@features/logdetail";
 import { LoadingSpinner } from "@shared/components";
 import { Drawer } from "@shared/components";
 import TimelineSettings from "@features/timeline/components/TimelineSettings";
