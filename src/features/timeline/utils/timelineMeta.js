@@ -6,8 +6,8 @@ export const groupConfig = {
   EQP: {
     stateColors: {
       RUN: "bg-blue-600 border-blue-700",
-      IDLE: "bg-yellow-600 border-yellow-700",
-      PM: "bg-green-600 border-green-700",
+      IDLE: "bg-green-600 border-green-700",
+      PM: "bg-yellow-600 border-yellow-700",
       DOWN: "bg-red-600 border-red-700",
     },
   },

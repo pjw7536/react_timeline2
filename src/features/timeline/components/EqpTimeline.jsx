@@ -9,8 +9,8 @@ export default function EqpTimeline({
   range,
   showLegend,
   showTimeAxis = false,
-  height = 10, // EQP는 단일 그룹이므로 낮은 높이
-  eqpLogs = [], // props로 데이터 받기
+  height,
+  eqpLogs = [],
 }) {
   const groups = useMemo(
     () => [
@@ -34,8 +34,11 @@ export default function EqpTimeline({
       min: range.min,
       max: range.max,
       zoomMin: 60 * 60 * 1000,
+      height: height,
+      verticalScroll: false,
+      align: "center",
     }),
-    [range]
+    [range, height]
   );
 
   return (
@@ -46,8 +49,6 @@ export default function EqpTimeline({
       title="⚙️ EQP 상태"
       showTimeAxis={showTimeAxis}
       height={height}
-      minHeight={80}
-      maxHeight={200}
       headerExtra={
         <span className="text-xs text-slate-500">{eqpLogs.length}개 로그</span>
       }

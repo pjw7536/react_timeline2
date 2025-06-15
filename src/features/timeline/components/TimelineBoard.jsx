@@ -1,3 +1,4 @@
+// src/features/timeline/components/TimelineBoard.jsx
 import EqpTimeline from "./EqpTimeline";
 import TipTimeline from "./TipTimeline";
 import EventTimeline from "./EventTimeline";
@@ -8,24 +9,25 @@ export default function TimelineBoard({
   eqpId,
   showLegend,
   selectedTipGroups,
-  // 새로 추가: 각 타임라인의 로그 데이터를 props로 받기
   eqpLogs = [],
   tipLogs = [],
   eventLogs = [],
 }) {
-  // 모든 로그를 합쳐서 범위 계산
   const allLogs = [...eqpLogs, ...tipLogs, ...eventLogs];
   const range = useTimelineRange(allLogs);
 
   return (
-    <div className="w-full space-y-0">
+    <div
+      className="w-full space-y-0"
+      style={{ position: "relative", zIndex: 1 }}
+    >
       <EqpTimeline
         lineId={lineId}
         eqpId={eqpId}
         range={range}
         showLegend={showLegend}
         showTimeAxis={false}
-        eqpLogs={eqpLogs} // 데이터를 props로 전달
+        eqpLogs={eqpLogs}
       />
 
       <TipTimeline
@@ -35,7 +37,7 @@ export default function TimelineBoard({
         showLegend={showLegend}
         selectedTipGroups={selectedTipGroups}
         showTimeAxis={false}
-        tipLogs={tipLogs} // 데이터를 props로 전달
+        tipLogs={tipLogs}
       />
 
       <EventTimeline
@@ -44,7 +46,7 @@ export default function TimelineBoard({
         range={range}
         showLegend={showLegend}
         showTimeAxis={true}
-        eventLogs={eventLogs} // 데이터를 props로 전달
+        eventLogs={eventLogs}
       />
     </div>
   );

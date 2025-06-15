@@ -2,7 +2,7 @@
    vis-timeline 커스터마이징
 ───────────────────────────────────────────────────────────────────────── */
 
-.timeline-container { margin-bottom: 16px; }
+
 
 /* 공통 아이템 */
 .vis-item {
@@ -19,7 +19,6 @@
 .vis-item .vis-item-content {
   font-size: 11px !important;  /* 폰트 크기 조절 */
   font-weight: 500 !important;  /* 약간 굵게 */
-  padding: 2px 4px !important;  /* 내부 여백 */
   white-space: nowrap !important;  /* 줄바꿈 방지 */
   overflow: hidden !important;
   text-overflow: ellipsis !important;  /* 긴 텍스트는 ... 처리 */
@@ -43,8 +42,8 @@
 
 /* 선택 아이템 */
 .vis-item.vis-selected {
-  outline: 2px dashed #fb923c !important;  
-  outline-offset: -2px !important;              
+  outline: 1px dashed #fb923c !important;  
+  outline-offset: 0px !important;              
   background-color: rgba(251, 146, 60, 0.2) !important; 
   filter: brightness(1.1) !important;
   z-index: 10 !important;
@@ -153,21 +152,7 @@
   color: #60a5fa;
 }
 
-/* TIP 그룹 스타일 */
-.vis-label.tip-group {
-  background-color: rgba(59, 130, 246, 0.05);
-  border-left: 3px solid #3b82f6;
-}
-.dark .vis-label.tip-group {
-  background-color: rgba(59, 130, 246, 0.1);
-}
-/* TIP 그룹 hover 효과 */
-.vis-label.tip-group:hover {
-  background-color: rgba(59, 130, 246, 0.15);
-}
-.dark .vis-label.tip-group:hover {
-  background-color: rgba(59, 130, 246, 0.25);
-}
+
 
 /* 툴팁 스타일 개선 */
 .vis-tooltip {
@@ -177,6 +162,7 @@
   padding: 8px 12px !important;
   border-radius: 6px !important;
   white-space: nowrap !important;
+  overflow: visible !important;
 }
 
 /* x축이 없는 타임라인 스타일 */
@@ -196,10 +182,63 @@
 }
 
 
-
-/* 컴팩트 모드 */
-.compact-timeline .vis-group {
-  min-height: 20px !important;
-  padding: 2px 0 !important;
+/* vis-timeline 스크롤바 스타일 (테이블과 동일하게) */
+.vis-panel.vis-left::-webkit-scrollbar,
+.vis-panel.vis-center::-webkit-scrollbar,
+.vis-panel.vis-right::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
+.vis-panel.vis-left::-webkit-scrollbar-track,
+.vis-panel.vis-center::-webkit-scrollbar-track,
+.vis-panel.vis-right::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.vis-panel.vis-left::-webkit-scrollbar-thumb,
+.vis-panel.vis-center::-webkit-scrollbar-thumb,
+.vis-panel.vis-right::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+
+.vis-panel.vis-left::-webkit-scrollbar-thumb:hover,
+.vis-panel.vis-center::-webkit-scrollbar-thumb:hover,
+.vis-panel.vis-right::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* 다크모드 스타일 */
+.dark .vis-panel.vis-left::-webkit-scrollbar-track,
+.dark .vis-panel.vis-center::-webkit-scrollbar-track,
+.dark .vis-panel.vis-right::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark .vis-panel.vis-left::-webkit-scrollbar-thumb,
+.dark .vis-panel.vis-center::-webkit-scrollbar-thumb,
+.dark .vis-panel.vis-right::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .vis-panel.vis-left::-webkit-scrollbar-thumb:hover,
+.dark .vis-panel.vis-center::-webkit-scrollbar-thumb:hover,
+.dark .vis-panel.vis-right::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Firefox 지원을 위한 스타일 */
+.vis-panel.vis-left,
+.vis-panel.vis-center,
+.vis-panel.vis-right {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+
+.dark .vis-panel.vis-left,
+.dark .vis-panel.vis-center,
+.dark .vis-panel.vis-right {
+  scrollbar-color: #475569 #1e293b;
+}

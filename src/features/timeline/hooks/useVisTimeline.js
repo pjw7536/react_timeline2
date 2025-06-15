@@ -15,6 +15,9 @@ export function useVisTimeline({ containerRef, groups, items, options }) {
   // vis-timeline 인스턴스 보관용 ref
   const tlRef = useRef(null);
 
+  // 현재 range를 저장할 ref 추가
+  const currentRangeRef = useRef(null);
+
   // 선택 상태는 shared store에서 가져오기
   const { setSelectedRow, selectedRow } = useSelectionStore();
 
@@ -40,9 +43,11 @@ export function useVisTimeline({ containerRef, groups, items, options }) {
       register(tlRef.current);
 
       // 다른 타임라인과 범위 동기화
-      tlRef.current.on("rangechange", ({ start, end }) =>
-        syncRange(tlRef.current, start, end)
-      );
+      tlRef.current.on("rangechange", ({ start, end }) => {
+        // 현재 range를 저장
+        currentRangeRef.current = { start, end };
+        syncRange(tlRef.current, start, end);
+      });
 
       // 아이템 선택 시 전역 상태에 반영
       tlRef.current.on("select", ({ items }) => {
@@ -89,10 +94,17 @@ export function useVisTimeline({ containerRef, groups, items, options }) {
     }
   }, [groups]);
 
-  // 4. 옵션 변경 시 범위 업데이트 (동기화 개선)
+  // 4. 옵션의 min/max가 변경될 때만 range 업데이트 (초기 설정 시에만)
   useEffect(() => {
-    if (tlRef.current && options.min && options.max) {
+    if (
+      tlRef.current &&
+      options.min &&
+      options.max &&
+      !currentRangeRef.current
+    ) {
+      // 현재 저장된 range가 없을 때만 초기 range 설정
       tlRef.current.setWindow(options.min, options.max, { animation: false });
+      currentRangeRef.current = { start: options.min, end: options.max };
     }
   }, [options.min, options.max]);
 
@@ -100,7 +112,23 @@ export function useVisTimeline({ containerRef, groups, items, options }) {
   useEffect(() => {
     if (tlRef.current) {
       if (selectedRow && tlRef.current.itemsData.get(selectedRow)) {
+        // setSelection을 호출하기 전에 현재 range 저장
+        const currentWindow = tlRef.current.getWindow();
+        currentRangeRef.current = {
+          start: currentWindow.start,
+          end: currentWindow.end,
+        };
+
         tlRef.current.setSelection([selectedRow]);
+
+        // 선택 후 range 복원
+        if (currentRangeRef.current) {
+          tlRef.current.setWindow(
+            currentRangeRef.current.start,
+            currentRangeRef.current.end,
+            { animation: false }
+          );
+        }
       } else {
         tlRef.current.setSelection([]);
       }

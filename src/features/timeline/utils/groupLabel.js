@@ -6,8 +6,8 @@ export function makeGroupLabel(type, title, showLegend) {
   }
   const EMOJI = {
     RUN: "🟦RUN ",
-    IDLE: "🟨IDLE ",
-    PM: "🟩PM ",
+    IDLE: "🟩IDLE ",
+    PM: "🟨PM ",
     DOWN: "🟥DOWN ",
     OPEN: "🟦OPEN ",
     CLOSE: "🟥CLOSE ",

@@ -20,6 +20,9 @@ export default function BaseTimeline({
   className = "",
   style = {},
   showTimeAxis = true,
+  height,
+  minHeight,
+  maxHeight,
 }) {
   const containerRef = useRef(null);
 
@@ -31,14 +34,21 @@ export default function BaseTimeline({
       verticalScroll: true,
       tooltip: {
         followMouse: true,
-        overflowMethod: "cap",
+        overflowMethod: "flip",
       },
       showMajorLabels: showTimeAxis,
       showMinorLabels: showTimeAxis,
-      // 높이 관련 옵션
+      align: "center",
+      orientation: {
+        item: "center",
+      },
+
+      height: height,
+      minHeight: minHeight || 20,
+      maxHeight: maxHeight || 400,
       ...options,
     }),
-    [options, showTimeAxis]
+    [options, showTimeAxis, height, minHeight, maxHeight]
   );
 
   useVisTimeline({

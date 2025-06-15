@@ -174,7 +174,7 @@ export default function TimelinePage() {
       </div>
 
       {/* 오른쪽 타임라인 패널 */}
-      <div className="lg:w-[65%] h-full overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl p-4">
+      <div className="lg:w-[65%] h-full overflow-visible bg-white dark:bg-slate-800 shadow rounded-xl p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <h2 className="text-md font-bold text-slate-900 dark:text-white">
@@ -183,7 +183,6 @@ export default function TimelinePage() {
             {lineId && eqpId && <ShareButton />}
           </div>
 
-          {/* 설정 버튼 - EQP가 선택되었을 때만 표시 */}
           {eqpId && !logsLoading && (
             <button
               onClick={() => setIsDrawerOpen(true)}
@@ -208,7 +207,10 @@ export default function TimelinePage() {
             <LoadingSpinner />
           </div>
         ) : (
-          <div className="mt-4">
+          <div
+            className="mt-4"
+            style={{ position: "relative", overflow: "visible" }}
+          >
             <TimelineBoard
               lineId={lineId}
               eqpId={eqpId}
