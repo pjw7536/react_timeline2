@@ -33,6 +33,9 @@ export default function RacbTimeline({
       min: range.min,
       max: range.max,
       zoomMin: 60 * 60 * 1000,
+      height: 50, // 추가
+      minHeight: 50, // 추가
+      maxHeight: 80, // 추가
       verticalScroll: false,
     }),
     [range]

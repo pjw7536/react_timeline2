@@ -13,7 +13,6 @@ import ShareButton from "@features/timeline/components/ShareButton";
 import { TimelineBoard } from "@features/timeline";
 import { LogDetailSection } from "@features/logdetail";
 import { LoadingSpinner } from "@shared/components";
-import { Drawer } from "@shared/components";
 import TimelineSettings from "@features/timeline/components/TimelineSettings";
 // 모든 개별 hooks import
 import { useEqpLogs } from "@features/timeline/hooks/useEqpLogs";
@@ -105,7 +104,7 @@ export default function TimelinePage() {
 
   // 로컬 상태 (timeline과 관련 없는 상태들)
   const [typeFilters, setTypeFilters] = useState(DEFAULT_TYPE_FILTERS);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // 필터 핸들러
   const handleFilter = (e) =>
@@ -202,7 +201,7 @@ export default function TimelinePage() {
 
           {eqpId && !logsLoading && (
             <button
-              onClick={() => setIsDrawerOpen(true)}
+              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               <AdjustmentsHorizontalIcon className="h-4 w-4" />
@@ -250,20 +249,56 @@ export default function TimelinePage() {
         )}
       </div>
 
-      {/* Settings Drawer */}
-      <Drawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        title="타임라인 설정"
+      {/* 설정 패널 - 슬라이드 애니메이션으로 나타남/사라짐 */}
+      <div
+        className={`
+          relative bg-white dark:bg-slate-800 shadow rounded-xl overflow-hidden
+          transition-all duration-300 ease-in-out
+          ${isSettingsOpen ? "w-80" : "w-0"}
+        `}
       >
-        <TimelineSettings
-          showLegend={showLegend}
-          onLegendToggle={() => setShowLegend(!showLegend)}
-          tipLogs={filteredTipLogs}
-          selectedTipGroups={selectedTipGroups}
-          onTipFilterChange={setSelectedTipGroups}
-        />
-      </Drawer>
+        {/* 내부 컨텐츠에 transform 애니메이션 적용 */}
+        <div
+          className={`
+            absolute inset-0 transform transition-transform duration-300 ease-in-out
+            ${isSettingsOpen ? "translate-x-0" : "translate-x-full"}
+          `}
+        >
+          <div className="p-4 h-full overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                타임라인 설정
+              </h3>
+              <button
+                onClick={() => setIsSettingsOpen(false)}
+                className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <TimelineSettings
+              showLegend={showLegend}
+              onLegendToggle={() => setShowLegend(!showLegend)}
+              tipLogs={filteredTipLogs}
+              selectedTipGroups={selectedTipGroups}
+              onTipFilterChange={setSelectedTipGroups}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

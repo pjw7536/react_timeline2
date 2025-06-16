@@ -40,9 +40,8 @@ export default function BaseTimeline({
       showMinorLabels: showTimeAxis,
       align: "center",
       orientation: {
-        item: "center",
+        item: "top", // top으로 유지
       },
-
       height: height,
       minHeight: minHeight || 20,
       maxHeight: maxHeight || 400,

@@ -35,13 +35,15 @@ export default function EqpTimeline({
       min: range.min,
       max: range.max,
       zoomMin: 60 * 60 * 1000,
-      height: 30, // 고정 높이 설정
-      minHeight: 80, // 최소 높이도 동일하게
-      maxHeight: 80, // 최대 높이도 동일하게
-      verticalScroll: false,
+      height: 50, // 고정 높이
+      minHeight: 50,
+      maxHeight: 50,
+      verticalScroll: false, // 수직 스크롤 비활성화
       horizontalScroll: true,
-      align: "center",
-      groupHeightMode: "fixed", // auto 대신 fixed 사용
+      align: "top",
+      groupHeightMode: "fixed",
+      // 줌 관련 설정 추가
+      zoomFriction: 5,
     }),
     [range]
   );
