@@ -173,7 +173,7 @@
 
 /* 타임라인 간격 조정 (x축이 없으면 간격을 줄임) */
 .timeline-container.no-time-axis {
-  margin-bottom: 5px !important;
+  margin-bottom: 15px !important;
 }
 
 /* 마지막 타임라인은 정상 간격 유지 */
@@ -229,16 +229,4 @@
   background: #64748b;
 }
 
-/* Firefox 지원을 위한 스타일 */
-.vis-panel.vis-left,
-.vis-panel.vis-center,
-.vis-panel.vis-right {
-  scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9;
-}
 
-.dark .vis-panel.vis-left,
-.dark .vis-panel.vis-center,
-.dark .vis-panel.vis-right {
-  scrollbar-color: #475569 #1e293b;
-}

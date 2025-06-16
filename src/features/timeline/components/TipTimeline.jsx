@@ -1,16 +1,16 @@
+// src/features/timeline/components/TipTimeline.jsx
 import React, { useMemo } from "react";
 import BaseTimeline from "./BaseTimeline";
 import { processData } from "../utils/timelineUtils";
 import { makeTipGroupLabel } from "../utils/groupLabel";
 
 export default function TipTimeline({
-  tipLogs = [], // 부모에서 전달받은 TIP 로그
+  tipLogs = [],
   range,
   showLegend,
   selectedTipGroups = ["__ALL__"],
   showTimeAxis = true,
 }) {
-  // 필터링된 TIP 로그
   const filteredTipLogs = useMemo(() => {
     if (!tipLogs.length) return [];
     if (selectedTipGroups.includes("__ALL__")) return tipLogs;
@@ -23,7 +23,6 @@ export default function TipTimeline({
     });
   }, [tipLogs, selectedTipGroups]);
 
-  // 동적 그룹 생성
   const { groups, items } = useMemo(() => {
     const groupMap = new Map();
     const processedItems = [];
@@ -53,7 +52,6 @@ export default function TipTimeline({
       }
     });
 
-    // 각 그룹별로 아이템 생성
     const groupedLogs = new Map();
     filteredTipLogs.forEach((log) => {
       const groupKey = `TIP_${log.process || "unknown"}_${
@@ -79,20 +77,27 @@ export default function TipTimeline({
     };
   }, [filteredTipLogs, showLegend]);
 
-  const options = useMemo(
-    () => ({
+  const options = useMemo(() => {
+    // 그룹 수에 따른 높이 계산 (그룹당 30px)
+    const calculatedHeight = Math.max(
+      100,
+      Math.min(300, groups.length * 30 + 40)
+    );
+
+    return {
       stack: false,
       min: range.min,
       max: range.max,
       zoomMin: 60 * 60 * 1000,
-      groupHeightMode: "auto",
-      maxHeight: 400,
-      verticalScroll: true,
-    }),
-    [range]
-  );
+      height: calculatedHeight, // 계산된 고정 높이
+      minHeight: calculatedHeight, // 동일하게 설정
+      maxHeight: calculatedHeight, // 동일하게 설정
+      verticalScroll: groups.length > 8, // 그룹이 많을 때만 스크롤 활성화
+      horizontalScroll: true,
+      groupHeightMode: "fixed", // 고정 모드
+    };
+  }, [range, groups.length]);
 
-  // TIP 로그가 없거나 필터링 결과가 없을 때
   if (tipLogs.length === 0 || groups.length === 0) {
     return (
       <div className="timeline-container relative">

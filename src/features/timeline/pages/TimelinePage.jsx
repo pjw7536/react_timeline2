@@ -1,4 +1,3 @@
-// src/features/timeline/pages/TimelinePage.jsx
 import React, { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
@@ -14,11 +13,14 @@ import ShareButton from "@features/timeline/components/ShareButton";
 import { TimelineBoard } from "@features/timeline";
 import { LogDetailSection } from "@features/logdetail";
 import { LoadingSpinner } from "@shared/components";
+import { Drawer } from "@shared/components";
 import TimelineSettings from "@features/timeline/components/TimelineSettings";
-// 각 타임라인의 개별 훅들을 직접 import
+// 모든 개별 hooks import
 import { useEqpLogs } from "@features/timeline/hooks/useEqpLogs";
 import { useTipLogs } from "@features/timeline/hooks/useTipLogs";
-import { useEventLogs } from "@features/timeline/hooks/useEventLogs";
+import { useCtttmLogs } from "@features/timeline/hooks/useCtttmLogs";
+import { useRacbLogs } from "@features/timeline/hooks/useRacbLogs";
+import { useJiraLogs } from "@features/timeline/hooks/useJiraLogs";
 
 export default function TimelinePage() {
   const params = useParams();
@@ -64,31 +66,46 @@ export default function TimelinePage() {
     lineId,
     eqpId
   );
-  const { data: eventLogs = [], isLoading: eventLoading } = useEventLogs(
+  const { data: ctttmLogs = [], isLoading: ctttmLoading } = useCtttmLogs(
+    lineId,
+    eqpId
+  );
+  const { data: racbLogs = [], isLoading: racbLoading } = useRacbLogs(
+    lineId,
+    eqpId
+  );
+  const { data: jiraLogs = [], isLoading: jiraLoading } = useJiraLogs(
     lineId,
     eqpId
   );
 
   // 로딩 상태 계산
-  const logsLoading = eqpLoading || tipLoading || eventLoading;
+  const logsLoading =
+    eqpLoading || tipLoading || ctttmLoading || racbLoading || jiraLoading;
 
   // 모든 로그 데이터를 하나로 합치기
   const mergedLogs = useMemo(() => {
     if (!enabled) return [];
 
     // 모든 로그를 배열로 합치기
-    const allLogs = [...eqpLogs, ...tipLogs, ...eventLogs];
+    const allLogs = [
+      ...eqpLogs,
+      ...tipLogs,
+      ...ctttmLogs,
+      ...racbLogs,
+      ...jiraLogs,
+    ];
 
     // 시간순으로 정렬 (최신순)
     return allLogs.sort(
       (a, b) =>
         new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
     );
-  }, [eqpLogs, tipLogs, eventLogs, enabled]);
+  }, [eqpLogs, tipLogs, ctttmLogs, racbLogs, jiraLogs, enabled]);
 
   // 로컬 상태 (timeline과 관련 없는 상태들)
   const [typeFilters, setTypeFilters] = useState(DEFAULT_TYPE_FILTERS);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // 설정 패널 열림/닫힘 상태
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // 필터 핸들러
   const handleFilter = (e) =>
@@ -173,127 +190,80 @@ export default function TimelinePage() {
         </div>
       </div>
 
-      {/* 오른쪽 컨테이너 - 타임라인과 설정 패널을 포함 */}
-      <div className="lg:w-[65%] h-full flex gap-2 transition-all duration-300 ease-in-out">
-        {/* 타임라인 패널 - 설정 패널이 열리면 너비가 줄어듦 */}
-        <div
-          className="
-            overflow-visible bg-white dark:bg-slate-800 shadow rounded-xl p-4
-            transition-[width] duration-300 ease-in-out
-          "
-          style={{ width: isSettingsOpen ? "calc(100% - 20rem)" : "100%" }}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <h2 className="text-md font-bold text-slate-900 dark:text-white">
-                📊 Timeline
-              </h2>
-              {lineId && eqpId && <ShareButton />}
-            </div>
-
-            {eqpId && !logsLoading && (
-              <button
-                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className={`
-                  inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium 
-                  bg-white dark:bg-slate-700 border rounded-md 
-                  hover:bg-gray-50 dark:hover:bg-slate-600 
-                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                  transition-colors duration-200
-                  ${
-                    isSettingsOpen
-                      ? "text-blue-600 dark:text-blue-400 border-blue-500 dark:border-blue-400"
-                      : "text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600"
-                  }
-                `}
-              >
-                <AdjustmentsHorizontalIcon className="h-4 w-4" />
-                설정
-              </button>
-            )}
+      {/* 오른쪽 타임라인 패널 */}
+      <div className="lg:w-[65%] h-full overflow-visible bg-white dark:bg-slate-800 shadow rounded-xl p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-md font-bold text-slate-900 dark:text-white">
+              📊 Timeline
+            </h2>
+            {lineId && eqpId && <ShareButton />}
           </div>
 
-          <hr className="border-slate-300 dark:border-slate-600" />
-
-          {!eqpId && !logsLoading ? (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-center text-slate-600 dark:text-slate-400">
-                EQP를 선택하세요.
-              </p>
-            </div>
-          ) : logsLoading ? (
-            <div className="flex items-center justify-center h-full">
-              <LoadingSpinner />
-            </div>
-          ) : (
-            <div
-              className="mt-4"
-              style={{ position: "relative", overflow: "visible" }}
+          {eqpId && !logsLoading && (
+            <button
+              onClick={() => setIsDrawerOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              <TimelineBoard
-                lineId={lineId}
-                eqpId={eqpId}
-                showLegend={showLegend}
-                selectedTipGroups={selectedTipGroups}
-                eqpLogs={eqpLogs}
-                tipLogs={tipLogs}
-                eventLogs={eventLogs}
-              />
-            </div>
+              <AdjustmentsHorizontalIcon className="h-4 w-4" />
+              설정
+            </button>
           )}
         </div>
 
-        {/* 설정 패널 - 슬라이드 애니메이션으로 나타남/사라짐 */}
-        <div
-          className={`
-    relative bg-white dark:bg-slate-800 shadow rounded-xl overflow-hidden
-    transition-all duration-300 ease-in-out
-    ${isSettingsOpen ? "w-80" : "w-0"}
-  `}
-        >
-          {/* 내부 컨텐츠에 transform 애니메이션 적용 */}
-          <div
-            className={`
-      absolute inset-0 transform transition-transform duration-300 ease-in-out
-      ${isSettingsOpen ? "translate-x-0" : "translate-x-full"}
-    `}
-          >
-            <div className="p-4 h-full overflow-y-auto">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  타임라인 설정
-                </h3>
-                <button
-                  onClick={() => setIsSettingsOpen(false)}
-                  className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none"
-                >
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
+        <hr className="border-slate-300 dark:border-slate-600" />
 
-              <TimelineSettings
-                showLegend={showLegend}
-                onLegendToggle={() => setShowLegend(!showLegend)}
-                tipLogs={filteredTipLogs}
-                selectedTipGroups={selectedTipGroups}
-                onTipFilterChange={setSelectedTipGroups}
-              />
+        {!eqpId && !logsLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-center text-slate-600 dark:text-slate-400">
+              EQP를 선택하세요.
+            </p>
+          </div>
+        ) : logsLoading ? (
+          <div className="flex flex-col items-center justify-center h-full gap-2">
+            <LoadingSpinner />
+            <div className="text-xs text-slate-500 dark:text-slate-400 text-center">
+              {eqpLoading && <div>EQP 로그 로딩 중...</div>}
+              {tipLoading && <div>TIP 로그 로딩 중...</div>}
+              {ctttmLoading && <div>CTTTM 로그 로딩 중...</div>}
+              {racbLoading && <div>RACB 로그 로딩 중...</div>}
+              {jiraLoading && <div>JIRA 로그 로딩 중...</div>}
             </div>
           </div>
-        </div>
+        ) : (
+          <div
+            className="mt-4"
+            style={{ position: "relative", overflow: "visible" }}
+          >
+            <TimelineBoard
+              lineId={lineId}
+              eqpId={eqpId}
+              showLegend={showLegend}
+              selectedTipGroups={selectedTipGroups}
+              eqpLogs={eqpLogs}
+              tipLogs={tipLogs}
+              ctttmLogs={ctttmLogs}
+              racbLogs={racbLogs}
+              jiraLogs={jiraLogs}
+            />
+          </div>
+        )}
       </div>
+
+      {/* Settings Drawer */}
+      <Drawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        title="타임라인 설정"
+      >
+        <TimelineSettings
+          showLegend={showLegend}
+          onLegendToggle={() => setShowLegend(!showLegend)}
+          tipLogs={filteredTipLogs}
+          selectedTipGroups={selectedTipGroups}
+          onTipFilterChange={setSelectedTipGroups}
+        />
+      </Drawer>
     </div>
   );
 }

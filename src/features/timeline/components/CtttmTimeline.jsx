@@ -1,23 +1,21 @@
-// src/features/timeline/components/EqpTimeline.jsx
 import React, { useMemo } from "react";
 import BaseTimeline from "./BaseTimeline";
 import { processData } from "../utils/timelineUtils";
 import { makeGroupLabel } from "../utils/groupLabel";
 
-export default function EqpTimeline({
+export default function CtttmTimeline({
   lineId,
   eqpId,
   range,
   showLegend,
   showTimeAxis = false,
-  height,
-  eqpLogs = [],
+  ctttmLogs = [],
 }) {
   const groups = useMemo(
     () => [
       {
-        id: "EQP",
-        content: makeGroupLabel("EQP", "EQP 로그", showLegend),
+        id: "CTTTM",
+        content: makeGroupLabel("CTTTM", "CTTTM", showLegend),
         className: showLegend
           ? "custom-group-label legend-mode"
           : "custom-group-label",
@@ -27,7 +25,7 @@ export default function EqpTimeline({
     [showLegend]
   );
 
-  const items = useMemo(() => processData("EQP", eqpLogs, true), [eqpLogs]);
+  const items = useMemo(() => processData("CTTTM", ctttmLogs), [ctttmLogs]);
 
   const options = useMemo(
     () => ({
@@ -35,13 +33,7 @@ export default function EqpTimeline({
       min: range.min,
       max: range.max,
       zoomMin: 60 * 60 * 1000,
-      height: 30, // 고정 높이 설정
-      minHeight: 80, // 최소 높이도 동일하게
-      maxHeight: 80, // 최대 높이도 동일하게
       verticalScroll: false,
-      horizontalScroll: true,
-      align: "center",
-      groupHeightMode: "fixed", // auto 대신 fixed 사용
     }),
     [range]
   );
@@ -51,10 +43,12 @@ export default function EqpTimeline({
       groups={groups}
       items={items}
       options={options}
-      title="⚙️ EQP 상태"
+      title="⚠️ CTTTM"
       showTimeAxis={showTimeAxis}
       headerExtra={
-        <span className="text-xs text-slate-500">{eqpLogs.length}개 로그</span>
+        <span className="text-xs text-slate-500">
+          {ctttmLogs.length}개 로그
+        </span>
       }
     />
   );

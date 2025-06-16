@@ -1,7 +1,9 @@
 export { useVisTimeline } from "./useVisTimeline";
 export { useTimelineRange } from "./useTimelineRange";
 export { useEqpLogs } from "./useEqpLogs";
-export { useEventLogs } from "./useEventLogs";
 export { useTipLogs } from "./useTipLogs";
+export { useCtttmLogs } from "./useCtttmLogs";
+export { useRacbLogs } from "./useRacbLogs";
+export { useJiraLogs } from "./useJiraLogs";
 export { useUrlValidation } from "./useUrlValidation";
 export { useUrlSync } from "./useUrlSync";
