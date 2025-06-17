@@ -25,6 +25,9 @@ export const apiClient = async (
   const qs = params ? "?" + new URLSearchParams(params) : "";
   const fullUrl = baseUrl + url + qs;
 
+  // JWT 토큰 가져오기
+  const token = localStorage.getItem("jwt");
+
   // AbortController로 타임아웃 처리
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -34,6 +37,8 @@ export const apiClient = async (
       const response = await fetch(fullUrl, {
         headers: {
           "Content-Type": "application/json",
+          // JWT 토큰이 있으면 Authorization 헤더에 추가
+          ...(token && { Authorization: `Bearer ${token}` }),
           ...opts.headers,
         },
         signal: controller.signal,
@@ -53,6 +58,9 @@ export const apiClient = async (
             break;
           case 401:
             errorMessage = "인증이 필요합니다.";
+            // 401 에러시 토큰 삭제하고 로그인 페이지로
+            localStorage.removeItem("jwt");
+            window.location.href = "/";
             break;
           case 403:
             errorMessage = "접근 권한이 없습니다.";
@@ -106,6 +114,9 @@ export const apiClient = async (
  * 재시도 가능한 에러인지 확인
  */
 function isRetryableError(error) {
+  // 401은 재시도하지 않음
+  if (error.status === 401) return false;
+
   // 네트워크 에러나 5xx 서버 에러는 재시도 가능
   return (
     !error.status || // 네트워크 에러

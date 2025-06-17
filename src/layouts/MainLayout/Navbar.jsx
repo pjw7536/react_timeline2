@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
-  Dialog,
-  DialogPanel,
   Disclosure,
   DisclosureButton,
   DisclosurePanel,
@@ -13,12 +11,10 @@ import {
 } from "@headlessui/react";
 import {
   ArrowPathIcon,
-  Bars3Icon,
   ChartPieIcon,
   CursorArrowRaysIcon,
   FingerPrintIcon,
   SquaresPlusIcon,
-  XMarkIcon,
   SunIcon,
   MoonIcon,
 } from "@heroicons/react/24/outline";
@@ -67,8 +63,7 @@ const callsToAction = [
 ];
 
 export default function Navbar() {
-  // 모바일 메뉴와 다크모드 상태를 관리
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // 다크모드 상태를 관리
   const [darkMode, setDarkMode] = useState(false);
 
   // 컴포넌트가 처음 마운트될 때, localStorage나 OS 기본 테마를 기준으로 다크모드 설정을 결정
@@ -118,19 +113,8 @@ export default function Navbar() {
             />
           </Link>
         </div>
-        {/* 모바일 메뉴 버튼 (작은 화면에서만 보임) */}
-        <div className="flex lg:hidden">
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(true)}
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-300"
-          >
-            <span className="sr-only">Open main menu</span>
-            <Bars3Icon aria-hidden="true" className="size-6" />
-          </button>
-        </div>
         {/* 데스크탑 메뉴: Product, Timeline 등 네비게이션 */}
-        <PopoverGroup className="hidden lg:flex lg:gap-x-12">
+        <PopoverGroup className="flex gap-x-12">
           <Popover className="relative">
             <PopoverButton className="flex items-center gap-x-1 text-xs/6 font-semibold text-gray-900 dark:text-gray-100 focus:outline-none">
               Product
@@ -210,7 +194,7 @@ export default function Navbar() {
           </a>
         </PopoverGroup>
         {/* 데스크탑: 다크모드 토글 + 로그인 */}
-        <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:gap-x-6">
+        <div className="flex flex-1 items-center justify-end gap-x-6">
           <button
             onClick={toggleDarkMode}
             className="p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
@@ -230,114 +214,6 @@ export default function Navbar() {
           </a>
         </div>
       </nav>
-      {/* 모바일 메뉴 다이얼로그: 작은 화면에서만 열림 */}
-      <Dialog
-        open={mobileMenuOpen}
-        onClose={setMobileMenuOpen}
-        className="lg:hidden"
-      >
-        <div className="fixed inset-0 z-20" />
-        <DialogPanel className="fixed inset-y-0 right-0 z-30 w-full overflow-y-auto bg-white dark:bg-gray-800 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:sm:ring-white/10">
-          <div className="flex items-center justify-between">
-            <Link
-              to="/"
-              className="-m-1.5 p-1.5"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <span className="sr-only">Your Company</span>
-              <img
-                alt="Company Logo"
-                src="https://tailwindcss.com/img/logos/mark.svg?color=indigo&shade=600"
-                className="h-8 w-auto"
-              />
-            </Link>
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(false)}
-              className="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-300"
-            >
-              <span className="sr-only">Close menu</span>
-              <XMarkIcon aria-hidden="true" className="size-6" />
-            </button>
-          </div>
-          <div className="mt-6 flow-root">
-            <div className="-my-6 divide-y divide-gray-500/10 dark:divide-gray-700">
-              <div className="space-y-2 py-6">
-                {/* Product 드롭다운 (모바일) */}
-                <Disclosure as="div" className="-mx-3">
-                  <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    Product
-                    <ChevronDownIcon
-                      aria-hidden="true"
-                      className="size-5 flex-none text-gray-400 dark:text-gray-500 group-data-open:rotate-180"
-                    />
-                  </DisclosureButton>
-                  <DisclosurePanel className="mt-2 space-y-2">
-                    {[...products, ...callsToAction].map((item) => (
-                      <DisclosureButton
-                        key={item.name}
-                        as="a"
-                        href={item.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
-                      >
-                        {item.name}
-                      </DisclosureButton>
-                    ))}
-                  </DisclosurePanel>
-                </Disclosure>
-                {/* 주요 메뉴들 */}
-                <Link
-                  to="/timeline"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  Timeline
-                </Link>
-                <a
-                  href="#"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  Marketplace
-                </a>
-                <a
-                  href="#"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  Company
-                </a>
-              </div>
-              <div className="py-6">
-                {/* 다크모드 토글 (모바일) */}
-                <button
-                  onClick={() => {
-                    toggleDarkMode();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="-mx-3 flex items-center gap-x-2 w-full rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  aria-label="Toggle dark mode"
-                >
-                  {darkMode ? (
-                    <SunIcon className="size-5 flex-none text-gray-400 dark:text-gray-500" />
-                  ) : (
-                    <MoonIcon className="size-5 flex-none text-gray-400 dark:text-gray-500" />
-                  )}
-                  {darkMode ? "라이트 모드" : "다크 모드"}
-                </button>
-                <a
-                  href="#"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  Log in
-                </a>
-              </div>
-            </div>
-          </div>
-        </DialogPanel>
-      </Dialog>
     </header>
   );
 }
