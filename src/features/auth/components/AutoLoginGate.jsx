@@ -1,7 +1,9 @@
-import { useEffect } from "react";
+// import { useEffect } from "react"; // 개발용: 사용하지 않으므로 주석처리
 import { LoadingSpinner } from "@shared/components";
 
 const AutoLoginGate = ({ children }) => {
+  // 개발용: 자동 로그인 체크 비활성화
+  /*
   useEffect(() => {
     const token = localStorage.getItem("jwt");
     if (!token) {
@@ -29,6 +31,10 @@ const AutoLoginGate = ({ children }) => {
       </p>
     </div>
   );
+  */
+
+  // 개발용: 항상 로그인된 상태로 처리
+  return <>{children}</>;
 };
 
 export default AutoLoginGate;

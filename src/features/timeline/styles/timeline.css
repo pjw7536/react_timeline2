@@ -78,13 +78,7 @@
   font-size: 12px !important;
 }
 
-/* 테이블 스크롤바 */
-.table-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
-.table-scroll::-webkit-scrollbar-track { background: #ffffff; border-radius: 10px; }
-.table-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; border: 1px solid #e2e8f0; }
-.dark .table-scroll::-webkit-scrollbar-track { background: #1e293b; }
-.dark .table-scroll::-webkit-scrollbar-thumb { background: #475569; border: 1px solid #1e293b; }
-.dark .table-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
+/* Legacy table-scroll 스타일 - scrollbar-thin으로 통일됨 */
 
 /* react-window & 가상 스크롤 스크롤바 스타일 */
 .scrollbar-thin {
@@ -163,17 +157,25 @@
   border-radius: 6px !important;
   white-space: nowrap !important;
   overflow: visible !important;
+  position: absolute !important;
+  pointer-events: none !important;
 }
+
+
+
 
 /* x축이 없는 타임라인 스타일 */
 .no-time-axis .vis-panel.vis-bottom {
   display: none !important;
 }
-
-
 /* 타임라인 간격 조정 (x축이 없으면 간격을 줄임) */
 .timeline-container.no-time-axis {
   margin-bottom: 15px !important;
+}
+
+/* 마지막 타임라인은 정상 간격 유지 */
+.timeline-container {
+  margin-bottom: 20px !important;
 }
 
 /* 마지막 타임라인은 정상 간격 유지 */
@@ -181,51 +183,4 @@
   margin-bottom: 16px !important;
 }
 
-
-/* vis-timeline 스크롤바 스타일 (테이블과 동일하게) */
-.vis-panel.vis-left::-webkit-scrollbar,
-.vis-panel.vis-center::-webkit-scrollbar,
-.vis-panel.vis-right::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.vis-panel.vis-left::-webkit-scrollbar-track,
-.vis-panel.vis-center::-webkit-scrollbar-track,
-.vis-panel.vis-right::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 4px;
-}
-
-.vis-panel.vis-left::-webkit-scrollbar-thumb,
-.vis-panel.vis-center::-webkit-scrollbar-thumb,
-.vis-panel.vis-right::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 4px;
-}
-
-.vis-panel.vis-left::-webkit-scrollbar-thumb:hover,
-.vis-panel.vis-center::-webkit-scrollbar-thumb:hover,
-.vis-panel.vis-right::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
-}
-
-/* 다크모드 스타일 */
-.dark .vis-panel.vis-left::-webkit-scrollbar-track,
-.dark .vis-panel.vis-center::-webkit-scrollbar-track,
-.dark .vis-panel.vis-right::-webkit-scrollbar-track {
-  background: #1e293b;
-}
-
-.dark .vis-panel.vis-left::-webkit-scrollbar-thumb,
-.dark .vis-panel.vis-center::-webkit-scrollbar-thumb,
-.dark .vis-panel.vis-right::-webkit-scrollbar-thumb {
-  background: #475569;
-}
-
-.dark .vis-panel.vis-left::-webkit-scrollbar-thumb:hover,
-.dark .vis-panel.vis-center::-webkit-scrollbar-thumb:hover,
-.dark .vis-panel.vis-right::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
-}
 

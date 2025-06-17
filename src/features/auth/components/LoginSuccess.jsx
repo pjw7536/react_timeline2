@@ -6,6 +6,8 @@ const LoginSuccess = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // 개발용: 토큰 처리 로직 비활성화
+    /*
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
 
@@ -21,6 +23,10 @@ const LoginSuccess = () => {
       alert("로그인에 실패했습니다.");
       navigate("/");
     }
+    */
+
+    // 개발용: 바로 홈으로 리다이렉트
+    navigate("/");
   }, [navigate]);
 
   return (

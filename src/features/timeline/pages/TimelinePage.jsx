@@ -177,7 +177,7 @@ export default function TimelinePage() {
           />
 
           <section
-            className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex-[1] min-h-0 flex flex-col overflow-auto"
+            className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex-[1] min-h-0 flex flex-col overflow-auto scrollbar-thin"
             style={{ minHeight: 180, maxHeight: 320 }}
           >
             <h2 className="text-md font-bold text-slate-900 dark:text-white border-slate-200 dark:border-slate-700 pb-1">
@@ -190,7 +190,7 @@ export default function TimelinePage() {
       </div>
 
       {/* 오른쪽 타임라인 패널 */}
-      <div className="lg:w-[65%] h-full overflow-visible bg-white dark:bg-slate-800 shadow rounded-xl p-4">
+      <div className="lg:w-[65%] h-full overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl p-4 flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <h2 className="text-md font-bold text-slate-900 dark:text-white">
@@ -231,8 +231,8 @@ export default function TimelinePage() {
           </div>
         ) : (
           <div
-            className="mt-4"
-            style={{ position: "relative", overflow: "visible" }}
+            className="mt-4 flex-1 min-h-0 overflow-hidden"
+            style={{ position: "relative" }}
           >
             <TimelineBoard
               lineId={lineId}
@@ -264,7 +264,7 @@ export default function TimelinePage() {
             ${isSettingsOpen ? "translate-x-0" : "translate-x-full"}
           `}
         >
-          <div className="p-4 h-full overflow-y-auto">
+          <div className="p-4 h-full overflow-y-auto scrollbar-thin">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 타임라인 설정

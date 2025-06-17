@@ -81,7 +81,7 @@ export default function TipTimeline({
     // 그룹 수에 따른 높이 계산 (그룹당 30px)
     const calculatedHeight = Math.max(
       100,
-      Math.min(300, groups.length * 30 + 40)
+      Math.min(300, groups.length * 30 + 60)
     );
 
     return {

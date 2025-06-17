@@ -339,7 +339,7 @@ export default function VirtualizedDataTable({
               itemSize={ITEM_HEIGHT}
               width="100%"
               overscanCount={OVERSCAN_COUNT}
-              className="scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800"
+              className="scrollbar-thin"
               style={{
                 // 스크롤 성능 최적화
                 contain: "strict",

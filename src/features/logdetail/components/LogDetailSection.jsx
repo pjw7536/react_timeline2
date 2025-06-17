@@ -46,7 +46,7 @@ export default function LogDetailSection({ log }) {
     <div
       className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs
       bg-white dark:bg-slate-800 rounded-lg p-2
-      text-slate-800 dark:text-slate-100 overflow-auto table-scroll"
+      text-slate-800 dark:text-slate-100 overflow-auto scrollbar-thin"
     >
       {renderDetailComponent()}
     </div>

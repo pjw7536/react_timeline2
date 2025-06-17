@@ -33,9 +33,9 @@ export default function CtttmTimeline({
       min: range.min,
       max: range.max,
       zoomMin: 60 * 60 * 1000,
-      height: 50, // 추가
-      minHeight: 30, // 추가
-      maxHeight: 80, // 추가
+      height: 100, // 고정 높이
+      minHeight: 30,
+      maxHeight: 80,
       verticalScroll: false,
     }),
     [range]
