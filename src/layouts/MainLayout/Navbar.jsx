@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@features/auth/contexts/AuthContext";
 import {
   Disclosure,
   DisclosureButton,
@@ -65,6 +66,7 @@ const callsToAction = [
 export default function Navbar() {
   // 다크모드 상태를 관리
   const [darkMode, setDarkMode] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   // 컴포넌트가 처음 마운트될 때, localStorage나 OS 기본 테마를 기준으로 다크모드 설정을 결정
   useEffect(() => {
@@ -96,8 +98,7 @@ export default function Navbar() {
   };
 
   return (
-    // 상단 고정 네비게이션 바
-    <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50  h-15">
+    <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 h-15">
       <nav
         aria-label="Global"
         className="mx-auto flex max-w-7xl items-center justify-between p-5 lg:px-8 h-15"
@@ -193,7 +194,7 @@ export default function Navbar() {
             Company
           </a>
         </PopoverGroup>
-        {/* 데스크탑: 다크모드 토글 + 로그인 */}
+        {/* 데스크탑: 다크모드 토글 + 사용자 정보 */}
         <div className="flex flex-1 items-center justify-end gap-x-6">
           <button
             onClick={toggleDarkMode}
@@ -206,12 +207,27 @@ export default function Navbar() {
               <MoonIcon className="size-5" />
             )}
           </button>
-          <a
-            href="#"
-            className="text-xs/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400"
-          >
-            Log in <span aria-hidden="true">&rarr;</span>
-          </a>
+
+          {isAuthenticated ? (
+            <div className="flex items-center gap-x-4">
+              <span className="text-xs text-gray-700 dark:text-gray-300">
+                {user?.username} ({user?.deptname})
+              </span>
+              <button
+                onClick={logout}
+                className="text-xs/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400"
+              >
+                로그아웃
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/"
+              className="text-xs/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400"
+            >
+              로그인 <span aria-hidden="true">&rarr;</span>
+            </Link>
+          )}
         </div>
       </nav>
     </header>

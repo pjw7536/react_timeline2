@@ -1,8 +1,10 @@
+// src/app/App.jsx
 import React, { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@features/auth/contexts/AuthContext";
 import Navbar from "@layouts/MainLayout/Navbar";
 import { LoadingSpinner } from "@shared/components";
-import { AutoLoginGate, LoginSuccess, ProtectedRoute } from "@features/auth";
+import { AutoLoginGate, ProtectedRoute } from "@features/auth";
 
 const TimelinePage = lazy(() =>
   import("@features/timeline/pages/TimelinePage")
@@ -19,78 +21,69 @@ const HomePage = () => (
 
 export default function App() {
   return (
-    <Routes>
-      {/* 로그인 성공 처리 라우트 */}
-      <Route path="/login-success" element={<LoginSuccess />} />
+    <AuthProvider>
+      <AutoLoginGate>
+        <div className="h-screen flex flex-col overflow-hidden">
+          <Navbar />
+          <div className="flex-1 overflow-hidden px-4">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
 
-      {/* 메인 앱 라우트 */}
-      <Route
-        path="/*"
-        element={
-          <AutoLoginGate>
-            <div className="h-screen flex flex-col overflow-hidden">
-              <Navbar />
-              <div className="flex-1 overflow-hidden px-4">
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
+              {/* Timeline 페이지는 보호된 라우트 */}
+              <Route
+                path="/timeline"
+                element={
+                  <ProtectedRoute>
+                    <Suspense
+                      fallback={
+                        <div className="flex items-center justify-center h-[80vh]">
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <TimelinePage />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/timeline/:lineId/:eqpId"
+                element={
+                  <ProtectedRoute>
+                    <Suspense
+                      fallback={
+                        <div className="flex items-center justify-center h-[80vh]">
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <TimelinePage />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
 
-                  {/* Timeline 페이지는 보호된 라우트 */}
-                  <Route
-                    path="/timeline"
-                    element={
-                      <ProtectedRoute>
-                        <Suspense
-                          fallback={
-                            <div className="flex items-center justify-center h-[80vh]">
-                              <LoadingSpinner />
-                            </div>
-                          }
-                        >
-                          <TimelinePage />
-                        </Suspense>
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/timeline/:lineId/:eqpId"
-                    element={
-                      <ProtectedRoute>
-                        <Suspense
-                          fallback={
-                            <div className="flex items-center justify-center h-[80vh]">
-                              <LoadingSpinner />
-                            </div>
-                          }
-                        >
-                          <TimelinePage />
-                        </Suspense>
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* App Store 페이지도 보호된 라우트 */}
-                  <Route
-                    path="/appstore"
-                    element={
-                      <ProtectedRoute>
-                        <Suspense
-                          fallback={
-                            <div className="flex items-center justify-center h-[80vh]">
-                              <LoadingSpinner />
-                            </div>
-                          }
-                        >
-                          <AppStorePage />
-                        </Suspense>
-                      </ProtectedRoute>
-                    }
-                  />
-                </Routes>
-              </div>
-            </div>
-          </AutoLoginGate>
-        }
-      />
-    </Routes>
+              {/* App Store 페이지도 보호된 라우트 */}
+              <Route
+                path="/appstore"
+                element={
+                  <ProtectedRoute>
+                    <Suspense
+                      fallback={
+                        <div className="flex items-center justify-center h-[80vh]">
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <AppStorePage />
+                    </Suspense>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </div>
+        </div>
+      </AutoLoginGate>
+    </AuthProvider>
   );
 }
