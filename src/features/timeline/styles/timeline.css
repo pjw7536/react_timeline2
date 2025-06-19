@@ -118,22 +118,44 @@
   background: #64748b;
 }
 
-/* 그룹 라벨에 legend-mode 클래스가 추가됐을 때만 폰트 크기를 12px로 */
-.vis-label.legend-mode {
-  font-size: 12px !important;
-  font-weight: normal !important;
-  letter-spacing: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 240px !important;
-  min-width: 240px !important;
-  max-width: 240px !important;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 0 !important;
+/* react-window & 가상 스크롤 스크롤바 스타일 - medium */
+.scrollbar-medium {
+  scrollbar-width: medium;
+  scrollbar-color: #94a3b8 #f1f5f9;
+  /* 하드웨어 가속 */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
+.dark .scrollbar-medium {
+  scrollbar-color: #475569 #1e293b;
+}
+.scrollbar-medium::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+.scrollbar-medium::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 6px;
+}
+.scrollbar-medium::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 6px;
+}
+.scrollbar-medium::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+.dark .scrollbar-medium::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+.dark .scrollbar-medium::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+.dark .scrollbar-medium::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
 
 /* 간단한 TIP 그룹 라벨 (PPID만 표시) */
 .tip-group-label-simple {

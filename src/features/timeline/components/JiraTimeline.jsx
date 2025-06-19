@@ -1,3 +1,4 @@
+// src/features/timeline/components/JiraTimeline.jsx
 import React, { useMemo } from "react";
 import BaseTimeline from "./BaseTimeline";
 import { processData } from "../utils/timelineUtils";
@@ -15,14 +16,12 @@ export default function JiraTimeline({
     () => [
       {
         id: "JIRA",
-        content: makeGroupLabel("JIRA", "JIRA", showLegend),
-        className: showLegend
-          ? "custom-group-label legend-mode"
-          : "custom-group-label",
+        content: makeGroupLabel("JIRA", "JIRA"),
+        className: "custom-group-label",
         order: 1,
       },
     ],
-    [showLegend]
+    []
   );
 
   const items = useMemo(() => processData("JIRA", jiraLogs), [jiraLogs]);
@@ -33,13 +32,19 @@ export default function JiraTimeline({
       min: range.min,
       max: range.max,
       zoomMin: 60 * 60 * 1000,
-      height: 80, // 추가
-      minHeight: 80, // 추가
-      maxHeight: 80, // 추가
+      height: 80,
+      minHeight: 80,
+      maxHeight: 80,
       verticalScroll: false,
     }),
     [range]
   );
+
+  // JIRA 범례 항목
+  const legendItems = [
+    { state: "ISSUED", color: "bg-blue-600", label: "ISSUED" },
+    { state: "CLOSED", color: "bg-purple-600", label: "CLOSED" },
+  ];
 
   return (
     <BaseTimeline
@@ -49,7 +54,23 @@ export default function JiraTimeline({
       title="📋 JIRA"
       showTimeAxis={showTimeAxis}
       headerExtra={
-        <span className="text-xs text-slate-500">{jiraLogs.length}개 로그</span>
+        <div>
+          {/* 범례 - showLegend가 true일 때만 표시 */}
+          {showLegend && (
+            <div className="flex items-center gap-3 px-2">
+              <div className="flex gap-3">
+                {legendItems.map(({ state, color, label }) => (
+                  <div key={state} className="flex items-center gap-1">
+                    <div className={`w-3 h-3 rounded ${color}`} />
+                    <span className="text-xs text-slate-600 dark:text-slate-400">
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       }
     />
   );

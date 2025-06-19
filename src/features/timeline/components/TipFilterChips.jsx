@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 
 export default function TipFilterChips({
@@ -9,6 +9,9 @@ export default function TipFilterChips({
   const [selectedGroups, setSelectedGroups] = useState(new Set());
   const [showAll, setShowAll] = useState(false);
   const [isAllSelected, setIsAllSelected] = useState(true); // 초기값은 전체 선택
+
+  // 그룹 순서를 고정하기 위한 참조
+  const groupOrderRef = useRef(new Map());
 
   // TIP 로그를 그룹별로 정리
   const tipGroups = useMemo(() => {
@@ -30,7 +33,30 @@ export default function TipFilterChips({
       groupMap.get(groupKey).count++;
     });
 
-    return Array.from(groupMap.values()).sort((a, b) => {
+    const groups = Array.from(groupMap.values());
+
+    // 기존 순서가 있다면 그것을 유지하면서 새로운 그룹만 추가
+    groups.forEach((group) => {
+      if (!groupOrderRef.current.has(group.key)) {
+        // 새로운 그룹의 경우, 현재 최대 순서 + 1로 설정
+        const maxOrder = Math.max(
+          -1,
+          ...Array.from(groupOrderRef.current.values())
+        );
+        groupOrderRef.current.set(group.key, maxOrder + 1);
+      }
+    });
+
+    // 기존 순서 참조를 기반으로 정렬
+    return groups.sort((a, b) => {
+      const orderA = groupOrderRef.current.get(a.key) ?? 0;
+      const orderB = groupOrderRef.current.get(b.key) ?? 0;
+
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+
+      // 순서가 같다면 기존 정렬 방식 사용 (백업용)
       if (a.process !== b.process) return a.process.localeCompare(b.process);
       if (a.step !== b.step) return a.step.localeCompare(b.step);
       return a.ppid.localeCompare(b.ppid);
@@ -126,6 +152,9 @@ export default function TipFilterChips({
           </button>
         </div>
       </div>
+      <div className="mb-2 h-4 text-xs text-slate-600 dark:text-slate-400">
+        {!isAllSelected && selectedGroups.size === 0 && "PPID 선택하세요"}
+      </div>
 
       <div className="flex flex-wrap gap-1.5">
         {displayGroups.map((group) => {
@@ -147,31 +176,13 @@ export default function TipFilterChips({
               title={`Process: ${group.process} | Step: ${group.step} | PPID: ${group.ppid}`}
             >
               <span className="font-semibold">{group.ppid}</span>
-              <span className="text-[10px] text-gray-600 dark:text-gray-400">
-                ({group.count})
-              </span>
-              {isSelected && <XMarkIcon className="w-3 h-3 ml-0.5" />}
+              <div className="w-3 h-3 ml-0.5 flex items-center justify-center">
+                {isSelected && <XMarkIcon className="w-3 h-3" />}
+              </div>
             </button>
           );
         })}
-
-        {!showAll && tipGroups.length > 5 && (
-          <button
-            onClick={() => setShowAll(true)}
-            className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-              bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300
-              hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
-          >
-            +{tipGroups.length - 5} 더보기
-          </button>
-        )}
       </div>
-
-      {!isAllSelected && selectedGroups.size === 0 && (
-        <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
-          PPID 선택하세요
-        </div>
-      )}
     </div>
   );
 }

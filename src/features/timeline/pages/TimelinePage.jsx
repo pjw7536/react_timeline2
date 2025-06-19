@@ -190,8 +190,8 @@ export default function TimelinePage() {
       </div>
 
       {/* 오른쪽 타임라인 패널 */}
-      <div className="lg:w-[65%] h-full overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl p-4 flex flex-col">
-        <div className="flex items-center justify-between mb-4">
+      <div className="lg:w-[65%] h-full overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl p-4 pr-1 flex flex-col">
+        <div className="flex items-center justify-between mb-5 mr-5">
           <div className="flex items-center gap-2">
             <h2 className="text-md font-bold text-slate-900 dark:text-white">
               📊 Timeline
@@ -202,7 +202,7 @@ export default function TimelinePage() {
           {eqpId && !logsLoading && (
             <button
               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
             >
               <AdjustmentsHorizontalIcon className="h-4 w-4" />
               설정
@@ -219,7 +219,7 @@ export default function TimelinePage() {
             </p>
           </div>
         ) : logsLoading ? (
-          <div className="flex flex-col items-center justify-center h-full gap-2">
+          <div className="flex flex-col items-center justify-center h-full gap-15">
             <LoadingSpinner />
             <div className="text-xs text-slate-500 dark:text-slate-400 text-center">
               {eqpLoading && <div>EQP 로그 로딩 중...</div>}

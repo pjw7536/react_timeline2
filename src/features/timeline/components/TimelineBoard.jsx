@@ -1,5 +1,5 @@
-// Start of Selection
 // src/features/timeline/components/TimelineBoard.jsx
+import React from "react";
 import EqpTimeline from "./EqpTimeline";
 import TipTimeline from "./TipTimeline";
 import CtttmTimeline from "./CtttmTimeline";
@@ -41,7 +41,7 @@ export default function TimelineBoard({
     <div className="w-full h-full">
       {/* 타임라인이 많아질 때를 위한 스크롤 컨테이너 */}
       <div
-        className="w-full h-full overflow-y-auto space-y-0 scroll-smooth scrollbar-thin"
+        className="w-full h-full overflow-y-auto space-y-0 scroll-smooth scrollbar-medium pr-5"
         style={{ position: "relative", zIndex: 1 }}
       >
         {eqpLogs.length > 0 && (

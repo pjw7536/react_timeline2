@@ -35,15 +35,8 @@ export default function TipTimeline({
       if (!groupMap.has(groupKey)) {
         groupMap.set(groupKey, {
           id: groupKey,
-          content: makeTipGroupLabel(
-            log.process,
-            log.step,
-            log.ppid,
-            showLegend
-          ),
-          className: showLegend
-            ? "custom-group-label tip-group legend-mode"
-            : "custom-group-label tip-group",
+          content: makeTipGroupLabel(log.process, log.step, log.ppid),
+          className: "custom-group-label tip-group",
           order: 100 + groupMap.size,
           title: `Process: ${log.process || "N/A"} | Step: ${
             log.step || "N/A"
@@ -75,28 +68,30 @@ export default function TipTimeline({
       groups: Array.from(groupMap.values()).sort((a, b) => a.order - b.order),
       items: processedItems,
     };
-  }, [filteredTipLogs, showLegend]);
+  }, [filteredTipLogs]);
 
   const options = useMemo(() => {
-    // 그룹 수에 따른 높이 계산 (그룹당 30px)
-    const calculatedHeight = Math.max(
-      100,
-      Math.min(300, groups.length * 30 + 60)
-    );
+    const calculatedHeight = groups.length * 35;
 
     return {
       stack: false,
       min: range.min,
       max: range.max,
       zoomMin: 60 * 60 * 1000,
-      height: calculatedHeight, // 계산된 고정 높이
-      minHeight: calculatedHeight, // 동일하게 설정
-      maxHeight: calculatedHeight, // 동일하게 설정
-      verticalScroll: groups.length > 8, // 그룹이 많을 때만 스크롤 활성화
-      horizontalScroll: true,
-      groupHeightMode: "fixed", // 고정 모드
+      height: calculatedHeight,
+      minHeight: calculatedHeight,
+      maxHeight: calculatedHeight,
+      verticalScroll: false,
+      horizontalScroll: false,
+      groupHeightMode: "fixed",
     };
   }, [range, groups.length]);
+
+  // TIP 범례 항목
+  const legendItems = [
+    { state: "OPEN", color: "bg-blue-600", label: "OPEN" },
+    { state: "CLOSE", color: "bg-red-600", label: "CLOSE" },
+  ];
 
   if (tipLogs.length === 0 || groups.length === 0) {
     return (
@@ -128,9 +123,23 @@ export default function TipTimeline({
       title="🔧 TIP 로그"
       showTimeAxis={showTimeAxis}
       headerExtra={
-        <span className="text-xs text-slate-500">
-          {groups.length}개 그룹, {filteredTipLogs.length}개 로그
-        </span>
+        <div>
+          {/* 범례 - showLegend가 true일 때만 표시 */}
+          {showLegend && (
+            <div className="flex items-center gap-3 px-2">
+              <div className="flex gap-3">
+                {legendItems.map(({ state, color, label }) => (
+                  <div key={state} className="flex items-center gap-1">
+                    <div className={`w-3 h-3 rounded ${color}`} />
+                    <span className="text-xs text-slate-600 dark:text-slate-400">
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       }
     />
   );

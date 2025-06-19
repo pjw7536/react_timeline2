@@ -37,7 +37,7 @@ export default function EqpSelector({
     <select
       value={eqpId}
       onChange={(e) => setEqpId(e.target.value)}
-      className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-xs dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 h-8"
+      className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-xs dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-600 h-8"
       disabled={eqps.length === 0}
     >
       <option value="">EQP 선택…</option>

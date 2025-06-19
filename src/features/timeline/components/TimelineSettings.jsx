@@ -12,17 +12,9 @@ export default function TimelineSettings({
   return (
     <div className="space-y-6">
       {/* Legend 설정 섹션 */}
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
-          표시 설정
-        </h3>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-700 dark:text-gray-300">
-              타임라인 범례 표시
-            </span>
-            <LegendToggle showLegend={showLegend} onToggle={onLegendToggle} />
-          </div>
+      <div className="border-y border-gray-200 dark:border-gray-700 py-3">
+        <div className="flex items-center justify-end">
+          <LegendToggle showLegend={showLegend} onToggle={onLegendToggle} />
         </div>
       </div>
 
