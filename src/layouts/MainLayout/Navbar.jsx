@@ -29,6 +29,9 @@ import {
   PlayCircleIcon,
 } from "@heroicons/react/20/solid";
 
+import owlImageLight from "@assets/owl_lightmode.png";
+import owlImageDark from "@assets/owl_darkmode.png";
+
 // "Product" 드롭다운에 사용될 예시 데이터
 const products = [
   {
@@ -71,7 +74,7 @@ export default function Navbar() {
   // 모바일 메뉴와 다크모드 상태를 관리
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   // 컴포넌트가 처음 마운트될 때, localStorage나 OS 기본 테마를 기준으로 다크모드 설정을 결정
   useEffect(() => {
@@ -106,7 +109,7 @@ export default function Navbar() {
     <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 h-15">
       <nav
         aria-label="Global"
-        className="mx-auto flex max-w-7xl items-center justify-between p-5 lg:px-8 h-15"
+        className="mx-auto flex max-w-7xl items-center justify-between py-5 px-10 lg:px-2 h-15"
       >
         {/* 로고: 메인 페이지로 이동 */}
         <div className="flex lg:flex-1">
@@ -114,8 +117,8 @@ export default function Navbar() {
             <span className="sr-only">Your Company</span>
             <img
               alt="Company Logo"
-              src="https://tailwindcss.com/plus-assets/img/logos/158x48/transistor-logo-gray-900.svg"
-              className="h-8 w-auto"
+              src={darkMode ? owlImageDark : owlImageLight}
+              className="h-15 w-auto"
             />
           </Link>
         </div>
@@ -229,12 +232,6 @@ export default function Navbar() {
               <span className="text-xs text-gray-700 dark:text-gray-300">
                 {user?.username} ({user?.deptname})
               </span>
-              <button
-                onClick={logout}
-                className="text-xs/6 font-semibold text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400"
-              >
-                로그아웃
-              </button>
             </div>
           ) : (
             <Link
@@ -253,20 +250,8 @@ export default function Navbar() {
         className="lg:hidden"
       >
         <div className="fixed inset-0 z-20" />
-        <DialogPanel className="scrollbar-thin fixed inset-y-0 right-0 z-30 w-full overflow-y-auto bg-white dark:bg-gray-800 px-6 py-6 sm:max-w-xs sm:ring-1 sm:ring-gray-900/10 dark:sm:ring-white/10">
-          <div className="flex items-center justify-between">
-            <Link
-              to="/"
-              className="-m-1.5 p-1.5"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <span className="sr-only">Your Company</span>
-              <img
-                alt="Company Logo"
-                src="https://tailwindcss.com/plus-assets/img/logos/158x48/transistor-logo-gray-900.svg"
-                className="h-8 w-auto"
-              />
-            </Link>
+        <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white dark:bg-gray-800 px-6 py-6 sm:max-w-xs sm:ring-1 sm:ring-gray-900/10 dark:sm:ring-white/10">
+          <div className="flex items-center justify-end">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(false)}
@@ -349,15 +334,6 @@ export default function Navbar() {
                     <div className="block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 dark:text-gray-100">
                       {user?.username} ({user?.deptname})
                     </div>
-                    <button
-                      onClick={() => {
-                        logout();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="-mx-3 block w-full text-left rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
-                    >
-                      로그아웃
-                    </button>
                   </div>
                 ) : (
                   <Link

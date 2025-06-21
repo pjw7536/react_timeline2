@@ -29,7 +29,7 @@ export default function Drawer({ isOpen, onClose, title, children }) {
         </div>
 
         {/* 컨텐츠 */}
-        <div className="p-4 overflow-y-auto h-[calc(100%-4rem)] scrollbar-thin">
+        <div className="p-4 overflow-y-auto h-[calc(100%-4rem)]">
           {children}
         </div>
       </div>

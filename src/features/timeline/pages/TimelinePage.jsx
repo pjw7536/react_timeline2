@@ -177,7 +177,7 @@ export default function TimelinePage() {
           />
 
           <section
-            className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex-[1] min-h-0 flex flex-col overflow-auto scrollbar-thin"
+            className="bg-white dark:bg-slate-800 shadow rounded-xl p-3 flex-[1] min-h-0 flex flex-col overflow-auto"
             style={{ minHeight: 180, maxHeight: 320 }}
           >
             <h2 className="text-md font-bold text-slate-900 dark:text-white border-slate-200 dark:border-slate-700 pb-1">
@@ -251,7 +251,7 @@ export default function TimelinePage() {
         {/* 설정 패널 (열릴 때만 ml-2로 밀림) */}
         {isSettingsOpen && (
           <div className="w-55 ml-2 transition-all duration-300 ease-in-out">
-            <div className="p-4 h-full overflow-y-auto bg-white dark:bg-slate-800 shadow rounded-xl scrollbar-thin">
+            <div className="p-4 h-full overflow-y-auto bg-white dark:bg-slate-800 shadow rounded-xl">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   타임라인 설정

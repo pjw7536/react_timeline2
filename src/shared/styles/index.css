@@ -4,3 +4,107 @@
 /* 다크모드 설정 */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* 전역 기본 스크롤바 - thin 스타일 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+
+.dark * {
+  scrollbar-color: #475569 #1e293b;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.dark *::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark *::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* 스크롤바 스타일: Medium */
+.scrollbar-medium {
+  scrollbar-width: medium;
+  scrollbar-color: #94a3b8 #f1f5f9;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.dark .scrollbar-medium {
+  scrollbar-color: #475569 #1e293b;
+}
+
+.scrollbar-medium::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.scrollbar-medium::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 6px;
+}
+
+.scrollbar-medium::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 6px;
+}
+
+.scrollbar-medium::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.dark .scrollbar-medium::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark .scrollbar-medium::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .scrollbar-medium::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* 기본 스크롤바로 되돌리기 */
+.scrollbar-default {
+  scrollbar-width: auto !important;
+}
+
+.scrollbar-default::-webkit-scrollbar {
+  width: initial !important;
+  height: initial !important;
+}
+
+.scrollbar-default::-webkit-scrollbar-track {
+  background: initial !important;
+  border-radius: initial !important;
+}
+
+.scrollbar-default::-webkit-scrollbar-thumb {
+  background: initial !important;
+  border-radius: initial !important;
+}

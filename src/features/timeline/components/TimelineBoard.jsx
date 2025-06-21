@@ -41,7 +41,7 @@ export default function TimelineBoard({
     <div className="w-full h-full">
       {/* 타임라인이 많아질 때를 위한 스크롤 컨테이너 */}
       <div
-        className="w-full h-full overflow-y-auto space-y-0 scroll-smooth scrollbar-medium pr-5"
+        className="w-full h-full overflow-y-auto space-y-0 scroll-smooth pr-5"
         style={{ position: "relative", zIndex: 1 }}
       >
         {eqpLogs.length > 0 && (
