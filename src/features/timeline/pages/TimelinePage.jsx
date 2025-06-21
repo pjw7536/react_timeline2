@@ -153,7 +153,7 @@ export default function TimelinePage() {
   }
 
   return (
-    <div className="flex flex-row h-[calc(100vh-85px)] gap-2 mt-3 ">
+    <div className="flex flex-row h-[calc(100vh-85px)] mt-3 gap-2">
       {/* 왼쪽 패널 */}
       <div className="flex flex-col h-full min-h-0 w-[35%] gap-2">
         <LogViewerSection
@@ -189,115 +189,103 @@ export default function TimelinePage() {
         </div>
       </div>
 
-      {/* 오른쪽 타임라인 패널 */}
-      <div className="w-[65%] h-full overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl p-4 pr-1 flex flex-col">
-        <div className="flex items-center justify-between mb-5 mr-5">
-          <div className="flex items-center gap-2">
-            <h2 className="text-md font-bold text-slate-900 dark:text-white">
-              📊 Timeline
-            </h2>
-            {lineId && eqpId && <ShareButton />}
+      {/* 오른쪽 패널 + 설정 패널 포함 */}
+      <div className="flex flex-row h-full w-[65%]">
+        {/* 타임라인 패널 */}
+        <div className="flex flex-col flex-1 overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl pl-4 pr-1 transition-all duration-300 ease-in-out">
+          <div className="flex items-center justify-between my-5">
+            <div className="flex items-center gap-2">
+              <h2 className="text-md font-bold text-slate-900 dark:text-white">
+                📊 Timeline
+              </h2>
+              {lineId && eqpId && <ShareButton />}
+            </div>
+
+            {eqpId && !logsLoading && (
+              <button
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                className="mr-3 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
+              >
+                <AdjustmentsHorizontalIcon className="h-4 w-4" />
+                설정
+              </button>
+            )}
           </div>
 
-          {eqpId && !logsLoading && (
-            <button
-              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
-            >
-              <AdjustmentsHorizontalIcon className="h-4 w-4" />
-              설정
-            </button>
+          <hr className="border-slate-300 dark:border-slate-600" />
+
+          {!eqpId && !logsLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-center text-slate-600 dark:text-slate-400">
+                EQP를 선택하세요.
+              </p>
+            </div>
+          ) : logsLoading ? (
+            <div className="flex flex-col items-center justify-center h-full gap-15">
+              <LoadingSpinner />
+              <div className="text-xs text-slate-500 dark:text-slate-400 text-center">
+                {eqpLoading && <div>EQP 로그 로딩 중...</div>}
+                {tipLoading && <div>TIP 로그 로딩 중...</div>}
+                {ctttmLoading && <div>CTTTM 로그 로딩 중...</div>}
+                {racbLoading && <div>RACB 로그 로딩 중...</div>}
+                {jiraLoading && <div>JIRA 로그 로딩 중...</div>}
+              </div>
+            </div>
+          ) : (
+            <div className="mt-4 flex-1 min-h-0 overflow-hidden relative">
+              <TimelineBoard
+                lineId={lineId}
+                eqpId={eqpId}
+                showLegend={showLegend}
+                selectedTipGroups={selectedTipGroups}
+                eqpLogs={eqpLogs}
+                tipLogs={tipLogs}
+                ctttmLogs={ctttmLogs}
+                racbLogs={racbLogs}
+                jiraLogs={jiraLogs}
+              />
+            </div>
           )}
         </div>
 
-        <hr className="border-slate-300 dark:border-slate-600" />
+        {/* 설정 패널 (열릴 때만 ml-2로 밀림) */}
+        {isSettingsOpen && (
+          <div className="w-55 ml-2 transition-all duration-300 ease-in-out">
+            <div className="p-4 h-full overflow-y-auto bg-white dark:bg-slate-800 shadow rounded-xl scrollbar-thin">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  타임라인 설정
+                </h3>
+                <button
+                  onClick={() => setIsSettingsOpen(false)}
+                  className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none"
+                >
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
 
-        {!eqpId && !logsLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-center text-slate-600 dark:text-slate-400">
-              EQP를 선택하세요.
-            </p>
-          </div>
-        ) : logsLoading ? (
-          <div className="flex flex-col items-center justify-center h-full gap-15">
-            <LoadingSpinner />
-            <div className="text-xs text-slate-500 dark:text-slate-400 text-center">
-              {eqpLoading && <div>EQP 로그 로딩 중...</div>}
-              {tipLoading && <div>TIP 로그 로딩 중...</div>}
-              {ctttmLoading && <div>CTTTM 로그 로딩 중...</div>}
-              {racbLoading && <div>RACB 로그 로딩 중...</div>}
-              {jiraLoading && <div>JIRA 로그 로딩 중...</div>}
+              <TimelineSettings
+                showLegend={showLegend}
+                onLegendToggle={() => setShowLegend(!showLegend)}
+                tipLogs={filteredTipLogs}
+                selectedTipGroups={selectedTipGroups}
+                onTipFilterChange={setSelectedTipGroups}
+              />
             </div>
-          </div>
-        ) : (
-          <div
-            className="mt-4 flex-1 min-h-0 overflow-hidden"
-            style={{ position: "relative" }}
-          >
-            <TimelineBoard
-              lineId={lineId}
-              eqpId={eqpId}
-              showLegend={showLegend}
-              selectedTipGroups={selectedTipGroups}
-              eqpLogs={eqpLogs}
-              tipLogs={tipLogs}
-              ctttmLogs={ctttmLogs}
-              racbLogs={racbLogs}
-              jiraLogs={jiraLogs}
-            />
           </div>
         )}
-      </div>
-
-      {/* 설정 패널 - 슬라이드 애니메이션으로 나타남/사라짐 */}
-      <div
-        className={`
-          relative bg-white dark:bg-slate-800 shadow rounded-xl overflow-hidden
-          transition-all duration-300 ease-in-out
-          ${isSettingsOpen ? "w-80" : "w-0"}
-        `}
-      >
-        {/* 내부 컨텐츠에 transform 애니메이션 적용 */}
-        <div
-          className={`
-            absolute inset-0 transform transition-transform duration-300 ease-in-out
-            ${isSettingsOpen ? "translate-x-0" : "translate-x-full"}
-          `}
-        >
-          <div className="p-4 h-full overflow-y-auto scrollbar-thin">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                타임라인 설정
-              </h3>
-              <button
-                onClick={() => setIsSettingsOpen(false)}
-                className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none"
-              >
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            <TimelineSettings
-              showLegend={showLegend}
-              onLegendToggle={() => setShowLegend(!showLegend)}
-              tipLogs={filteredTipLogs}
-              selectedTipGroups={selectedTipGroups}
-              onTipFilterChange={setSelectedTipGroups}
-            />
-          </div>
-        </div>
       </div>
     </div>
   );

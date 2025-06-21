@@ -180,15 +180,15 @@
   display: none !important;
 }
 .timeline-container.no-time-axis {
-  margin-bottom: 15px !important;
+  margin-bottom: 10px !important;
 }
 
 /* 타임라인 간격 정리 */
 .timeline-container {
-  margin-bottom: 10px !important;
+  margin-bottom: 15px !important;
 }
 .timeline-container:last-child {
-  margin-bottom: 16px !important;
+  margin-bottom: 10px !important;
 }
 
 

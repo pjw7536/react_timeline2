@@ -44,9 +44,9 @@ export default function BaseTimeline({
       orientation: {
         item: "top",
       },
-      height: height || options.height,
-      minHeight: minHeight || options.minHeight || 20,
-      maxHeight: maxHeight || options.maxHeight || 400,
+      ...(height !== undefined && { height }),
+      ...(minHeight !== undefined && { minHeight }),
+      ...(maxHeight !== undefined && { maxHeight }),
       ...options,
     }),
     [options, showTimeAxis, height, minHeight, maxHeight]
@@ -80,7 +80,7 @@ export default function BaseTimeline({
       }`}
     >
       {(title || headerExtra) && (
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between">
           {title && (
             <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300">
               {title}
