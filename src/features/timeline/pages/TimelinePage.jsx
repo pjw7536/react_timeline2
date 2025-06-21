@@ -153,9 +153,9 @@ export default function TimelinePage() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-85px)] gap-2 mt-3">
+    <div className="flex flex-row h-[calc(100vh-85px)] gap-2 mt-3 ">
       {/* 왼쪽 패널 */}
-      <div className="flex flex-col h-full min-h-0 lg:w-[35%] gap-2">
+      <div className="flex flex-col h-full min-h-0 w-[35%] gap-2">
         <LogViewerSection
           lineId={lineId}
           sdwtId={sdwtId}
@@ -190,7 +190,7 @@ export default function TimelinePage() {
       </div>
 
       {/* 오른쪽 타임라인 패널 */}
-      <div className="lg:w-[65%] h-full overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl p-4 pr-1 flex flex-col">
+      <div className="w-[65%] h-full overflow-hidden bg-white dark:bg-slate-800 shadow rounded-xl p-4 pr-1 flex flex-col">
         <div className="flex items-center justify-between mb-5 mr-5">
           <div className="flex items-center gap-2">
             <h2 className="text-md font-bold text-slate-900 dark:text-white">

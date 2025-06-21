@@ -11,6 +11,10 @@ export default function TipTimeline({
   selectedTipGroups = ["__ALL__"],
   showTimeAxis = true,
 }) {
+  // 각 그룹당 높이 설정 (픽셀)
+  const GROUP_HEIGHT = 28;
+  const TIME_AXIS_HEIGHT = 46;
+
   const filteredTipLogs = useMemo(() => {
     if (!tipLogs.length) return [];
     if (selectedTipGroups.includes("__ALL__")) return tipLogs;
@@ -70,22 +74,25 @@ export default function TipTimeline({
     };
   }, [filteredTipLogs]);
 
-  const options = useMemo(() => {
-    const calculatedHeight = groups.length * 35;
+  const calculatedHeight = useMemo(() => {
+    if (!groups || groups.length === 0) return TIME_AXIS_HEIGHT;
 
-    return {
+    return GROUP_HEIGHT * groups.length + TIME_AXIS_HEIGHT;
+  }, [groups]);
+
+  const options = useMemo(
+    () => ({
       stack: false,
-      min: range.min,
-      max: range.max,
       zoomMin: 60 * 60 * 1000,
       height: calculatedHeight,
-      minHeight: calculatedHeight,
-      maxHeight: calculatedHeight,
+      min: range.min,
+      max: range.max,
       verticalScroll: false,
       horizontalScroll: false,
       groupHeightMode: "fixed",
-    };
-  }, [range, groups.length]);
+    }),
+    [range, calculatedHeight]
+  );
 
   // TIP 범례 항목
   const legendItems = [
@@ -104,7 +111,11 @@ export default function TipTimeline({
             {tipLogs.length === 0 ? "로그 없음" : "선택된 그룹 없음"}
           </span>
         </div>
-        <div className="h-20 flex items-center justify-center bg-slate-50 dark:bg-slate-800 rounded-lg">
+        {/* 💡 테두리 + 높이 유지된 타임라인 자리 */}
+        <div
+          className="flex items-center justify-center bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md"
+          style={{ height: "74px" }} // 28 * 1 + 46 (x축 높이)
+        >
           <p className="text-sm text-slate-500 dark:text-slate-400">
             {tipLogs.length === 0
               ? "TIP 로그가 없습니다"
@@ -117,13 +128,15 @@ export default function TipTimeline({
 
   return (
     <BaseTimeline
+      key={`tip-timeline-${groups.length}`} // 그룹 개수가 변경되면 컴포넌트를 다시 마운트
       groups={groups}
       items={items}
       options={options}
-      title="🔧 TIP 로그"
+      title={`🔧 TIP 로그 (${groups.length}개 그룹)`}
       showTimeAxis={showTimeAxis}
+      className="tip-timeline"
       headerExtra={
-        <div>
+        <div className="flex items-center gap-3">
           {/* 범례 - showLegend가 true일 때만 표시 */}
           {showLegend && (
             <div className="flex items-center gap-3 px-2">

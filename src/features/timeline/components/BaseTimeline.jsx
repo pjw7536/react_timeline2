@@ -1,3 +1,4 @@
+// src/features/timeline/components/BaseTimeline.jsx
 import React, { useRef, useMemo } from "react";
 import { useVisTimeline } from "../hooks/useVisTimeline";
 
@@ -31,7 +32,8 @@ export default function BaseTimeline({
       margin: { item: 0, axis: 0 },
       groupOrder: "order",
       selectable: true,
-      verticalScroll: true,
+      verticalScroll:
+        options.verticalScroll !== undefined ? options.verticalScroll : true,
       tooltip: {
         followMouse: true,
         overflowMethod: "flip",
@@ -40,11 +42,11 @@ export default function BaseTimeline({
       showMinorLabels: showTimeAxis,
       align: "center",
       orientation: {
-        item: "top", // top으로 유지
+        item: "top",
       },
-      height: height,
-      minHeight: minHeight || 20,
-      maxHeight: maxHeight || 400,
+      height: height || options.height,
+      minHeight: minHeight || options.minHeight || 20,
+      maxHeight: maxHeight || options.maxHeight || 400,
       ...options,
     }),
     [options, showTimeAxis, height, minHeight, maxHeight]
@@ -63,8 +65,13 @@ export default function BaseTimeline({
       ...style,
     };
 
+    // 높이가 지정된 경우 컨테이너에도 적용
+    if (mergedOptions.height) {
+      baseStyle.height = `${mergedOptions.height}px`;
+    }
+
     return baseStyle;
-  }, [style]);
+  }, [style, mergedOptions.height]);
 
   return (
     <div

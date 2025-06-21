@@ -63,9 +63,6 @@ export default function TipFilterChips({
     });
   }, [tipLogs]);
 
-  // 표시할 그룹 (처음 5개 또는 전체)
-  const displayGroups = showAll ? tipGroups : tipGroups.slice(0, 5);
-
   // 선택 상태가 변경될 때마다 부모 컴포넌트에 알림
   useEffect(() => {
     if (isAllSelected) {
@@ -157,7 +154,7 @@ export default function TipFilterChips({
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        {displayGroups.map((group) => {
+        {tipGroups.map((group) => {
           const isSelected = isGroupSelected(group.key);
           return (
             <button
