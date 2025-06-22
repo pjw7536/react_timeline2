@@ -17,6 +17,7 @@ export default function TimelineBoard({
   ctttmLogs = [],
   racbLogs = [],
   jiraLogs = [],
+  typeFilters, // 추가
 }) {
   // 모든 로그를 합쳐서 range 계산
   const allLogs = [
@@ -44,56 +45,66 @@ export default function TimelineBoard({
         className="w-full h-full overflow-y-auto space-y-0 scroll-smooth pr-5"
         style={{ position: "relative", zIndex: 1 }}
       >
-        {/* 로그가 없어도 항상 EqpTimeline 렌더링 */}
-        <EqpTimeline
-          lineId={lineId}
-          eqpId={eqpId}
-          range={range}
-          showLegend={showLegend}
-          showTimeAxis={true}
-          eqpLogs={eqpLogs}
-        />
+        {/* EQP 타임라인 - display:none으로 숨김 처리 */}
+        <div style={{ display: typeFilters?.EQP ? "block" : "none" }}>
+          <EqpTimeline
+            lineId={lineId}
+            eqpId={eqpId}
+            range={range}
+            showLegend={showLegend}
+            showTimeAxis={true}
+            eqpLogs={eqpLogs}
+          />
+        </div>
 
-        {/* 로그가 없어도 항상 TipTimeline 렌더링 */}
-        <TipTimeline
-          lineId={lineId}
-          eqpId={eqpId}
-          range={range}
-          showLegend={showLegend}
-          selectedTipGroups={selectedTipGroups}
-          showTimeAxis={true}
-          tipLogs={tipLogs}
-        />
+        {/* TIP 타임라인 - display:none으로 숨김 처리 */}
+        <div style={{ display: typeFilters?.TIP ? "block" : "none" }}>
+          <TipTimeline
+            lineId={lineId}
+            eqpId={eqpId}
+            range={range}
+            showLegend={showLegend}
+            selectedTipGroups={selectedTipGroups}
+            showTimeAxis={true}
+            tipLogs={tipLogs}
+          />
+        </div>
 
-        {/* 로그가 없어도 항상 CtttmTimeline 렌더링 */}
-        <CtttmTimeline
-          lineId={lineId}
-          eqpId={eqpId}
-          range={range}
-          showLegend={showLegend}
-          showTimeAxis={true}
-          ctttmLogs={ctttmLogs}
-        />
+        {/* CTTTM 타임라인 - display:none으로 숨김 처리 */}
+        <div style={{ display: typeFilters?.CTTTM ? "block" : "none" }}>
+          <CtttmTimeline
+            lineId={lineId}
+            eqpId={eqpId}
+            range={range}
+            showLegend={showLegend}
+            showTimeAxis={true}
+            ctttmLogs={ctttmLogs}
+          />
+        </div>
 
-        {/* 로그가 없어도 항상 RacbTimeline 렌더링 */}
-        <RacbTimeline
-          lineId={lineId}
-          eqpId={eqpId}
-          range={range}
-          showLegend={showLegend}
-          showTimeAxis={true}
-          racbLogs={racbLogs}
-        />
+        {/* RACB 타임라인 - display:none으로 숨김 처리 */}
+        <div style={{ display: typeFilters?.RACB ? "block" : "none" }}>
+          <RacbTimeline
+            lineId={lineId}
+            eqpId={eqpId}
+            range={range}
+            showLegend={showLegend}
+            showTimeAxis={true}
+            racbLogs={racbLogs}
+          />
+        </div>
 
-        {/* 로그가 없어도 항상 JiraTimeline 렌더링 */}
-        <JiraTimeline
-          lineId={lineId}
-          eqpId={eqpId}
-          range={range}
-          showLegend={showLegend}
-          showTimeAxis={true}
-          jiraLogs={jiraLogs}
-        />
+        {/* JIRA 타임라인 - display:none으로 숨김 처리 */}
+        <div style={{ display: typeFilters?.JIRA ? "block" : "none" }}>
+          <JiraTimeline
+            lineId={lineId}
+            eqpId={eqpId}
+            range={range}
+            showLegend={showLegend}
+            showTimeAxis={true}
+            jiraLogs={jiraLogs}
+          />
+        </div>
       </div>
     </div>
   );

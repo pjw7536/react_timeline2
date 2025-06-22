@@ -6,7 +6,6 @@ import { useTimelineStore } from "@features/timeline/store/timelineStore";
 import { useUrlValidation } from "@features/timeline/hooks/useUrlValidation";
 import { useUrlSync } from "@features/timeline/hooks/useUrlSync";
 import { transformLogsToTableData } from "@features/timeline/utils/dataTransformers";
-import { processData } from "@features/timeline/utils/timelineUtils";
 import { DEFAULT_TYPE_FILTERS } from "@features/timeline/constants";
 import LogViewerSection from "@features/timeline/components/LogViewerSection";
 import DataLogSection from "@features/timeline/components/DataLogSection";
@@ -83,26 +82,6 @@ export default function TimelinePage() {
   const logsLoading =
     eqpLoading || tipLoading || ctttmLoading || racbLoading || jiraLoading;
 
-  // 모든 로그 데이터를 하나로 합치기
-  const mergedLogs = useMemo(() => {
-    if (!enabled) return [];
-
-    // 모든 로그를 배열로 합치기
-    const allLogs = [
-      ...eqpLogs,
-      ...tipLogs,
-      ...ctttmLogs,
-      ...racbLogs,
-      ...jiraLogs,
-    ];
-
-    // 시간순으로 정렬 (최신순)
-    return allLogs.sort(
-      (a, b) =>
-        new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
-    );
-  }, [eqpLogs, tipLogs, ctttmLogs, racbLogs, jiraLogs, enabled]);
-
   // 로컬 상태 (timeline과 관련 없는 상태들)
   const [typeFilters, setTypeFilters] = useState(DEFAULT_TYPE_FILTERS);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -111,35 +90,85 @@ export default function TimelinePage() {
   const handleFilter = (e) =>
     setTypeFilters((prev) => ({ ...prev, [e.target.name]: e.target.checked }));
 
-  // 처리된 아이템들을 저장할 맵 생성
-  const processedItemsMap = useMemo(() => {
-    const map = {};
+  // 로그 데이터에 duration 추가
+  const logsWithDuration = useMemo(() => {
+    const addDuration = (logs, logType) => {
+      if (!logs || logs.length === 0) return logs;
 
-    // EQP 로그 처리 (makeRangeContinuous = true)
-    const eqpItems = processData("EQP", eqpLogs, true);
-    eqpItems.forEach((item) => {
-      map[item.id] = item;
-    });
+      // 시간순 정렬 (오래된 것부터)
+      const sortedLogs = [...logs].sort(
+        (a, b) => new Date(a.eventTime) - new Date(b.eventTime)
+      );
 
-    // TIP 로그 처리 (makeRangeContinuous = true)
-    const tipItems = processData("TIP", tipLogs, true);
-    tipItems.forEach((item) => {
-      map[item.id] = item;
-    });
+      return sortedLogs.map((log, index) => {
+        let duration = null;
 
-    // 다른 로그 타입들도 필요하면 추가
-    // CTTTM, RACB, JIRA는 makeRangeContinuous = false로 처리되므로 duration이 없음
+        // EQP와 TIP만 duration 계산
+        if (logType === "EQP" || logType === "TIP") {
+          if (index < sortedLogs.length - 1) {
+            // 다음 로그까지의 시간
+            const nextLog = sortedLogs[index + 1];
+            const startTime = new Date(log.eventTime).getTime();
+            const endTime = new Date(nextLog.eventTime).getTime();
+            duration = endTime - startTime;
+          } else {
+            // 마지막 로그는 현재 시간까지
+            const startTime = new Date(log.eventTime).getTime();
+            const endTime = new Date().getTime();
+            duration = endTime - startTime;
+          }
+        }
 
-    return map;
-  }, [eqpLogs, tipLogs]);
+        return { ...log, duration };
+      });
+    };
 
-  // 테이블 데이터 변환 시 processedItemsMap 전달
+    return {
+      eqpLogs: addDuration(eqpLogs, "EQP"),
+      tipLogs: addDuration(tipLogs, "TIP"),
+      ctttmLogs: ctttmLogs, // duration 필요 없음
+      racbLogs: racbLogs, // duration 필요 없음
+      jiraLogs: jiraLogs, // duration 필요 없음
+    };
+  }, [eqpLogs, tipLogs, ctttmLogs, racbLogs, jiraLogs]);
+
+  // typeFilters를 적용한 필터된 로그 데이터
+  const filteredLogsForTimeline = useMemo(() => {
+    return {
+      eqpLogs: typeFilters.EQP ? logsWithDuration.eqpLogs : [],
+      tipLogs: typeFilters.TIP ? logsWithDuration.tipLogs : [],
+      ctttmLogs: typeFilters.CTTTM ? logsWithDuration.ctttmLogs : [],
+      racbLogs: typeFilters.RACB ? logsWithDuration.racbLogs : [],
+      jiraLogs: typeFilters.JIRA ? logsWithDuration.jiraLogs : [],
+    };
+  }, [logsWithDuration, typeFilters]);
+
+  // 모든 로그 데이터를 하나로 합치기
+  const mergedLogs = useMemo(() => {
+    if (!enabled) return [];
+
+    const allLogs = [
+      ...logsWithDuration.eqpLogs,
+      ...logsWithDuration.tipLogs,
+      ...logsWithDuration.ctttmLogs,
+      ...logsWithDuration.racbLogs,
+      ...logsWithDuration.jiraLogs,
+    ];
+
+    // 시간순으로 정렬 (최신순)
+    return allLogs.sort(
+      (a, b) =>
+        new Date(b.eventTime).getTime() - new Date(a.eventTime).getTime()
+    );
+  }, [logsWithDuration, enabled]);
+
+  // 테이블 데이터 변환
   const tableData = useMemo(
     () =>
       enabled && !logsLoading
-        ? transformLogsToTableData(mergedLogs, typeFilters, processedItemsMap)
+        ? transformLogsToTableData(mergedLogs, typeFilters)
         : [],
-    [mergedLogs, logsLoading, enabled, typeFilters, processedItemsMap]
+    [mergedLogs, logsLoading, enabled, typeFilters]
   );
 
   // 선택된 로그 (병합된 로그에서 찾기)
@@ -244,70 +273,36 @@ export default function TimelinePage() {
               </p>
             </div>
           ) : logsLoading ? (
-            <div className="flex flex-col items-center justify-center h-full gap-15">
+            <div className="flex items-center justify-center h-full">
               <LoadingSpinner />
-              <div className="text-xs text-slate-500 dark:text-slate-400 text-center">
-                {eqpLoading && <div>EQP 로그 로딩 중...</div>}
-                {tipLoading && <div>TIP 로그 로딩 중...</div>}
-                {ctttmLoading && <div>CTTTM 로그 로딩 중...</div>}
-                {racbLoading && <div>RACB 로그 로딩 중...</div>}
-                {jiraLoading && <div>JIRA 로그 로딩 중...</div>}
-              </div>
             </div>
           ) : (
-            <div className="mt-4 flex-1 min-h-0 overflow-hidden relative">
-              <TimelineBoard
-                lineId={lineId}
-                eqpId={eqpId}
-                showLegend={showLegend}
-                selectedTipGroups={selectedTipGroups}
-                eqpLogs={eqpLogs}
-                tipLogs={tipLogs}
-                ctttmLogs={ctttmLogs}
-                racbLogs={racbLogs}
-                jiraLogs={jiraLogs}
-              />
-            </div>
+            <TimelineBoard
+              lineId={lineId}
+              eqpId={eqpId}
+              showLegend={showLegend}
+              selectedTipGroups={selectedTipGroups}
+              eqpLogs={logsWithDuration.eqpLogs}
+              tipLogs={logsWithDuration.tipLogs}
+              ctttmLogs={logsWithDuration.ctttmLogs}
+              racbLogs={logsWithDuration.racbLogs}
+              jiraLogs={logsWithDuration.jiraLogs}
+              typeFilters={typeFilters}
+            />
           )}
         </div>
 
-        {/* 설정 패널 (열릴 때만 ml-2로 밀림) */}
-        {isSettingsOpen && (
-          <div className="w-70 ml-2 transition-all duration-300 ease-in-out">
-            <div className="p-4 h-full overflow-y-auto bg-white dark:bg-slate-800 shadow rounded-xl">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  타임라인 설정
-                </h3>
-                <button
-                  onClick={() => setIsSettingsOpen(false)}
-                  className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none"
-                >
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <TimelineSettings
-                showLegend={showLegend}
-                onLegendToggle={() => setShowLegend(!showLegend)}
-                tipLogs={filteredTipLogs}
-                selectedTipGroups={selectedTipGroups}
-                onTipFilterChange={setSelectedTipGroups}
-              />
-            </div>
-          </div>
+        {/* 설정 패널 */}
+        {eqpId && !logsLoading && (
+          <TimelineSettings
+            isOpen={isSettingsOpen}
+            onClose={() => setIsSettingsOpen(false)}
+            showLegend={showLegend}
+            selectedTipGroups={selectedTipGroups}
+            onLegendToggle={setShowLegend}
+            onTipFilterChange={setSelectedTipGroups}
+            tipLogs={filteredTipLogs}
+          />
         )}
       </div>
     </div>
