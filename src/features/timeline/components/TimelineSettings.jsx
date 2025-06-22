@@ -1,12 +1,13 @@
+// src/features/timeline/components/TimelineSettings.jsx
 import React from "react";
 import LegendToggle from "./LegendToggle";
-import TipFilterChips from "./TipFilterChips";
+import TipTreeFilter from "./TipTreeFilter";
 
 export default function TimelineSettings({
   showLegend,
   onLegendToggle,
   tipLogs,
-  selectedTipGroups, // 추가
+  selectedTipGroups,
   onTipFilterChange,
 }) {
   return (
@@ -24,9 +25,9 @@ export default function TimelineSettings({
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
             TIP 그룹 필터
           </h3>
-          <TipFilterChips
+          <TipTreeFilter
             tipLogs={tipLogs}
-            selectedTipGroups={selectedTipGroups} // 추가
+            selectedTipGroups={selectedTipGroups}
             onFilterChange={onTipFilterChange}
             inDrawer={true}
           />

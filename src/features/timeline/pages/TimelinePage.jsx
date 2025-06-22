@@ -250,7 +250,7 @@ export default function TimelinePage() {
 
         {/* 설정 패널 (열릴 때만 ml-2로 밀림) */}
         {isSettingsOpen && (
-          <div className="w-55 ml-2 transition-all duration-300 ease-in-out">
+          <div className="w-70 ml-2 transition-all duration-300 ease-in-out">
             <div className="p-4 h-full overflow-y-auto bg-white dark:bg-slate-800 shadow rounded-xl">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">

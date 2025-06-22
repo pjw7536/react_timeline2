@@ -3,6 +3,7 @@ import React, { useMemo } from "react";
 import BaseTimeline from "./BaseTimeline";
 import { processData } from "../utils/timelineUtils";
 import { makeTipGroupLabel } from "../utils/groupLabel";
+import { getTipGroupKey } from "../utils/tipUtils";
 
 export default function TipTimeline({
   tipLogs = [],
@@ -11,7 +12,6 @@ export default function TipTimeline({
   selectedTipGroups = ["__ALL__"],
   showTimeAxis = true,
 }) {
-  // 각 그룹당 높이 설정 (픽셀)
   const GROUP_HEIGHT = 28;
   const TIME_AXIS_HEIGHT = 46;
 
@@ -20,9 +20,7 @@ export default function TipTimeline({
     if (selectedTipGroups.includes("__ALL__")) return tipLogs;
 
     return tipLogs.filter((log) => {
-      const groupKey = `${log.process || "unknown"}_${log.step || "unknown"}_${
-        log.ppid || "unknown"
-      }`;
+      const groupKey = getTipGroupKey(log);
       return selectedTipGroups.includes(groupKey);
     });
   }, [tipLogs, selectedTipGroups]);
@@ -32,9 +30,7 @@ export default function TipTimeline({
     const processedItems = [];
 
     filteredTipLogs.forEach((log) => {
-      const groupKey = `TIP_${log.process || "unknown"}_${
-        log.step || "unknown"
-      }_${log.ppid || "unknown"}`;
+      const groupKey = `TIP_${getTipGroupKey(log)}`;
 
       if (!groupMap.has(groupKey)) {
         groupMap.set(groupKey, {
@@ -42,18 +38,16 @@ export default function TipTimeline({
           content: makeTipGroupLabel(log.process, log.step, log.ppid),
           className: "custom-group-label tip-group",
           order: 100 + groupMap.size,
-          title: `Process: ${log.process || "N/A"} | Step: ${
-            log.step || "N/A"
-          } | PPID: ${log.ppid || "N/A"}`,
+          title: `Line: ${log.lineId || "N/A"} | Process: ${
+            log.process || "N/A"
+          } | Step: ${log.step || "N/A"} | PPID: ${log.ppid || "N/A"}`,
         });
       }
     });
 
     const groupedLogs = new Map();
     filteredTipLogs.forEach((log) => {
-      const groupKey = `TIP_${log.process || "unknown"}_${
-        log.step || "unknown"
-      }_${log.ppid || "unknown"}`;
+      const groupKey = `TIP_${getTipGroupKey(log)}`;
 
       if (!groupedLogs.has(groupKey)) {
         groupedLogs.set(groupKey, []);
@@ -76,7 +70,6 @@ export default function TipTimeline({
 
   const calculatedHeight = useMemo(() => {
     if (!groups || groups.length === 0) return TIME_AXIS_HEIGHT;
-
     return GROUP_HEIGHT * groups.length + TIME_AXIS_HEIGHT;
   }, [groups]);
 
@@ -94,7 +87,6 @@ export default function TipTimeline({
     [range, calculatedHeight]
   );
 
-  // TIP 범례 항목
   const legendItems = [
     { state: "OPEN", color: "bg-blue-600", label: "OPEN" },
     { state: "CLOSE", color: "bg-red-600", label: "CLOSE" },
@@ -111,10 +103,9 @@ export default function TipTimeline({
             {tipLogs.length === 0 ? "로그 없음" : "선택된 그룹 없음"}
           </span>
         </div>
-        {/* 💡 테두리 + 높이 유지된 타임라인 자리 */}
         <div
           className="flex items-center justify-center bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md"
-          style={{ height: "74px" }} // 28 * 1 + 46 (x축 높이)
+          style={{ height: "74px" }}
         >
           <p className="text-sm text-slate-500 dark:text-slate-400">
             {tipLogs.length === 0
@@ -128,7 +119,7 @@ export default function TipTimeline({
 
   return (
     <BaseTimeline
-      key={`tip-timeline-${groups.length}`} // 그룹 개수가 변경되면 컴포넌트를 다시 마운트
+      key={`tip-timeline-${groups.length}`}
       groups={groups}
       items={items}
       options={options}
@@ -137,7 +128,6 @@ export default function TipTimeline({
       className="tip-timeline"
       headerExtra={
         <div className="flex items-center gap-3">
-          {/* 범례 - showLegend가 true일 때만 표시 */}
           {showLegend && (
             <div className="flex items-center gap-3 px-2">
               <div className="flex gap-3">
