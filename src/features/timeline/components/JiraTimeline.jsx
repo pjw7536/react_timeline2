@@ -12,6 +12,26 @@ export default function JiraTimeline({
   showTimeAxis = false,
   jiraLogs = [],
 }) {
+  // 로그가 없을 때 빈 타임라인 표시
+  if (jiraLogs.length === 0) {
+    return (
+      <div className="timeline-container relative">
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+            📋 JIRA
+          </h3>
+        </div>
+        <div
+          className="flex items-center justify-center bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600"
+          style={{ height: "74px" }}
+        >
+          <p className="text-sm text-slate-400 dark:text-slate-500">
+            JIRA 로그가 없습니다
+          </p>
+        </div>
+      </div>
+    );
+  }
   const groups = useMemo(
     () => [
       {

@@ -44,57 +44,56 @@ export default function TimelineBoard({
         className="w-full h-full overflow-y-auto space-y-0 scroll-smooth pr-5"
         style={{ position: "relative", zIndex: 1 }}
       >
-        {eqpLogs.length > 0 && (
-          <EqpTimeline
-            lineId={lineId}
-            eqpId={eqpId}
-            range={range}
-            showLegend={showLegend}
-            showTimeAxis={true}
-            eqpLogs={eqpLogs}
-          />
-        )}
-        {tipLogs.length > 0 && (
-          <TipTimeline
-            lineId={lineId}
-            eqpId={eqpId}
-            range={range}
-            showLegend={showLegend}
-            selectedTipGroups={selectedTipGroups}
-            showTimeAxis={true}
-            tipLogs={tipLogs}
-          />
-        )}
-        {ctttmLogs.length > 0 && (
-          <CtttmTimeline
-            lineId={lineId}
-            eqpId={eqpId}
-            range={range}
-            showLegend={showLegend}
-            showTimeAxis={true}
-            ctttmLogs={ctttmLogs}
-          />
-        )}
-        {racbLogs.length > 0 && (
-          <RacbTimeline
-            lineId={lineId}
-            eqpId={eqpId}
-            range={range}
-            showLegend={showLegend}
-            showTimeAxis={true}
-            racbLogs={racbLogs}
-          />
-        )}
-        {jiraLogs.length > 0 && (
-          <JiraTimeline
-            lineId={lineId}
-            eqpId={eqpId}
-            range={range}
-            showLegend={showLegend}
-            showTimeAxis={true}
-            jiraLogs={jiraLogs}
-          />
-        )}
+        {/* 로그가 없어도 항상 EqpTimeline 렌더링 */}
+        <EqpTimeline
+          lineId={lineId}
+          eqpId={eqpId}
+          range={range}
+          showLegend={showLegend}
+          showTimeAxis={true}
+          eqpLogs={eqpLogs}
+        />
+
+        {/* 로그가 없어도 항상 TipTimeline 렌더링 */}
+        <TipTimeline
+          lineId={lineId}
+          eqpId={eqpId}
+          range={range}
+          showLegend={showLegend}
+          selectedTipGroups={selectedTipGroups}
+          showTimeAxis={true}
+          tipLogs={tipLogs}
+        />
+
+        {/* 로그가 없어도 항상 CtttmTimeline 렌더링 */}
+        <CtttmTimeline
+          lineId={lineId}
+          eqpId={eqpId}
+          range={range}
+          showLegend={showLegend}
+          showTimeAxis={true}
+          ctttmLogs={ctttmLogs}
+        />
+
+        {/* 로그가 없어도 항상 RacbTimeline 렌더링 */}
+        <RacbTimeline
+          lineId={lineId}
+          eqpId={eqpId}
+          range={range}
+          showLegend={showLegend}
+          showTimeAxis={true}
+          racbLogs={racbLogs}
+        />
+
+        {/* 로그가 없어도 항상 JiraTimeline 렌더링 */}
+        <JiraTimeline
+          lineId={lineId}
+          eqpId={eqpId}
+          range={range}
+          showLegend={showLegend}
+          showTimeAxis={true}
+          jiraLogs={jiraLogs}
+        />
       </div>
     </div>
   );
