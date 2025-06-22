@@ -6,6 +6,7 @@ import { useTimelineStore } from "@features/timeline/store/timelineStore";
 import { useUrlValidation } from "@features/timeline/hooks/useUrlValidation";
 import { useUrlSync } from "@features/timeline/hooks/useUrlSync";
 import { transformLogsToTableData } from "@features/timeline/utils/dataTransformers";
+import { processData } from "@features/timeline/utils/timelineUtils";
 import { DEFAULT_TYPE_FILTERS } from "@features/timeline/constants";
 import LogViewerSection from "@features/timeline/components/LogViewerSection";
 import DataLogSection from "@features/timeline/components/DataLogSection";
@@ -110,13 +111,35 @@ export default function TimelinePage() {
   const handleFilter = (e) =>
     setTypeFilters((prev) => ({ ...prev, [e.target.name]: e.target.checked }));
 
-  // 테이블 데이터 변환 (병합된 로그 사용)
+  // 처리된 아이템들을 저장할 맵 생성
+  const processedItemsMap = useMemo(() => {
+    const map = {};
+
+    // EQP 로그 처리 (makeRangeContinuous = true)
+    const eqpItems = processData("EQP", eqpLogs, true);
+    eqpItems.forEach((item) => {
+      map[item.id] = item;
+    });
+
+    // TIP 로그 처리 (makeRangeContinuous = true)
+    const tipItems = processData("TIP", tipLogs, true);
+    tipItems.forEach((item) => {
+      map[item.id] = item;
+    });
+
+    // 다른 로그 타입들도 필요하면 추가
+    // CTTTM, RACB, JIRA는 makeRangeContinuous = false로 처리되므로 duration이 없음
+
+    return map;
+  }, [eqpLogs, tipLogs]);
+
+  // 테이블 데이터 변환 시 processedItemsMap 전달
   const tableData = useMemo(
     () =>
       enabled && !logsLoading
-        ? transformLogsToTableData(mergedLogs, typeFilters)
+        ? transformLogsToTableData(mergedLogs, typeFilters, processedItemsMap)
         : [],
-    [mergedLogs, logsLoading, enabled, typeFilters]
+    [mergedLogs, logsLoading, enabled, typeFilters, processedItemsMap]
   );
 
   // 선택된 로그 (병합된 로그에서 찾기)
