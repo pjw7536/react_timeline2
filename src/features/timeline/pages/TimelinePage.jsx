@@ -132,17 +132,6 @@ export default function TimelinePage() {
     };
   }, [eqpLogs, tipLogs, ctttmLogs, racbLogs, jiraLogs]);
 
-  // typeFilters를 적용한 필터된 로그 데이터
-  const filteredLogsForTimeline = useMemo(() => {
-    return {
-      eqpLogs: typeFilters.EQP ? logsWithDuration.eqpLogs : [],
-      tipLogs: typeFilters.TIP ? logsWithDuration.tipLogs : [],
-      ctttmLogs: typeFilters.CTTTM ? logsWithDuration.ctttmLogs : [],
-      racbLogs: typeFilters.RACB ? logsWithDuration.racbLogs : [],
-      jiraLogs: typeFilters.JIRA ? logsWithDuration.jiraLogs : [],
-    };
-  }, [logsWithDuration, typeFilters]);
-
   // 모든 로그 데이터를 하나로 합치기
   const mergedLogs = useMemo(() => {
     if (!enabled) return [];

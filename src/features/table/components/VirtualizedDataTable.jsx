@@ -17,10 +17,30 @@ export default function VirtualizedDataTable({
   const listRef = useRef(null);
   const scrollAnimationRef = useRef(null);
   const containerRef = useRef(null);
+  const isFilterChangingRef = useRef(false);
+  const prevTypeFiltersRef = useRef(typeFilters);
 
   // 오버스캔 카운트 증가로 더 많은 행을 미리 렌더링
   const OVERSCAN_COUNT = 10;
   const ITEM_HEIGHT = 36;
+
+  // 필터 변경 감지
+  useEffect(() => {
+    // 필터가 변경되었는지 확인
+    const filtersChanged =
+      JSON.stringify(prevTypeFiltersRef.current) !==
+      JSON.stringify(typeFilters);
+
+    if (filtersChanged) {
+      isFilterChangingRef.current = true;
+      prevTypeFiltersRef.current = typeFilters;
+
+      // 필터 변경 후 잠시 뒤에 플래그를 리셋
+      setTimeout(() => {
+        isFilterChangingRef.current = false;
+      }, 300);
+    }
+  }, [typeFilters]);
 
   // 부드러운 스크롤 함수
   const smoothScrollTo = useCallback((targetOffset, duration = 200) => {
@@ -68,6 +88,11 @@ export default function VirtualizedDataTable({
 
   // 타임라인에서 선택된 항목이 있을 때 해당 행으로 스크롤
   useEffect(() => {
+    // 필터가 변경 중이면 스크롤하지 않음
+    if (isFilterChangingRef.current) {
+      return;
+    }
+
     if (
       source === "timeline" &&
       selectedRow &&

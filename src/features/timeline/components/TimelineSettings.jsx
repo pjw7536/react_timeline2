@@ -16,7 +16,7 @@ export default function TimelineSettings({
   if (!isOpen) return null;
 
   return (
-    <div className="w-80 bg-white dark:bg-slate-800 shadow-xl border-l border-gray-200 dark:border-gray-700 overflow-y-auto">
+    <div className="w-70 ml-2 bg-white dark:bg-slate-800 shadow-xl border-l border-gray-200 dark:border-gray-700 overflow-y-auto rounded-xl">
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
