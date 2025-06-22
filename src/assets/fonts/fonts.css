@@ -1,0 +1,8 @@
+/* src/assets/fonts/fonts.css */
+@font-face {
+    font-family: 'Black Ops One';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/src/assets/fonts/BlackOpsOne/black-ops-one-v20-latin-regular.woff2') format('woff2');
+  }

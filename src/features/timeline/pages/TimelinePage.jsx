@@ -288,7 +288,7 @@ export default function TimelinePage() {
             onClose={() => setIsSettingsOpen(false)}
             showLegend={showLegend}
             selectedTipGroups={selectedTipGroups}
-            onLegendToggle={setShowLegend}
+            onLegendToggle={(e) => setShowLegend(e.target.checked)} // 수정
             onTipFilterChange={setSelectedTipGroups}
             tipLogs={filteredTipLogs}
           />
