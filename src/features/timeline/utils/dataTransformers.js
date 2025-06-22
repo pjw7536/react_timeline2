@@ -1,12 +1,29 @@
 // src/features/timeline/utils/dataTransformers.js
 import { formatDateTime } from "@features/timeline/utils/dateUtils";
-export function transformLogsToTableData(logs, typeFilters) {
+import { getTipGroupKey } from "@features/timeline/utils/tipUtils";
+
+export function transformLogsToTableData(
+  logs,
+  typeFilters,
+  selectedTipGroups = ["__ALL__"]
+) {
   const transformed = logs
-    .filter((log) => typeFilters[log.logType])
+    .filter((log) => {
+      // 타입 필터 체크
+      if (!typeFilters[log.logType]) return false;
+
+      // TIP 로그인 경우 추가 필터링
+      if (log.logType === "TIP" && !selectedTipGroups.includes("__ALL__")) {
+        const groupKey = getTipGroupKey(log);
+        return selectedTipGroups.includes(groupKey);
+      }
+
+      return true;
+    })
     .map((log) => {
       let duration = "-";
 
-      // 이미 계산된 duration 사용
+      // duration 계산
       if (log.duration && log.duration > 0) {
         const totalSeconds = Math.floor(log.duration / 1000);
         const hours = Math.floor(totalSeconds / 3600);

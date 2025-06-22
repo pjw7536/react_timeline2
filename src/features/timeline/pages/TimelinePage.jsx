@@ -162,13 +162,13 @@ export default function TimelinePage() {
     );
   }, [logsWithDuration, enabled]);
 
-  // 테이블 데이터 변환
+  // 테이블 데이터 변환 시 selectedTipGroups 전달
   const tableData = useMemo(
     () =>
       enabled && !logsLoading
-        ? transformLogsToTableData(mergedLogs, typeFilters)
+        ? transformLogsToTableData(mergedLogs, typeFilters, selectedTipGroups)
         : [],
-    [mergedLogs, logsLoading, enabled, typeFilters]
+    [mergedLogs, logsLoading, enabled, typeFilters, selectedTipGroups]
   );
 
   // 선택된 로그 (병합된 로그에서 찾기)

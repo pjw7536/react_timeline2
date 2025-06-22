@@ -1,7 +1,8 @@
-// src/features/table/VirtualizedDataTable.jsx
+// src/features/table/components/VirtualizedDataTable.jsx
 import React, { useEffect, useRef, useCallback, useMemo } from "react";
 import { FixedSizeList as List } from "react-window";
 import { useSelectionStore } from "@shared/store";
+import { LinkIcon } from "@heroicons/react/24/outline";
 
 /**
  * 가상화된 데이터 테이블 컴포넌트
@@ -15,6 +16,7 @@ export default function VirtualizedDataTable({
   const { selectedRow, source, setSelectedRow } = useSelectionStore();
   const listRef = useRef(null);
   const scrollAnimationRef = useRef(null);
+  const containerRef = useRef(null);
 
   // 오버스캔 카운트 증가로 더 많은 행을 미리 렌더링
   const OVERSCAN_COUNT = 10;
@@ -29,6 +31,14 @@ export default function VirtualizedDataTable({
     const startTime = performance.now();
 
     const animateScroll = (currentTime) => {
+      // 컴포넌트가 언마운트되었는지 확인
+      if (!listRef.current) {
+        if (scrollAnimationRef.current) {
+          cancelAnimationFrame(scrollAnimationRef.current);
+        }
+        return;
+      }
+
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
 
@@ -70,7 +80,7 @@ export default function VirtualizedDataTable({
 
       if (index >= 0) {
         // 목표 위치 계산 (화면 중앙에 오도록)
-        const listHeight = containerHeight;
+        const listHeight = listRef.current?.props.height || containerHeight;
         const targetOffset =
           index * ITEM_HEIGHT - listHeight / 2 + ITEM_HEIGHT / 2;
         const maxOffset = data.length * ITEM_HEIGHT - listHeight;
@@ -92,14 +102,17 @@ export default function VirtualizedDataTable({
   }, []);
 
   // 컬럼 너비 정의 (px 단위로 통일)
-  const columnWidths = {
-    time: 112,
-    logType: 80,
-    changeType: 160,
-    operator: 70,
-    duration: 70,
-    url: 70,
-  };
+  const columnWidths = useMemo(
+    () => ({
+      time: 112,
+      logType: 80,
+      changeType: 160,
+      operator: 70,
+      duration: 70,
+      url: 70,
+    }),
+    []
+  );
 
   // 헤더 컴포넌트
   const TableHeader = useMemo(
@@ -172,35 +185,54 @@ export default function VirtualizedDataTable({
     [typeFilters, handleFilter]
   );
 
+  // itemData 메모이제이션
+  const itemData = useMemo(
+    () => ({
+      data,
+      selectedRow,
+      setSelectedRow,
+      columnWidths,
+    }),
+    [data, selectedRow, setSelectedRow, columnWidths]
+  );
+
   // 행 렌더링 함수 - React.memo로 최적화
-  const Row = React.memo(({ index, style }) => {
+  const Row = React.memo(({ index, style, data: itemData }) => {
+    const { data, selectedRow, setSelectedRow, columnWidths } = itemData;
     const row = data[index];
     const isSel = String(row.id) === String(selectedRow);
 
-    const handleClick = () => {
-      setSelectedRow(isSel ? null : row.id, "table");
-    };
+    // 클래스명 메모이제이션
+    const rowClassName = useMemo(() => {
+      const base =
+        "flex items-center cursor-pointer border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700";
+      return isSel
+        ? `${base} bg-yellow-200 dark:bg-yellow-800 dark:ring-yellow-700 transition-all duration-200`
+        : `${base} bg-white dark:bg-gray-800 transition-colors duration-150`;
+    }, [isSel]);
 
-    const handleUrlClick = (e) => {
-      e.stopPropagation();
-      if (row.url) {
-        window.open(row.url, "_blank", "noopener,noreferrer");
-      }
-    };
+    const handleClick = useCallback(() => {
+      setSelectedRow(isSel ? null : row.id, "table");
+    }, [isSel, row.id, setSelectedRow]);
+
+    const handleUrlClick = useCallback(
+      (e) => {
+        e.stopPropagation();
+        if (row.url) {
+          window.open(row.url, "_blank", "noopener,noreferrer");
+        }
+      },
+      [row.url]
+    );
 
     return (
       <div
         style={{
           ...style,
-          // will-change로 브라우저에 최적화 힌트 제공
           willChange: "transform",
         }}
         onClick={handleClick}
-        className={`flex items-center cursor-pointer border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 ${
-          isSel
-            ? "bg-yellow-200 dark:bg-yellow-800 dark:ring-yellow-700 transition-all duration-200"
-            : "bg-white dark:bg-gray-800 transition-colors duration-150"
-        }`}
+        className={rowClassName}
       >
         <div
           style={{ width: `${columnWidths.time}px` }}
@@ -214,33 +246,33 @@ export default function VirtualizedDataTable({
         >
           <span
             className={`
-            inline-block px-2 py-1 text-xs font-medium rounded
-            ${
-              row.logType === "EQP"
-                ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                : ""
-            }
-            ${
-              row.logType === "TIP"
-                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                : ""
-            }
-            ${
-              row.logType === "RACB"
-                ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                : ""
-            }
-            ${
-              row.logType === "CTTTM"
-                ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-                : ""
-            }
-            ${
-              row.logType === "JIRA"
-                ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-                : ""
-            }
-          `}
+           inline-block px-2 py-1 text-xs font-medium rounded
+           ${
+             row.logType === "EQP"
+               ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+               : ""
+           }
+           ${
+             row.logType === "TIP"
+               ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+               : ""
+           }
+           ${
+             row.logType === "RACB"
+               ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+               : ""
+           }
+           ${
+             row.logType === "CTTTM"
+               ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+               : ""
+           }
+           ${
+             row.logType === "JIRA"
+               ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+               : ""
+           }
+         `}
           >
             {row.logType}
           </span>
@@ -273,19 +305,7 @@ export default function VirtualizedDataTable({
               className="inline-flex items-center justify-center w-8 h-8 rounded hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors"
               title="Open URL"
             >
-              <svg
-                className="w-4 h-4 text-blue-600 dark:text-blue-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                />
-              </svg>
+              <LinkIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </button>
           ) : (
             <span className="text-gray-400 dark:text-gray-600">-</span>
@@ -299,20 +319,20 @@ export default function VirtualizedDataTable({
 
   // 리스트 컨테이너의 높이 계산
   const [containerHeight, setContainerHeight] = React.useState(400);
-  const containerRef = useRef(null);
 
+  // ResizeObserver를 사용한 높이 계산 최적화
   useEffect(() => {
-    const updateHeight = () => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        const availableHeight = rect.height - 120;
+    if (!containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const availableHeight = entry.contentRect.height - 120;
         setContainerHeight(Math.max(200, availableHeight));
       }
-    };
+    });
 
-    updateHeight();
-    window.addEventListener("resize", updateHeight);
-    return () => window.removeEventListener("resize", updateHeight);
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
   }, []);
 
   return (
@@ -337,10 +357,10 @@ export default function VirtualizedDataTable({
               height={containerHeight}
               itemCount={data.length}
               itemSize={ITEM_HEIGHT}
+              itemData={itemData}
               width="100%"
               overscanCount={OVERSCAN_COUNT}
               style={{
-                // 스크롤 성능 최적화
                 contain: "strict",
                 overflowAnchor: "none",
               }}
