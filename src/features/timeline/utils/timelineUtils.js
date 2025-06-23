@@ -1,3 +1,4 @@
+// src/features/timeline/utils/timelineUtils.js
 // 미사용 함수 제거하고 필요한 것만 남김
 import { groupConfig } from "./timelineMeta";
 
@@ -22,17 +23,25 @@ export const processData = (logType, data, makeRangeContinuous = false) => {
         // 다음 로그의 eventTime을 현재 로그의 endTime으로 설정
         end = new Date(sortedData[index + 1].eventTime);
       } else {
-        // 마지막 로그인 경우, 오늘 00:00:00으로 설정
-        const today = new Date(start);
-        end = new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate() + 1,
+        // 마지막 로그인 경우
+        const now = new Date();
+        const todayMidnight = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
           0,
           0,
           0,
           0
         );
+
+        if (start < todayMidnight) {
+          // eventTime이 오늘 00:00:00보다 이전이면, 오늘 00:00:00으로 설정
+          end = todayMidnight;
+        } else {
+          // eventTime이 오늘 00:00:00보다 이후면, eventTime + 1시간으로 설정
+          end = new Date(start.getTime() + 60 * 60 * 1000); // 1시간 추가
+        }
       }
       isRange = true;
     }

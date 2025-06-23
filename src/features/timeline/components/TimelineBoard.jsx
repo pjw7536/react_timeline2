@@ -17,7 +17,7 @@ export default function TimelineBoard({
   ctttmLogs = [],
   racbLogs = [],
   jiraLogs = [],
-  typeFilters, // 추가
+  typeFilters,
 }) {
   // 모든 로그를 합쳐서 range 계산
   const allLogs = [
@@ -39,11 +39,11 @@ export default function TimelineBoard({
   }
 
   return (
-    <div className="w-full h-full">
-      {/* 타임라인이 많아질 때를 위한 스크롤 컨테이너 */}
+    <div className="w-full h-full relative">
+      {/* 타임라인이 많아질 때를 위한 스크롤 컨테이너 - absolute로 부모의 전체 영역을 차지 */}
       <div
-        className="w-full h-full overflow-y-auto space-y-0 scroll-smooth pr-5"
-        style={{ position: "relative", zIndex: 1 }}
+        className="absolute inset-0 overflow-y-auto space-y-0 scroll-smooth pr-5 mt-5 mb-10"
+        style={{ zIndex: 1 }}
       >
         {/* EQP 타임라인 - display:none으로 숨김 처리 */}
         <div style={{ display: typeFilters?.EQP ? "block" : "none" }}>

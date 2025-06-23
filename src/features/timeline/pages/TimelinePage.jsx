@@ -112,10 +112,19 @@ export default function TimelinePage() {
             const endTime = new Date(nextLog.eventTime).getTime();
             duration = endTime - startTime;
           } else {
-            // 마지막 로그는 현재 시간까지
+            // 마지막 로그는 오늘 00:00:00까지
             const startTime = new Date(log.eventTime).getTime();
-            const endTime = new Date().getTime();
-            duration = endTime - startTime;
+            const now = new Date();
+            const todayMidnight = new Date(
+              now.getFullYear(),
+              now.getMonth(),
+              now.getDate(),
+              0,
+              0,
+              0,
+              0
+            ).getTime();
+            duration = todayMidnight - startTime;
           }
         }
 
