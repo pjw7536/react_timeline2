@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 import { useSelectionStore } from "@shared/store";
@@ -51,6 +51,14 @@ export default function TimelinePage() {
     setPrcGroup,
     setEqp
   );
+
+  // useEffect를 추가하여 eqpId가 변경될 때마다 selectedTipGroups를 초기화
+  useEffect(() => {
+    if (eqpId) {
+      // eqpId가 변경될 때마다 TIP 그룹을 전체 선택 상태로 초기화
+      setSelectedTipGroups(["__ALL__"]);
+    }
+  }, [eqpId, setSelectedTipGroups]);
 
   // URL 동기화
   useUrlSync(lineId, eqpId, isValidating, isUrlInitialized);

@@ -6,7 +6,7 @@ import { buildTipGroupTree } from "../utils/tipTreeUtils";
 export default function TipTreeFilter({
   tipLogs,
   onFilterChange,
-  selectedTipGroups, // 부모로부터 현재 선택 상태 받기
+  selectedTipGroups,
   inDrawer = false,
 }) {
   const [expandedNodes, setExpandedNodes] = useState(new Set(["LINE01"]));
@@ -17,7 +17,7 @@ export default function TipTreeFilter({
   // 초기 선택 상태를 selectedTipGroups 기반으로 설정
   const [selectedPpids, setSelectedPpids] = useState(() => {
     if (selectedTipGroups.includes("__ALL__")) {
-      return new Set(); // 전체 선택 상태
+      return new Set();
     }
     return new Set(selectedTipGroups);
   });
@@ -25,6 +25,17 @@ export default function TipTreeFilter({
   const [isAllSelected, setIsAllSelected] = useState(() => {
     return selectedTipGroups.includes("__ALL__");
   });
+
+  // selectedTipGroups prop이 변경될 때 내부 상태 업데이트
+  useEffect(() => {
+    if (selectedTipGroups.includes("__ALL__")) {
+      setIsAllSelected(true);
+      setSelectedPpids(new Set());
+    } else {
+      setIsAllSelected(false);
+      setSelectedPpids(new Set(selectedTipGroups));
+    }
+  }, [selectedTipGroups]);
 
   // 모든 ppid 키 가져오기
   const getAllPpidKeys = () => {
@@ -41,17 +52,6 @@ export default function TipTreeFilter({
     return ppids;
   };
 
-  // 선택 상태가 변경될 때마다 부모 컴포넌트에 알림
-  useEffect(() => {
-    if (isAllSelected) {
-      onFilterChange(["__ALL__"]);
-    } else if (selectedPpids.size === 0) {
-      onFilterChange([]);
-    } else {
-      onFilterChange(Array.from(selectedPpids));
-    }
-  }, [selectedPpids, isAllSelected, onFilterChange]);
-
   // 노드 확장/축소
   const toggleExpand = (nodeKey) => {
     const newExpanded = new Set(expandedNodes);
@@ -63,13 +63,14 @@ export default function TipTreeFilter({
     setExpandedNodes(newExpanded);
   };
 
-  // 노드 선택 처리
+  // 노드 선택 처리 - onFilterChange 직접 호출
   const handleNodeSelect = (node, checked) => {
     const newSelectedPpids = new Set(selectedPpids);
+    let newIsAllSelected = isAllSelected;
 
     if (isAllSelected && !checked) {
       // 전체 선택 상태에서 하나를 해제하면
-      setIsAllSelected(false);
+      newIsAllSelected = false;
       // 모든 ppid를 선택하고
       getAllPpidKeys().forEach((key) => newSelectedPpids.add(key));
       // 해당 노드의 ppid들만 제거
@@ -114,12 +115,22 @@ export default function TipTreeFilter({
       }
     }
 
-    setSelectedPpids(newSelectedPpids);
-
     // 모든 ppid가 선택되었는지 확인
     if (newSelectedPpids.size === getAllPpidKeys().length) {
-      setIsAllSelected(true);
-      setSelectedPpids(new Set());
+      newIsAllSelected = true;
+      newSelectedPpids.clear();
+    }
+
+    setSelectedPpids(newSelectedPpids);
+    setIsAllSelected(newIsAllSelected);
+
+    // 부모 컴포넌트에 바로 알림
+    if (newIsAllSelected) {
+      onFilterChange(["__ALL__"]);
+    } else if (newSelectedPpids.size === 0) {
+      onFilterChange([]);
+    } else {
+      onFilterChange(Array.from(newSelectedPpids));
     }
   };
 
@@ -161,14 +172,16 @@ export default function TipTreeFilter({
     };
   };
 
-  // 전체 선택/해제
+  // 전체 선택/해제 - onFilterChange 직접 호출
   const handleSelectAll = () => {
     if (isAllSelected) {
       setSelectedPpids(new Set());
       setIsAllSelected(false);
+      onFilterChange([]);
     } else {
       setSelectedPpids(new Set());
       setIsAllSelected(true);
+      onFilterChange(["__ALL__"]);
     }
   };
 
@@ -178,18 +191,22 @@ export default function TipTreeFilter({
       line: {
         color: "text-blue-800 dark:text-blue-400",
         indent: 0,
+        icon: "📍",
       },
       process: {
         color: "text-blue-800 dark:text-blue-400",
         indent: 10,
+        icon: "⚙️",
       },
       step: {
         color: "text-blue-800 dark:text-blue-400",
         indent: 20,
+        icon: "📋",
       },
       ppid: {
         color: "text-blue-800 dark:text-blue-400",
         indent: 30,
+        icon: "🔧",
       },
     };
     return styles[level] || { color: "", indent: 0, icon: "" };
