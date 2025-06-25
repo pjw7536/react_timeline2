@@ -8,6 +8,7 @@ export function useVisTimeline({ containerRef, groups, items, options }) {
   const tlRef = useRef(null);
   const currentRangeRef = useRef(null);
   const previousHeightRef = useRef(null); // 이전 높이를 저장
+  const datasetRef = useRef(null); // DataSet 인스턴스 재사용을 위한 ref
 
   const { setSelectedRow, selectedRow } = useSelectionStore();
   const { register, unregister, syncRange } = useTimelineStore();
@@ -19,10 +20,10 @@ export function useVisTimeline({ containerRef, groups, items, options }) {
       const { Timeline } = await import("vis-timeline/standalone");
       if (!mounted || !containerRef.current) return;
 
-      const dataset = new DataSet(items);
+      datasetRef.current = new DataSet(items);
       tlRef.current = new Timeline(
         containerRef.current,
-        dataset,
+        datasetRef.current,
         groups,
         options
       );
@@ -55,13 +56,16 @@ export function useVisTimeline({ containerRef, groups, items, options }) {
         unregister(tlRef.current);
         tlRef.current.destroy();
       }
+      datasetRef.current = null;
     };
   }, [register, unregister, syncRange, setSelectedRow]);
 
-  // 2. 아이템 배열이 바뀌면 교체
+  // 2// 2. 아이템 배열이 바뀌면 데이터셋 업데이트
   useEffect(() => {
-    if (tlRef.current) {
-      tlRef.current.setItems(new DataSet(items));
+    if (tlRef.current && datasetRef.current) {
+      datasetRef.current.clear();
+      datasetRef.current.add(items);
+      tlRef.current.setItems(datasetRef.current);
     }
   }, [items]);
 
