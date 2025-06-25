@@ -26,4 +26,6 @@ export const timelineApi = {
   // EQP 정보 조회
   fetchEquipmentInfo: (lineId, eqpId) =>
     apiClient(`/equipment-info/${lineId}/${eqpId}`),
+
+  fetchEquipmentInfoByEqpId: (eqpId) => apiClient(`/equipment-info/${eqpId}`),
 };

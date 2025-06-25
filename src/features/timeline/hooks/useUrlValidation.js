@@ -1,5 +1,4 @@
 // src/features/timeline/hooks/useUrlValidation.js
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { timelineApi } from "@/features/timeline/api/timelineApi";
@@ -21,26 +20,26 @@ export function useUrlValidation(
 
   useEffect(() => {
     const validateAndSetParams = async () => {
-      if (params.lineId && params.eqpId) {
+      // URL에 eqpId만 있는 경우
+      if (params.eqpId && !params.lineId) {
         setIsValidating(true);
         setValidationError(null);
         setIsUrlInitialized(true);
 
         try {
-          const eqpInfo = await timelineApi.fetchEquipmentInfo(
-            params.lineId,
+          // eqpId로만 조회
+          const eqpInfo = await timelineApi.fetchEquipmentInfoByEqpId(
             params.eqpId
           );
 
-          // 백엔드에서 이미 유효성 검증이 완료됨
           if (!eqpInfo) {
-            setValidationError("유효하지 않은 Line ID 또는 EQP ID입니다.");
+            setValidationError("유효하지 않은 EQP ID입니다.");
             setTimeout(() => navigate("/timeline"), 1500);
             return;
           }
 
           // 상태 업데이트
-          setLine(params.lineId);
+          setLine(eqpInfo.lineId);
           setSdwt(eqpInfo.sdwtId);
           setPrcGroup(eqpInfo.prcGroup);
           setEqp(params.eqpId);
@@ -59,7 +58,6 @@ export function useUrlValidation(
       validateAndSetParams();
     }
   }, [
-    params.lineId,
     params.eqpId,
     isUrlInitialized,
     navigate,

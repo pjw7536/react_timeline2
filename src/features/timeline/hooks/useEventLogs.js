@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@shared/services/api/client";
 
-export const useEventLogs = (lineId, eqpId) => {
+export const useEventLogs = (eqpId) => {
   return useQuery({
-    queryKey: ["logs", "event", lineId, eqpId],
+    queryKey: ["logs", "event", eqpId],
     queryFn: () =>
       apiClient("/logs/event", {
-        params: { lineId, eqpId },
+        params: { eqpId },
       }),
-    enabled: !!lineId && !!eqpId,
+    enabled: !!eqpId,
     staleTime: 1000 * 60 * 5,
   });
 };

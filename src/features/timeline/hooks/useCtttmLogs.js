@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@shared/services/api/client";
 
-export const useCtttmLogs = (lineId, eqpId) => {
+export const useCtttmLogs = (eqpId) => {
   return useQuery({
-    queryKey: ["logs", "ctttm", lineId, eqpId],
+    queryKey: ["logs", "ctttm", eqpId],
     queryFn: () =>
       apiClient("/logs/ctttm", {
-        params: { lineId, eqpId },
+        params: { eqpId },
       }),
-    enabled: !!lineId && !!eqpId,
+    enabled: !!eqpId,
     staleTime: 1000 * 60 * 5,
   });
 };

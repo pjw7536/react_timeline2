@@ -47,7 +47,7 @@ export default function App() {
                 }
               />
               <Route
-                path="/timeline/:lineId/:eqpId"
+                path="/timeline/:eqpId"
                 element={
                   <ProtectedRoute>
                     <Suspense

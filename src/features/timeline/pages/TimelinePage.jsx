@@ -64,27 +64,12 @@ export default function TimelinePage() {
   useUrlSync(lineId, eqpId, isValidating, isUrlInitialized);
 
   // 각 타임라인의 로그 데이터를 개별적으로 가져오기
-  const enabled = Boolean(lineId && eqpId);
-  const { data: eqpLogs = [], isLoading: eqpLoading } = useEqpLogs(
-    lineId,
-    eqpId
-  );
-  const { data: tipLogs = [], isLoading: tipLoading } = useTipLogs(
-    lineId,
-    eqpId
-  );
-  const { data: ctttmLogs = [], isLoading: ctttmLoading } = useCtttmLogs(
-    lineId,
-    eqpId
-  );
-  const { data: racbLogs = [], isLoading: racbLoading } = useRacbLogs(
-    lineId,
-    eqpId
-  );
-  const { data: jiraLogs = [], isLoading: jiraLoading } = useJiraLogs(
-    lineId,
-    eqpId
-  );
+  const enabled = Boolean(eqpId); // lineId 체크 제거
+  const { data: eqpLogs = [], isLoading: eqpLoading } = useEqpLogs(eqpId);
+  const { data: tipLogs = [], isLoading: tipLoading } = useTipLogs(eqpId);
+  const { data: ctttmLogs = [], isLoading: ctttmLoading } = useCtttmLogs(eqpId);
+  const { data: racbLogs = [], isLoading: racbLoading } = useRacbLogs(eqpId);
+  const { data: jiraLogs = [], isLoading: jiraLoading } = useJiraLogs(eqpId);
 
   // 로딩 상태 계산
   const logsLoading =

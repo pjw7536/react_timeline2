@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@shared/services/api/client";
 
-export const useJiraLogs = (lineId, eqpId) => {
+export const useJiraLogs = (eqpId) => {
   return useQuery({
-    queryKey: ["logs", "jira", lineId, eqpId],
+    queryKey: ["logs", "jira", eqpId],
     queryFn: () =>
       apiClient("/logs/jira", {
-        params: { lineId, eqpId },
+        params: { eqpId },
       }),
-    enabled: !!lineId && !!eqpId,
+    enabled: !!eqpId,
     staleTime: 1000 * 60 * 5,
   });
 };

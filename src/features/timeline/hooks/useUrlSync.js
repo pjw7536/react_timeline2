@@ -10,10 +10,11 @@ export function useUrlSync(lineId, eqpId, isValidating, isUrlInitialized) {
 
     const currentPath = window.location.pathname;
     const isParamRoute =
-      currentPath.includes("/timeline/") && currentPath.split("/").length > 3;
+      currentPath.includes("/timeline/") && currentPath.split("/").length > 2;
 
-    if (lineId && eqpId) {
-      const newPath = `/timeline/${lineId}/${eqpId}`;
+    if (eqpId) {
+      // eqpId만 사용하도록 변경
+      const newPath = `/timeline/${eqpId}`;
       if (currentPath !== newPath) {
         navigate(newPath, { replace: true });
       }
@@ -22,5 +23,5 @@ export function useUrlSync(lineId, eqpId, isValidating, isUrlInitialized) {
         navigate("/timeline", { replace: true });
       }
     }
-  }, [lineId, eqpId, navigate, isValidating, isUrlInitialized]);
+  }, [eqpId, navigate, isValidating, isUrlInitialized]);
 }
