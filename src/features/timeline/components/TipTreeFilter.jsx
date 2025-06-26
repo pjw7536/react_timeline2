@@ -10,6 +10,7 @@ export default function TipTreeFilter({
   inDrawer = false,
 }) {
   const [expandedNodes, setExpandedNodes] = useState(new Set(["LINE01"]));
+  const [excludePwq, setExcludePwq] = useState(false);
 
   // 트리 구조 생성
   const tree = useMemo(() => buildTipGroupTree(tipLogs), [tipLogs]);
@@ -31,9 +32,16 @@ export default function TipTreeFilter({
     if (selectedTipGroups.includes("__ALL__")) {
       setIsAllSelected(true);
       setSelectedPpids(new Set());
+      setExcludePwq(false);
     } else {
       setIsAllSelected(false);
       setSelectedPpids(new Set(selectedTipGroups));
+      // PWQ 항목이 선택되어 있는지 확인
+      const pwqKeys = getPwqPpidKeys();
+      const hasPwqSelected = pwqKeys.some((key) =>
+        selectedTipGroups.includes(key)
+      );
+      setExcludePwq(!hasPwqSelected && selectedTipGroups.length > 0);
     }
   }, [selectedTipGroups]);
 
@@ -52,6 +60,77 @@ export default function TipTreeFilter({
     return ppids;
   };
 
+  // PWQ로 시작하는 ppid 키들 가져오기
+  const getPwqPpidKeys = () => {
+    const pwqPpids = [];
+    Object.values(tree).forEach((lineNode) => {
+      Object.values(lineNode.children).forEach((processNode) => {
+        Object.values(processNode.children).forEach((stepNode) => {
+          Object.values(stepNode.children).forEach((ppidNode) => {
+            // ppid name이 pwq로 시작하는지 확인
+            if (ppidNode.name.toLowerCase().startsWith("pwq")) {
+              pwqPpids.push(ppidNode.key);
+            }
+          });
+        });
+      });
+    });
+    return pwqPpids;
+  };
+
+  // PWQ 미포함 체크박스 핸들러
+  const handleExcludePwqChange = (checked) => {
+    setExcludePwq(checked);
+
+    const allPpidKeys = getAllPpidKeys();
+    const pwqPpidKeys = getPwqPpidKeys();
+    const newSelectedPpids = new Set(selectedPpids);
+    let newIsAllSelected = isAllSelected;
+
+    if (checked) {
+      // PWQ 미포함 체크됨: PWQ 항목들을 제거
+      if (isAllSelected) {
+        // 전체 선택 상태에서는 전체 선택 해제하고 PWQ만 제외
+        newIsAllSelected = false;
+        allPpidKeys.forEach((key) => {
+          if (!pwqPpidKeys.includes(key)) {
+            newSelectedPpids.add(key);
+          }
+        });
+      } else {
+        // 개별 선택 상태에서는 PWQ 항목만 제거
+        pwqPpidKeys.forEach((key) => newSelectedPpids.delete(key));
+      }
+    } else {
+      // PWQ 미포함 해제됨: PWQ 항목들을 추가
+      if (newSelectedPpids.size === 0) {
+        // 아무것도 선택되지 않았으면 전체 선택
+        newIsAllSelected = true;
+        newSelectedPpids.clear();
+      } else {
+        // PWQ 항목들 추가
+        pwqPpidKeys.forEach((key) => newSelectedPpids.add(key));
+        // 모든 항목이 선택되었는지 확인
+        if (newSelectedPpids.size === allPpidKeys.length) {
+          newIsAllSelected = true;
+          newSelectedPpids.clear();
+        }
+      }
+    }
+
+    setSelectedPpids(newSelectedPpids);
+    setIsAllSelected(newIsAllSelected);
+
+    // 부모 컴포넌트에 알림
+    if (newIsAllSelected) {
+      onFilterChange(["__ALL__"]);
+    } else if (newSelectedPpids.size === 0) {
+      onFilterChange([]);
+    } else {
+      onFilterChange(Array.from(newSelectedPpids));
+    }
+  };
+
   // 노드 확장/축소
   const toggleExpand = (nodeKey) => {
     const newExpanded = new Set(expandedNodes);
@@ -63,24 +142,25 @@ export default function TipTreeFilter({
     setExpandedNodes(newExpanded);
   };
 
-  // 노드 선택 처리 - onFilterChange 직접 호출
+  // 노드 선택 처리
   const handleNodeSelect = (node, checked) => {
     const newSelectedPpids = new Set(selectedPpids);
     let newIsAllSelected = isAllSelected;
+    let newExcludePwq = excludePwq;
 
     if (isAllSelected && !checked) {
-      // 전체 선택 상태에서 하나를 해제하면
       newIsAllSelected = false;
-      // 모든 ppid를 선택하고
       getAllPpidKeys().forEach((key) => newSelectedPpids.add(key));
-      // 해당 노드의 ppid들만 제거
     }
 
     // 노드 타입에 따라 처리
     if (node.level === "ppid") {
-      // ppid 직접 선택/해제
       if (checked && !isAllSelected) {
         newSelectedPpids.add(node.key);
+        // PWQ 항목이 선택되면 excludePwq 해제
+        if (node.name.toLowerCase().startsWith("pwq")) {
+          newExcludePwq = false;
+        }
       } else {
         newSelectedPpids.delete(node.key);
       }
@@ -110,6 +190,27 @@ export default function TipTreeFilter({
 
       if (checked && !isAllSelected) {
         ppidsToToggle.forEach((key) => newSelectedPpids.add(key));
+        // PWQ 항목이 포함되면 excludePwq 해제
+        const hasPwq = ppidsToToggle.some((key) => {
+          const ppidNodes = [];
+          Object.values(tree).forEach((lineNode) => {
+            Object.values(lineNode.children).forEach((processNode) => {
+              Object.values(processNode.children).forEach((stepNode) => {
+                Object.values(stepNode.children).forEach((ppidNode) => {
+                  if (ppidNode.key === key) {
+                    ppidNodes.push(ppidNode);
+                  }
+                });
+              });
+            });
+          });
+          return ppidNodes.some((node) =>
+            node.name.toLowerCase().startsWith("pwq")
+          );
+        });
+        if (hasPwq) {
+          newExcludePwq = false;
+        }
       } else {
         ppidsToToggle.forEach((key) => newSelectedPpids.delete(key));
       }
@@ -119,12 +220,14 @@ export default function TipTreeFilter({
     if (newSelectedPpids.size === getAllPpidKeys().length) {
       newIsAllSelected = true;
       newSelectedPpids.clear();
+      newExcludePwq = false;
     }
 
     setSelectedPpids(newSelectedPpids);
     setIsAllSelected(newIsAllSelected);
+    setExcludePwq(newExcludePwq);
 
-    // 부모 컴포넌트에 바로 알림
+    // 부모 컴포넌트에 알림
     if (newIsAllSelected) {
       onFilterChange(["__ALL__"]);
     } else if (newSelectedPpids.size === 0) {
@@ -136,7 +239,17 @@ export default function TipTreeFilter({
 
   // 노드의 선택 상태 확인
   const getNodeCheckState = (node) => {
-    if (isAllSelected) return { checked: true, indeterminate: false };
+    if (isAllSelected) {
+      // 전체 선택 상태에서 PWQ 제외가 체크되어 있고 PWQ 노드인 경우
+      if (
+        excludePwq &&
+        node.level === "ppid" &&
+        node.name.toLowerCase().startsWith("pwq")
+      ) {
+        return { checked: false, indeterminate: false };
+      }
+      return { checked: true, indeterminate: false };
+    }
 
     let childPpids = [];
 
@@ -172,7 +285,7 @@ export default function TipTreeFilter({
     };
   };
 
-  // 전체 선택/해제 - onFilterChange 직접 호출
+  // 전체 선택/해제
   const handleSelectAll = () => {
     if (isAllSelected) {
       setSelectedPpids(new Set());
@@ -183,6 +296,7 @@ export default function TipTreeFilter({
       setIsAllSelected(true);
       onFilterChange(["__ALL__"]);
     }
+    setExcludePwq(false);
   };
 
   // 레벨별 스타일
@@ -281,16 +395,27 @@ export default function TipTreeFilter({
             TIP 그룹 필터
           </h4>
         )}
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-500">
-            {isAllSelected ? "전체" : selectedPpids.size}개 선택
-          </span>
+        <div className="flex items-center justify-between w-full">
+          {/* 왼쪽: 전체 선택 */}
           <button
             onClick={handleSelectAll}
             className="text-xs text-blue-700 dark:text-blue-300 hover:underline"
           >
             {isAllSelected ? "전체 해제" : "전체 선택"}
           </button>
+
+          {/* 오른쪽: PWQ 미포함 */}
+          <label className="flex items-center gap-1 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={excludePwq}
+              onChange={(e) => handleExcludePwqChange(e.target.checked)}
+              className="rounded text-blue-600"
+            />
+            <span className="text-xs text-gray-700 dark:text-gray-300">
+              PWQ 필터
+            </span>
+          </label>
         </div>
       </div>
 
