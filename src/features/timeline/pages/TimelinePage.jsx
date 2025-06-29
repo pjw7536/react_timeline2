@@ -20,6 +20,7 @@ import { useTipLogs } from "@features/timeline/hooks/useTipLogs";
 import { useCtttmLogs } from "@features/timeline/hooks/useCtttmLogs";
 import { useRacbLogs } from "@features/timeline/hooks/useRacbLogs";
 import { useJiraLogs } from "@features/timeline/hooks/useJiraLogs";
+import { getTipGroupKey } from "@features/timeline/utils/tipUtils";
 
 export default function TimelinePage() {
   const params = useParams();
@@ -41,6 +42,8 @@ export default function TimelinePage() {
   const { showLegend, selectedTipGroups, setShowLegend, setSelectedTipGroups } =
     useTimelineStore();
 
+  const [tipGroupsInitialized, setTipGroupsInitialized] = useState(false);
+
   // URL 검증
   const { isValidating, validationError, isUrlInitialized } = useUrlValidation(
     params,
@@ -57,6 +60,7 @@ export default function TimelinePage() {
     if (eqpId) {
       // eqpId가 변경될 때마다 TIP 그룹을 전체 선택 상태로 초기화
       setSelectedTipGroups(["__ALL__"]);
+      setTipGroupsInitialized(false);
     }
   }, [eqpId, setSelectedTipGroups]);
 
@@ -70,6 +74,29 @@ export default function TimelinePage() {
   const { data: ctttmLogs = [], isLoading: ctttmLoading } = useCtttmLogs(eqpId);
   const { data: racbLogs = [], isLoading: racbLoading } = useRacbLogs(eqpId);
   const { data: jiraLogs = [], isLoading: jiraLoading } = useJiraLogs(eqpId);
+
+  // TIP 로그 로드 후 기본적으로 PWQ 그룹을 제외한 상태로 초기화
+  useEffect(() => {
+    if (
+      !tipGroupsInitialized &&
+      !tipLoading &&
+      tipLogs.length > 0 &&
+      selectedTipGroups.length === 1 &&
+      selectedTipGroups.includes("__ALL__")
+    ) {
+      const nonPwqKeys = Array.from(
+        new Set(
+          tipLogs
+            .filter(
+              (log) => !(log.ppid || "").toLowerCase().startsWith("pwq")
+            )
+            .map((log) => getTipGroupKey(log))
+        )
+      );
+      setSelectedTipGroups(nonPwqKeys);
+      setTipGroupsInitialized(true);
+    }
+  }, [tipLoading, tipLogs, selectedTipGroups, tipGroupsInitialized, setSelectedTipGroups]);
 
   // 로딩 상태 계산
   const logsLoading =
